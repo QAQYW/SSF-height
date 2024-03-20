@@ -52,6 +52,8 @@ public:
     Trajectory(int size);
     // 初始化为以固定高度heightIndex飞行的轨迹
     Trajectory(int size, int heightIndex);
+    // 重新初始化
+    void reInit(int size, int heightIndex);
     void setHeightIndex(int heightIndex, int lengthIndex);
     void addList(int heightIndex);
     vector<int> getHeightSche() const;
@@ -68,26 +70,26 @@ public:
 class ACOSolver; // 前置声明
 class Ant {
 private:
-    Trajectory* trajectory;
+    Trajectory trajectory;
     double cost;
 
 public:
-    Ant();
+    Ant(): trajectory() {};
     // 初始化为以固定高度heightIndex飞行的轨迹，但不会自动计算cost
-    Ant(int lengthDiscNum, int heightIndex);
+    Ant(int lengthDiscNum, int heightIndex): trajectory(lengthDiscNum, heightIndex) {};
     // 析构函数，释放trajectory的内存
-    ~Ant();
+    // ~Ant();
     double getCost() const;
-    void calCost(const ProblemDisc2D* problem);
-    Trajectory* getTrajectory() const;
+    void calCost(const ProblemDisc2D &problem);
+    Trajectory getTrajectory() const;
     // 生成轨迹之前先初始化各变量
     void init(int lengthDiscNum);
     // 生成轨迹
-    void generateTrajectory(int trajLen, const vector<vector<vector<double>>> &ph, const aco::ACOSolver *solver);
+    void generateTrajectory(int trajLen, const vector<vector<vector<double>>> &ph, const aco::ACOSolver &solver);
     // 计算高度变化产生的能耗
     double calHeightCost() const;
     // 计算速度调度的能耗（不包含高度变化）
-    double calSpeedCost(const ProblemDisc2D* problem) const;
+    double calSpeedCost(const ProblemDisc2D &problem) const;
 };
 
 /* --------------------------------- solver --------------------------------- */
@@ -97,16 +99,16 @@ private:
     int sensorNum;
     int lengthIndexNum;
     int heightIndexNum;
-    Trajectory *trajectory;
+    Trajectory trajectory;
     // 辅助变量
     vector<int> lBound; // 从0到当前位置d，经过的左边界数量
     vector<int> rBound; // 从0到当前位置d，经过的右边界数量
 
 public:
     ACOSolver(ProblemDisc2D *prob);
-    ~ACOSolver();
+    // ~ACOSolver();
     ProblemDisc2D* getProblem() const;
-    Trajectory* getTrajectory() const;
+    Trajectory getTrajectory() const;
     int getSensorNum() const;
     int getLBoundValue(int index) const;
     int getRBoundValue(int index) const;
@@ -114,7 +116,7 @@ public:
     // 信息素蒸发
     void evaporatePheromone(const vector<int>& dim, vector<vector<vector<double>>> &ph) const;
     // 用 bestAnt 的轨迹来增强信息素
-    void enhancePheromone(const Ant& ant, vector<vector<vector<double>>> &ph) const;
+    void enhancePheromone(const Ant &ant, vector<vector<vector<double>>> &ph) const;
     // 是否有快飞出范围了还没与无人机连接的传感器
     bool isUrgent(int d, vector<aco::Candidate> &candList, const vector<bool> &visit, int countVisit) const;
     // 计算被选中概率
@@ -122,7 +124,7 @@ public:
     // 动态计算启发值
     double calHeuristic(int d, int curr, int next) const;
     // 复制轨迹
-    void copyTrajectory(const aco::Trajectory &traj);
+    // void copyTrajectory(const aco::Trajectory &traj);
 };
 
 }

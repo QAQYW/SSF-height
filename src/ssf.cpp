@@ -3,19 +3,21 @@
 
 /* ------------------------------ SSFSolverDisc ----------------------------- */
 
-ssf::SSFSolverDisc::SSFSolverDisc(ProblemDisc1D* prob) {
-    problem = prob;
+ssf::SSFSolverDisc::SSFSolverDisc(ProblemDisc1D* prob): problem(prob) {
+    // problem = prob;
     sensorNum = prob->getSensorNum();
-    solution = new Solution(prob->getLengthDiscNum());
+    // solution = new Solution(prob->getLengthDiscNum());
+    this->solution = ssf::Solution(prob->getLengthDiscNum());
+    // solution.reInit(prob->getLengthDiscNum(), resource::V_STAR);
 }
 
-ssf::SSFSolverDisc::~SSFSolverDisc() {
-    if (solution != nullptr) {
-        delete solution;
-    }
-}
+// ssf::SSFSolverDisc::~SSFSolverDisc() {
+//     if (solution != nullptr) {
+//         delete solution;
+//     }
+// }
 
-ssf::Solution* ssf::SSFSolverDisc::getSolution() const {
+ssf::Solution ssf::SSFSolverDisc::getSolution() const {
     return solution;
 }
 
@@ -50,7 +52,7 @@ void ssf::SSFSolverDisc::solve() {
             int num = problem->getLengthDiscNum();
             for (int i = 0; i < num; i++) {
                 if (isActDis[i]) {
-                    solution->changeSpeedSche(i, resource::V_STAR);
+                    solution.changeSpeedSche(i, resource::V_STAR);
                 }
             }
             break;
@@ -123,7 +125,7 @@ void ssf::SSFSolverDisc::update(const ssf::Segment& seg, vector<bool>& isActDis,
     for (int i = l; i <= r; i++) {
         if (isActDis[i]) {
             // speedSche[i] = v;
-            solution->changeSpeedSche(i, v);
+            solution.changeSpeedSche(i, v);
             isActDis[i] = false;
         }
     }
@@ -146,7 +148,7 @@ int ssf::SSFSolverDisc::getActiveDistance(int l, int r, const vector<bool>& isAc
 }
 
 void ssf::SSFSolverDisc::calCost() {
-    cost = solution->calCost();
+    cost = solution.calCost();
 }
 
 double ssf::SSFSolverDisc::getCost() const {

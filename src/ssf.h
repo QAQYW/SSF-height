@@ -18,6 +18,7 @@ private:
     vector<double> speedSche;
 
 public:
+    Solution() {};
     // 构造函数，速度默认初始化为 resource::V_STAR
     Solution(int size);
     // 构造函数，速度初始化为 v
@@ -28,6 +29,8 @@ public:
     vector<double> getSpeedSche() const;
     // 计算速度调度的能耗
     double calCost() const;
+    // 重新初始化
+    // void reInit(int size, double v);
 };
 
 class Sensor {
@@ -80,14 +83,14 @@ class SSFSolverDisc {
 private:
     ProblemDisc1D* problem;
     int sensorNum;
-    Solution* solution;
+    Solution solution;
     double cost;
 
 public:
     SSFSolverDisc(ProblemDisc1D* prob);
     // 析构函数，只释放了solution的内存，没释放problem的
-    ~SSFSolverDisc();
-    Solution* getSolution() const;
+    // ~SSFSolverDisc();
+    Solution getSolution() const;
     // 求解 1D 问题，结果存于 solution
     void solve();
     // 计算速度调度能耗

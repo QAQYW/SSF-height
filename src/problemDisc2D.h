@@ -38,7 +38,6 @@ public:
     int getMaxHeightIndex() const;
     int getLengthDiscNum() const;
     int getHeightDiscNum() const;
-    // ProblemDisc1D* transformToProblemDisc1D(const Trajectory &traj) const;
     double getMinHeight() const;
 };
 

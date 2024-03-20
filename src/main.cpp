@@ -46,14 +46,14 @@ int main() {
         // if (acoSolver.getTrajectory() == nullptr) {
         //     cout << "empty pointer\n";
         // }
-        aco::Trajectory* optTraj = acoSolver.getTrajectory();
+        aco::Trajectory optTraj = acoSolver.getTrajectory();
 
         cout << "get optimal trajectory\n";
 
         vector<double> speedSche;
-        double hcost = optTraj->calHeightCost();
+        double hcost = optTraj.calHeightCost();
         cout << "1\n";
-        double vcost = optTraj->calSpeedCost(probDisc2D, speedSche);
+        double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
         cout << "2\n";
         string filename = dir + "\\" + "answer_" + std::to_string(exampleIndex) + ".txt";
         ofstream fout;
@@ -63,7 +63,7 @@ int main() {
 
         int num = probDisc2D.getLengthDiscNum();
         fout << "distance\tspeed\theight\n";
-        cout << "size of height list: " << std::to_string(optTraj->getHeightSche().size()) << "\n";
+        cout << "size of height list: " << std::to_string(optTraj.getHeightSche().size()) << "\n";
         cout << "size of speed schedule: " << std::to_string(speedSche.size()) << "\n";
         cout << "num = " << std::to_string(num) << "\n";
 
@@ -71,7 +71,7 @@ int main() {
 
         for (int i = 0; i < num; i++) {
             double dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
-            double hei = resource::indexToHeight(optTraj->getHeightIndex(i), prob2D.getMinHeight(), resource::REF_UNIT_HEIGHT);
+            double hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob2D.getMinHeight(), resource::REF_UNIT_HEIGHT);
             fout << std::to_string(dis) << "\t" << std::to_string(speedSche[i]) << "\t" << std::to_string(hei) << "\n";
         }
         fout.close();

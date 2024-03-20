@@ -2,6 +2,7 @@
 #define ACO_H
 
 #include <cmath>
+#include <iostream>
 
 #include "resource.h"
 #include "problemDisc1D.h"
@@ -74,6 +75,8 @@ public:
     Ant();
     // 初始化为以固定高度heightIndex飞行的轨迹，但不会自动计算cost
     Ant(int lengthDiscNum, int heightIndex);
+    // 析构函数，释放trajectory的内存
+    ~Ant();
     double getCost() const;
     void calCost(const ProblemDisc2D* problem);
     Trajectory* getTrajectory() const;
@@ -101,6 +104,7 @@ private:
 
 public:
     ACOSolver(ProblemDisc2D *prob);
+    ~ACOSolver();
     ProblemDisc2D* getProblem() const;
     Trajectory* getTrajectory() const;
     int getSensorNum() const;
@@ -117,6 +121,8 @@ public:
     double calProbability(const vector<vector<vector<double>>> &ph, int d, int curr, int next) const;
     // 动态计算启发值
     double calHeuristic(int d, int curr, int next) const;
+    // 复制轨迹
+    void copyTrajectory(const aco::Trajectory &traj);
 };
 
 }

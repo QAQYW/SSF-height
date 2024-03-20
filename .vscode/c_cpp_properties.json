@@ -10,7 +10,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            // 此处是编译路径，以后可直接在此修改
+            // 编译路径
             "compilerPath": "C:/Program Files/mingw64/bin/g++.exe",
             "cStandard": "c17",
             "cppStandard": "gnu++14",

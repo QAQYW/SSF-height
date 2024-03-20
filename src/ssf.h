@@ -85,6 +85,8 @@ private:
 
 public:
     SSFSolverDisc(ProblemDisc1D* prob);
+    // 析构函数，只释放了solution的内存，没释放problem的
+    ~SSFSolverDisc();
     Solution* getSolution() const;
     // 求解 1D 问题，结果存于 solution
     void solve();

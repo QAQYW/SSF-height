@@ -9,6 +9,12 @@ ssf::SSFSolverDisc::SSFSolverDisc(ProblemDisc1D* prob) {
     solution = new Solution(prob->getLengthDiscNum());
 }
 
+ssf::SSFSolverDisc::~SSFSolverDisc() {
+    if (solution != nullptr) {
+        delete solution;
+    }
+}
+
 ssf::Solution* ssf::SSFSolverDisc::getSolution() const {
     return solution;
 }

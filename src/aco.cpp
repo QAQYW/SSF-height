@@ -2,13 +2,13 @@
 
 /* -------------------------------- parameter ------------------------------- */
 
-const int aco::ANT_NUM = 50;    // ! 未调参
+const int aco::ANT_NUM = 10;    // ! 未调参
 const double aco::ALPHA = 1;    // ! 未调参
 const double aco::BETA = 1;     // ! 未调参
 const double aco::INITIAL_PHEROMONE_VALUE = 1;  // ! 未调参
 const double aco::EVAPORATE_COEF = 0.2;         // ! 未调参
 const double aco::ENHANCE_VALUE = 0.5;          // ! 未调参
-const int aco::MAX_INTERATOR = 100;             // ! 未调参
+const int aco::MAX_INTERATOR = 10;              // ! 未调参
 const double aco::HEURISTIC_BASE = 1;           // ? 这个值具体是多少好像不重要
 const double aco::HEURISTIC_REDUCE_FACTOR = 1;  // ! 慎重取值。和无人机升降的能耗有直接关系
 
@@ -17,6 +17,10 @@ const double aco::HEURISTIC_REDUCE_FACTOR = 1;  // ! 慎重取值。和无人机
 // 返回的是高度heightIndex，而不是对应项在candList中的索引
 // TODO 可以用二分
 int aco::roulette(vector<aco::Candidate>& candList, double sum) {
+    if (candList.empty()) {
+        cout << "Roulette Error: candList is empty\n";
+        return 0;
+    }
     double accu = 0;
     double r = tools::randDouble(0, sum);
     int num = candList.size();
@@ -26,8 +30,12 @@ int aco::roulette(vector<aco::Candidate>& candList, double sum) {
             return candList[i].h;
         }
     }
-    throw "Roulette Error.";
-    return candList[0].h;
+    // cout << "Roulette Error.\n";
+    // cout << "randomValue = " << r << "\n";
+    // cout << "sumProbability = " << sum << "\n";
+    // throw "Roulette Error.";
+    // return candList[0].h;
+    return candList.back().h;
 }
 
 
@@ -55,6 +63,25 @@ aco::ACOSolver::ACOSolver(ProblemDisc2D* prob) {
     for (int i = 1; i < lengthIndexNum; i++) {
         lBound[i] += lBound[i - 1];
         rBound[i] += rBound[i - 1];
+    }
+    this->trajectory = nullptr;
+}
+
+aco::ACOSolver::~ACOSolver() {
+    if (trajectory != nullptr) {
+        delete trajectory;
+    }
+}
+
+void aco::ACOSolver::copyTrajectory(const aco::Trajectory &traj) {
+    vector<int> list = traj.getHeightSche();
+    int len = list.size();
+    if (trajectory != nullptr) {
+        delete trajectory;
+    }
+    trajectory = new Trajectory(len);
+    for (int i = 0; i < len; i++) {
+        trajectory->setHeightIndex(list[i], i);
     }
 }
 
@@ -120,32 +147,38 @@ void aco::ACOSolver::solve() {
     Ant bestAnt(problem->getLengthDiscNum(), problem->getMinHeightIndex());
     bestAnt.calCost(problem);
     double optimalCost = bestAnt.getCost();
-    this->trajectory = bestAnt.getTrajectory();
+    // this->trajectory = bestAnt.getTrajectory();
+    copyTrajectory(*bestAnt.getTrajectory());
 
     int iter = 0;
     // TODO 也可以换成其他循环终止条件
     while (iter < aco::MAX_INTERATOR) {
-        int bestIndex = 0;
-        for (int i = 0; i < aco::ANT_NUM; i++) {
-            ants[i].init(problem->getLengthDiscNum());
-            ants[i].generateTrajectory(lengthIndexNum, pheromone, this);
-            ants[i].calCost(problem);
-            if (ants[i].getCost() < ants[bestIndex].getCost()) {
-                bestIndex = i;
-            }
-        }
-        if (ants[bestIndex].getCost() < bestAnt.getCost()) {
-            bestAnt = ants[bestIndex];
-        }
-        evaporatePheromone(dim, pheromone);   // 蒸发
-        enhancePheromone(bestAnt, pheromone); // 增强
-        if (bestAnt.getCost() < optimalCost) {
-            optimalCost = bestAnt.getCost();
-            this->trajectory = bestAnt.getTrajectory();
-        }
+        // int bestIndex = 0;
+        // for (int i = 0; i < aco::ANT_NUM; i++) {
+        //     ants[i].init(problem->getLengthDiscNum());
+        //     ants[i].generateTrajectory(lengthIndexNum, pheromone, this);
+        //     // cout << "trajectory generating over\n";
+        //     ants[i].calCost(problem);
+        //     // cout << "cost calculating over\n";
+        //     if (ants[i].getCost() < ants[bestIndex].getCost()) {
+        //         bestIndex = i;
+        //     }
+        // }
+        // if (ants[bestIndex].getCost() < bestAnt.getCost()) {
+        //     bestAnt = ants[bestIndex];
+        // }
+        // evaporatePheromone(dim, pheromone);   // 蒸发
+        // enhancePheromone(bestAnt, pheromone); // 增强
+        // if (bestAnt.getCost() < optimalCost) {
+        //     optimalCost = bestAnt.getCost();
+        //     // this->trajectory = bestAnt.getTrajectory();
+        //     copyTrajectory(*bestAnt.getTrajectory());
+        // }
         ++iter;
+        cout << "Iter: " << iter << "/" << aco::MAX_INTERATOR << "\n";
     }
-
+    cout << "Iteration over\n";
+    ants.clear();
 }
 
 void aco::ACOSolver::evaporatePheromone(const vector<int>& dim, vector<vector<vector<double>>> &ph) const {
@@ -235,6 +268,12 @@ aco::Ant::Ant(int lengthDiscNum, int heightIndex) {
     trajectory = new Trajectory(lengthDiscNum, heightIndex);
 }
 
+aco::Ant::~Ant() {
+    if (trajectory != nullptr) {
+        delete trajectory;
+    }
+}
+
 double aco::Ant::getCost() const {
     return cost;
 }
@@ -248,7 +287,9 @@ aco::Trajectory* aco::Ant::getTrajectory() const {
 }
 
 void aco::Ant::init(int lengthDiscNum) {
-    delete trajectory;
+    if (trajectory != nullptr) {
+        delete trajectory;
+    }
     trajectory = new Trajectory(lengthDiscNum);
 }
 
@@ -268,12 +309,15 @@ void aco::Ant::generateTrajectory(int trajLen, const vector<vector<vector<double
         vector<aco::Candidate> candidateList;
         double probSum = 0;
         // TODO 每确定了一个height，就要更新visit vector
+        // cout << "going to isUrgent()\n";
         if (solver->isUrgent(d, candidateList, visit, countVisit)) {
+            // cout << "\t In urgent case: " << std::to_string(candidateList.size()) << "\n";
             for (aco::Candidate cand : candidateList) {
                 cand.p = solver->calProbability(ph, d, curr, cand.h);
                 probSum += cand.p;
             }
         } else {
+            // cout << "\t NOT in urgent case\n";
             for (int h = hMin; h <= hMax; h++) {
                 Candidate cand;
                 cand.h = h;
@@ -285,7 +329,9 @@ void aco::Ant::generateTrajectory(int trajLen, const vector<vector<vector<double
 
         // 确定高度
         int next = aco::roulette(candidateList, probSum);
+        // cout << "next height = " << std::to_string(next) << "\n";
         trajectory->addList(next);
+        // cout << "successful: trajectory->addList(next);\n";
         curr = next; 
 
         // 更新visit

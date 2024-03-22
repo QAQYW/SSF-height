@@ -28,6 +28,14 @@ void resource::SensorDisc::updateByCoverList() {
 }
 
 bool resource::SensorDisc2D::isCovered(int lengthIndex, int heightIndex) const {
+    if (heightIndex >= rangeList.size()) {
+        // 出错 or 传感器的范围无法覆盖到这个高度
+        // std::cout<<"Invalid height index in function: isCovered()\n";
+        // std::cout<<"\tsize = "<<rangeList.size()<<"\n";
+        // std::cout<<"\tindex = "<<heightIndex<<"\n";
+        return false;
+        // throw "Invalid height index in function: 'isCovered()'";
+    }
     return lengthIndex >= rangeList[heightIndex].leftIndex && lengthIndex <= rangeList[heightIndex].rightIndex;
 }
 

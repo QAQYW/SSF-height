@@ -36,15 +36,10 @@ void ssf::SSFSolverDisc::init(vector<ssf::Sensor> &sensors) {
 }
 
 void ssf::SSFSolverDisc::solve() {
-    std::vector<ssf::Sensor> sensors;
-    // true 代表 active，未传输
-    std::vector<bool> isActDis(problem->getLengthDiscNum() + 1, true);
-    // std::vector<bool> isActDis(sensorNum);
-    // for (int i = 0; i < sensorNum; i++) isActDis[i] = true;
-    // std::vector<bool> isActDis(sensorNum, true);
-    // vector<double> speedSche(problem->getLengthDiscNum());
+    std::vector<ssf::Sensor> sensors; // 所有传感器集合
+    std::vector<bool> isActDis(problem->getLengthDiscNum(), true); // true 代表 active，未传输
+    this->init(sensors); // 对所有传感器初始化，并排序
 
-    this->init(sensors);
     int countActiveSensor = sensorNum; // 剩余未传输传感器数量
     while (countActiveSensor > 0) {
         ssf::Segment seg = findSlowestSegment(isActDis, sensors);

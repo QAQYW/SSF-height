@@ -8,7 +8,7 @@ const double aco::BETA = 1; //6;     // ! 未调参
 const double aco::INITIAL_PHEROMONE_VALUE = 1;  // ! 未调参
 const double aco::EVAPORATE_COEF = 0.2;         // ! 未调参
 const double aco::ENHANCE_VALUE = 1; //0.5;          // ! 未调参
-const int aco::MAX_INTERATOR = 50;              // ! 未调参
+const int aco::MAX_INTERATOR = 10; //50;              // ! 未调参
 const double aco::HEURISTIC_BASE = 1;           // ? 这个值具体是多少好像不重要
 const double aco::HEURISTIC_REDUCE_FACTOR = 1;  // ! 慎重取值。和无人机升降的能耗有直接关系
 
@@ -44,20 +44,20 @@ aco::ACOSolver::ACOSolver(ProblemDisc2D* prob): problem(prob), trajectory() {
     lengthIndexNum = prob->getLengthDiscNum();
     heightIndexNum = prob->getHeightDiscNum();
     // 构造 lBound 和 rBound
-    lBound.resize(lengthIndexNum, 0);
+    // lBound.resize(lengthIndexNum, 0);
     rBound.resize(lengthIndexNum, 0);
     for (resource::SensorDisc2D s : problem->getSensorList()) {
-        int lMost = s.rangeList[0].leftIndex;
+        // int lMost = s.rangeList[0].leftIndex;
         int rMost = s.rangeList[0].rightIndex;
         for (resource::RangeDisc rg : s.rangeList) {
-            lMost = min(lMost, rg.leftIndex);
+            // lMost = min(lMost, rg.leftIndex);
             rMost = max(rMost, rg.rightIndex);
         }
-        lBound[lMost]++;
+        // lBound[lMost]++;
         rBound[rMost]++;
     }
     for (int i = 1; i < lengthIndexNum; i++) {
-        lBound[i] += lBound[i - 1];
+        // lBound[i] += lBound[i - 1];
         rBound[i] += rBound[i - 1];
     }
     // this->trajectory = nullptr;
@@ -95,9 +95,9 @@ int aco::ACOSolver::getSensorNum() const {
     return sensorNum;
 }
 
-int aco::ACOSolver::getLBoundValue(int index) const {
-    return lBound[index];
-}
+// int aco::ACOSolver::getLBoundValue(int index) const {
+//     return lBound[index];
+// }
 
 int aco::ACOSolver::getRBoundValue(int index) const {
     return rBound[index];
@@ -175,7 +175,9 @@ void aco::ACOSolver::evaporatePheromone(const vector<int>& dim, vector<vector<ve
 void aco::ACOSolver::enhancePheromone(const Ant& ant, vector<vector<vector<double>>> &ph) const {
     // TODO 增强信息素
     // trajectory 的长度是 lengthIndexNum
-    vector<int> sche = trajectory.getHeightSche();
+    // vector<int> sche = trajectory.getHeightSche();
+    // ! 应该用bestAnt（即形参ant）的trajectory来更新
+    vector<int> sche = ant.getTrajectory().getHeightSche();
     for (int i = 1; i < lengthIndexNum; i++) {
         ph[i][sche[i - 1]][sche[i]] += aco::ENHANCE_VALUE;
     }
@@ -186,18 +188,33 @@ void aco::ACOSolver::enhancePheromone(const Ant& ant, vector<vector<vector<doubl
 
 bool aco::ACOSolver::isUrgent(int d, vector<aco::Candidate> & candList, const vector<bool> &visit, int countVisit) const {
     candList.clear();
-    int dMax = d + sensorNum - countVisit;
+    // int dMax = d + sensorNum - countVisit;
+    int dMax = std::min(d + sensorNum - countVisit, lengthIndexNum);
    // 0 ~ (d-1)的轨迹都已经确定
-    for (int _d = d; _d < dMax; _d++) {
-        if (_d - d + 1 <= getRBoundValue(_d) - countVisit) {
+    for (int nd = d; nd < dMax; nd++) {
+        // if (_d - d + 1 <= getRBoundValue(_d) - countVisit) {
+        if (nd - d + 1 <= rBound[nd] - countVisit) {
+            // whether urgent or not
             vector<bool> hFlag(heightIndexNum, false);
             int hMin = problem->getMinHeightIndex();
             int hMax = problem->getMaxHeightIndex();
             for (int i = 0; i < sensorNum; i++) { // i: sensor index
-                if (!visit[i] && rBound[i] <= _d) {
-                    resource::SensorDisc2D sensor = problem->getSensor(i);
-                    for (int h = hMin; h <= hMax; h++) {
-                        if (d <= sensor.rangeList[h].rightIndex) {
+                resource::SensorDisc2D sensor = problem->getSensor(i);
+
+                int hMost = std::min(hMax, (int) sensor.rangeList.size() - 1);
+
+                int rMostIndex = 0;
+                for (int h = hMin; h <= hMost; h++) {
+                    rMostIndex = std::max(rMostIndex, sensor.rangeList[h].rightIndex);
+                }
+                // ? 未访问过，且在nd之前结束？忘了之前写的是什么意思了，反正下面这句if里的条件有问题
+                // if (!visit[i] && rBound[i] <= nd) {
+                if (!visit[i] && rMostIndex <= nd) {
+                    // resource::SensorDisc2D sensor = problem->getSensor(i);
+                    for (int h = hMin; h <= hMost; h++) {
+                        // ? 下面这个if条件好像也有问题，仅仅d<=rightIndex可能还不够
+                        //if (d <= sensor.rangeList[h].rightIndex) {
+                        if (sensor.isCovered(d,h)) {
                             hFlag[h] = true;
                         }
                     }
@@ -277,6 +294,9 @@ void aco::Ant::init(int lengthDiscNum) {
 }
 
 void aco::Ant::generateTrajectory(int trajLen, const vector<vector<vector<double>>> &ph, const aco::ACOSolver &solver) {
+    
+    trajectory = Trajectory(trajLen);
+
     // 当前sensor i是否被访问过
     vector<bool> visit(solver.getSensorNum(), false);
     // 访问过的传感器数量(visit[i] == true)
@@ -312,9 +332,8 @@ void aco::Ant::generateTrajectory(int trajLen, const vector<vector<vector<double
 
         // 确定高度
         int next = aco::roulette(candidateList, probSum);
-        // cout << "next height = " << std::to_string(next) << "\n";
-        trajectory.addList(next);
-        // cout << "successful: trajectory->addList(next);\n";
+        // trajectory.addList(next);
+        trajectory.setHeightIndex(d, next);
         curr = next; 
 
         // 更新visit
@@ -354,7 +373,7 @@ void aco::Trajectory::reInit(int size, int heightIndex) {
     heightSche.resize(size, heightIndex);
 }
 
-void aco::Trajectory::setHeightIndex(int heightIndex, int lengthIndex) {
+void aco::Trajectory::setHeightIndex(int lengthIndex, int heightIndex) {
     heightSche[lengthIndex] = heightIndex;
 }
 

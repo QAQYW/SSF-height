@@ -54,7 +54,7 @@ public:
     Trajectory(int size, int heightIndex);
     // 重新初始化
     void reInit(int size, int heightIndex);
-    void setHeightIndex(int heightIndex, int lengthIndex);
+    void setHeightIndex(int lengthIndex, int heightIndex);
     void addList(int heightIndex);
     vector<int> getHeightSche() const;
     int getHeightIndex(int lengthIdnex) const;
@@ -101,7 +101,7 @@ private:
     int heightIndexNum;
     Trajectory trajectory;
     // 辅助变量
-    vector<int> lBound; // 从0到当前位置d，经过的左边界数量
+    // vector<int> lBound; // 从0到当前位置d，经过的左边界数量
     vector<int> rBound; // 从0到当前位置d，经过的右边界数量
 
 public:
@@ -110,7 +110,7 @@ public:
     ProblemDisc2D* getProblem() const;
     Trajectory getTrajectory() const;
     int getSensorNum() const;
-    int getLBoundValue(int index) const;
+    // int getLBoundValue(int index) const;
     int getRBoundValue(int index) const;
     void solve();
     // 信息素蒸发

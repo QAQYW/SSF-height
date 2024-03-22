@@ -64,7 +64,7 @@ void Problem2D::initFromFile(const string &filename) {
     getline(fin, buff);
     this->sensorNum = std::stoi(buff);
     
-    cout << "successful here\n";
+    // cout << "successful here\n";
 
     // 各传感器信息
     this->sensorList.resize(this->sensorNum);

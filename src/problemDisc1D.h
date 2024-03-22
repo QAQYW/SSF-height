@@ -1,6 +1,9 @@
 #ifndef PROBLEM_DISC_1D_H
 #define PROBLEM_DISC_1D_H
 
+#include <iostream>
+#include <fstream>
+
 #include "resource.h"
 #include "problemDisc2D.h"
 #include "aco.h"
@@ -22,6 +25,8 @@ private:
     int lengthDiscNum;
 
 public:
+    // 这个构造函数仅用于测试ssf，从文件读取内容，并初始化
+    // ProblemDisc1D(string filename);
     void transformFromProblemDisc2D(const ProblemDisc2D &prob, const aco::Trajectory &traj);
     vector<resource::SensorDisc> getSensorList() const;
     resource::SensorDisc getSensor(int index) const;

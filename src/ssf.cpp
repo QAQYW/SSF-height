@@ -35,19 +35,20 @@ void ssf::SSFSolverDisc::init(vector<ssf::Sensor> &sensors) {
     std::sort(sensors.begin(), sensors.end());
 }
 
-// !!!!!!!
 void ssf::SSFSolverDisc::solve() {
-    // TODO: complete
-    vector<ssf::Sensor> sensors;
+    std::vector<ssf::Sensor> sensors;
     // true 代表 active，未传输
-    vector<bool> isActDis(sensorNum, true);
+    std::vector<bool> isActDis(problem->getLengthDiscNum() + 1, true);
+    // std::vector<bool> isActDis(sensorNum);
+    // for (int i = 0; i < sensorNum; i++) isActDis[i] = true;
+    // std::vector<bool> isActDis(sensorNum, true);
     // vector<double> speedSche(problem->getLengthDiscNum());
 
     this->init(sensors);
     int countActiveSensor = sensorNum; // 剩余未传输传感器数量
-    while (countActiveSensor > 0) { // ! termination condition
+    while (countActiveSensor > 0) {
         ssf::Segment seg = findSlowestSegment(isActDis, sensors);
-        if (seg.getVelocity() < resource::V_STAR) {
+        if (seg.getVelocity() >= resource::V_STAR) {
             // set all empty speedSche as V_STAR
             int num = problem->getLengthDiscNum();
             for (int i = 0; i < num; i++) {
@@ -70,12 +71,14 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const vector<bool>& isActDis
         // segment 的基本信息
         int lMost = sensors[il].getLeftIndex();  // segment的最左端
         int rMost = sensors[il].getRightIndex(); // segment的最右端
-        int dis = getActiveDistance(lMost, rMost, isActDis); // ! active distance 假如中间被挖空了呢？
+        int dis = getActiveDistance(lMost, rMost, isActDis);
+        // ! active distance 假如中间被挖空了呢
         double time = problem->getSensor(sensors[il].getSensorIndex()).time; // active time
 
         // 单独一个传感器的 segment 也要记录
         ssf::Segment seg(lMost, rMost, dis, time);
         seg.addSensor(il);
+        seg.calVelocity();
         segments.push_back(seg);
 
         for (int ir = il + 1; ir < sensorNum; ir++) {
@@ -87,23 +90,23 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const vector<bool>& isActDis
             if (l > rMost) break;
 
             // 更新 segment 的基本信息
-            dis += getActiveDistance(rMost + 1, sensors[ir].getRightIndex(), isActDis); // 更新 active distance
+            if (sensors[ir].getRightIndex() > rMost) {
+                dis += getActiveDistance(rMost + 1, sensors[ir].getRightIndex(), isActDis); // 更新 active distance
+            }
             time += problem->getSensor(sensors[ir].getSensorIndex()).time; // 更新 active time
             rMost = sensors[ir].getRightIndex();
             // 新的 segment 加入集合 segments 中
             // ssf::Segment seg(lMost, rMost, dis, time);
-            // ? 怎么提高效率
-            // 不创建新的 segment，而是在之前的 segment 的基础上进行修改
             seg.setActiveDistance(dis);
             seg.setActiveTime(time);
             seg.setRight(rMost);
             seg.addSensor(ir);
+            seg.calVelocity();
             segments.push_back(seg);
         }
     }
 
     // sort(segments.begin(), segments.end());
-    // 只找一个slowest segment的话没必要sort，O(n)比较即可
     
     int index = 0; // the index of the slowest segment
     for (int i = segments.size() - 1; i; i--) {
@@ -112,19 +115,26 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const vector<bool>& isActDis
             index = i;
         }
     }
+
+    // puts("");
+    // printf("{l=%d, r=%d, dis=%d, time=%lf, v=%lf,\n[", 
+    //     segments[index].getLeft(), segments[index].getRight(),
+    //     segments[index].getActiveDistance(), segments[index].getActiveTime(),
+    //     segments[index].getVelocity());
+    // for (int id : segments[index].getSensorList()) {
+    //     printf("%d, ", id);
+    // }
+    // printf("]}\n");
+
     return segments[index];
 }
 
 void ssf::SSFSolverDisc::update(const ssf::Segment& seg, vector<bool>& isActDis, vector<ssf::Sensor>& sensors, int& count) {
     // TODO 确定slowest segment对应的速度，并更新active distance和active time
     double v = seg.getVelocity();
-    // if (v >= resource::V_STAR) {
-    //     return true;
-    // }
     int l = seg.getLeft(), r = seg.getRight();
     for (int i = l; i <= r; i++) {
         if (isActDis[i]) {
-            // speedSche[i] = v;
             solution.changeSpeedSche(i, v);
             isActDis[i] = false;
         }
@@ -133,7 +143,6 @@ void ssf::SSFSolverDisc::update(const ssf::Segment& seg, vector<bool>& isActDis,
         sensors[index].setInactive();
     }
     count -= seg.getSensorList().size();
-    // return false;
 }
 
 // ! 效率较低 O(r-l)
@@ -211,8 +220,22 @@ int ssf::Segment::getRight() const {
     return right;
 }
 
+int ssf::Segment::getActiveDistance() const {
+    return activeDistance;
+}
+
+double ssf::Segment::getActiveTime() const {
+    return activeTime;
+}
+
 vector<int> ssf::Segment::getSensorList() const {
     return sensorList;
+}
+
+void ssf::Segment::calVelocity() {
+    // double realDis = resource::indexToDistance(activeDistance, resource::REF_UNIT_LENGTH);
+    double realDis = activeDistance * resource::REF_UNIT_LENGTH;
+    velocity = realDis / activeTime;
 }
 
 /**
@@ -253,7 +276,7 @@ ssf::Solution::Solution(int size, double v) {
     speedSche.resize(size, v);
 }
 
-void ssf::Solution::changeSpeedSche(int index, int v) {
+void ssf::Solution::changeSpeedSche(int index, double v) {
     speedSche[index] = v;
 }
 

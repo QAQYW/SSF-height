@@ -80,7 +80,9 @@ namespace resource {
     double indexToValue(int id, int minId, double minVal, double unitVal);
     double indexToHeight(int heiId, double minHei, double unitHei);
     double indexToLength(int lenId, double minLen, double unitLen);
-    // double indexToLength(int lenId);
+    // 计算距离差
+    double indexToDistance(int activeDis, double unitLen);
+    double indexToDistance(int disId1, int disId2, double unitLen);
 }
 
 #endif

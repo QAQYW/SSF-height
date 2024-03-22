@@ -25,8 +25,13 @@
                     "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": false
+                },
+                {
+                    "description": "防止 gdb 打开标准库函数",
+                    "text": "-interpreter-exec console \"skip -rfu std::.*\"",
+                    "ignoreFailures": false
                 }
-            ]
+            ],
         }
     ]
 }

@@ -6,10 +6,10 @@ const double resource::V_STAR = 13.98;          // 在论文里有标注
 const double resource::LENGTH_ULP = 0.1;        // ! 慎重取值
 const double resource::HEIGHT_ULP = 0.01;       // ! 慎重取值
 const double resource::TIME_ULP = 0.1;          // ! 慎重取值
-const double resource::HEIGHT_COST_PROPOR = 40; // ! 慎重取值
+const double resource::HEIGHT_COST_PROPOR = 0.5; //40; // ! 慎重取值
 
 const double resource::REF_UNIT_HEIGHT = 10;
-const double resource::REF_UNIT_LENGTH = 10 * resource::LENGTH_ULP;
+const double resource::REF_UNIT_LENGTH = resource::LENGTH_ULP * 10;
 
 /* -------------------------- basic data structure -------------------------- */
 // void resource::SensorDisc::init() {
@@ -83,3 +83,16 @@ double resource::indexToLength(int lenId, double minLen, double unitLen) {
 // double resource::indexToLength(int lenId) {
 //     return resource::indexToValue(lenId, 0, 0, resource::LENGTH_ULP);
 // }
+
+// 计算两个距离差
+double resource::indexToDistance(int activeDis, double unitLen) {
+    return activeDis * unitLen;
+}
+
+// 计算两个lengthIndex之间的距离差（包含两端点）
+// lengthIndex 是小方格的 index，而不是某个坐标点
+// disId2 >= disId1
+double resource::indexToDistance(int disId1, int disId2, double unitLen) {
+    return indexToDistance(disId2 - disId1 + 1, unitLen);
+    // return (disId2 - disId1 + 1) * unitLen;
+}

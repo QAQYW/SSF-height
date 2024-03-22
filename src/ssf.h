@@ -24,7 +24,7 @@ public:
     // 构造函数，速度初始化为 v
     Solution(int size, double v);
     // 改变某位置的速度
-    void changeSpeedSche(int index, int v);
+    void changeSpeedSche(int index, double v);
     // 获得速度调度
     vector<double> getSpeedSche() const;
     // 计算速度调度的能耗
@@ -69,7 +69,12 @@ public:
     double getVelocity() const;
     int getLeft() const;
     int getRight() const;
+    int getActiveDistance() const;
+    double getActiveTime() const;
     vector<int> getSensorList() const;
+    // 根据active distance和active time来计算速度。
+    // 是真实速度，所以要算上resource::UNIT_LENGTH
+    void calVelocity();
     // 增加新发现的被segment覆盖的传感器
     void addSensor(int index);
     void setRight(int r);

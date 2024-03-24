@@ -101,6 +101,7 @@ double resource::indexToDistance(int activeDis, double unitLen) {
 // lengthIndex 是小方格的 index，而不是某个坐标点
 // disId2 >= disId1
 double resource::indexToDistance(int disId1, int disId2, double unitLen) {
-    return indexToDistance(disId2 - disId1 + 1, unitLen);
+    return indexToDistance(disId2 - disId1, unitLen);
+    // return indexToDistance(disId2 - disId1 + 1, unitLen);
     // return (disId2 - disId1 + 1) * unitLen;
 }

@@ -8,14 +8,14 @@
 #include "dataGenerator.h"
 
 const string dir = ".\\tiny_test";
-int exampleNum = 1;
+// int exampleNum = 1;
 vector<unsigned int> seeds;
 vector<string> filenames;
 
 void generateData(int exampleNum) {
     /* --------------------------------- 批量生成数据 --------------------------------- */
     srand((unsigned int) time(NULL));
-    if (exampleNum < 0) {
+    if (exampleNum <= 0) {
         std::cout << "Input the number of test instances: ";
         std::cin >> exampleNum;
     }
@@ -35,7 +35,7 @@ void generateData(int exampleNum) {
 void generateData_Solve(int exampleNum) {
     /* --------------------------------- 批量生成数据 --------------------------------- */
     srand((unsigned int) time(NULL));
-    if (exampleNum < 0) {
+    if (exampleNum <= 0) {
         std::cout << "Input the number of test instances: ";
         std::cin >> exampleNum;
     }

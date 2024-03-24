@@ -33,6 +33,7 @@ public:
     int getSensorNum() const;
     int getLengthIndexNum() const;
     int getHeightIndexNum() const;
+    aco::Trajectory getTrajectory() const;
     void solve();
 
 private:

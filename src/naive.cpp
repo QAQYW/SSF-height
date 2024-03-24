@@ -31,6 +31,10 @@ int naive_solver::NaiveSolver::getHeightIndexNum() const {
     return heightIndexNum;
 }
 
+aco::Trajectory naive_solver::NaiveSolver::getTrajectory() const {
+    return trajectory;
+}
+
 void naive_solver::NaiveSolver::solve() {
     // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
     trajectory = aco::Trajectory(lengthIndexNum, minHeightIndex);

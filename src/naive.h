@@ -1,12 +1,21 @@
 #ifndef NAIVE_H
 #define NAIVE_H
 
+#include "resource.h"
 #include "problemDisc2D.h"
 #include "aco.h"
 
 namespace naive_solver {
 
-
+// 描述当前状态的结构体
+struct State {
+    int lenId;  // length index
+    int heiId;  // height index
+    vector<bool> sensorFlag; // 当前位置覆盖的传感器集合，true表示覆盖
+    State(int l, int h): lenId(l), heiId(h) {};
+    // s覆盖的传感器集合是否是this覆盖的传感器集合的子集
+    bool isSubset(const State &s) const;
+};
 
 class NaiveSolver {
 private:
@@ -14,7 +23,10 @@ private:
     int sensorNum;
     int lengthIndexNum;
     int heightIndexNum;
+    int minHeightIndex;
+    int maxHeightIndex;
     aco::Trajectory trajectory;
+    double minCost;
 
 public:
     NaiveSolver(ProblemDisc2D *prob);
@@ -24,12 +36,10 @@ public:
     void solve();
 
 private:
-    void generateTrajectory(int trajLen);
+    void checkSensors(int lenId, int heiId, naive_solver::State &state) const;
+    void generateTrajectory(State curr, aco::Trajectory &traj, int trajLen);
 };
 
-
-
 }
-
 
 #endif

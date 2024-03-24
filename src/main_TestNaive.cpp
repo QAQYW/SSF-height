@@ -28,8 +28,8 @@ void generateData(int exampleNum) {
     }
     for (int i = 1; i <= exampleNum; i++) {
         DataGenerator dg(dir, 5);
-        dg.generateAndSave(seeds[i - 1], i);
-        std::cout << "instance " << std::to_string(i) << " generated.\n";
+        // dg.generateAndSave(seeds[i - 1], i);
+        // std::cout << "instance " << std::to_string(i) << " generated.\n";
         string filename = dir + "\\" + dg.filenameBase + std::to_string(i) + ".txt";
         filenames.push_back(filename);
     }
@@ -48,7 +48,7 @@ void solve(int exampleNum) {
         vector<double> speedSche;
         double hcost = optTraj.calHeightCost();
         double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
-        string filename = dir + "\\" + "answer_" + std::to_string(exampleIndex) + ".txt";
+        string filename = dir + "\\" + "answer_prop10_" + std::to_string(exampleIndex) + ".txt";
         ofstream fout;
         fout.open(filename);
 
@@ -59,6 +59,10 @@ void solve(int exampleNum) {
             double hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob2D.getMinHeight(), resource::REF_UNIT_HEIGHT);
             fout << std::to_string(dis) << "\t" << std::to_string(speedSche[i]) << "\t" << std::to_string(hei) << "\n";
         }
+        fout << " cost = " << std::to_string(hcost + vcost) << "\n";
+        fout << "hcost = " << std::to_string(hcost) << "\n";
+        fout << "vcost = " << std::to_string(vcost) << "\n";
+        fout << "\n";
         fout.close();
     }
 }
@@ -111,7 +115,7 @@ void generateData_Solve(int exampleNum) {
 
 int main(int argc, char *argv[]) { // int main() {
     
-    // generateData(10);
+    generateData(10);
     solve(expNum = 10);
 
     // generateData_Solve(1);

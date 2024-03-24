@@ -7,7 +7,7 @@
 #include "tools.h"
 #include "dataGenerator.h"
 
-const string dir = ".\\test";
+const string dir = ".\\tiny_test";
 int exampleNum = 1;
 vector<unsigned int> seeds;
 vector<string> filenames;
@@ -24,7 +24,7 @@ void generateData(int exampleNum) {
         seeds.push_back(seed);
     }
     for (int i = 1; i <= exampleNum; i++) {
-        DataGenerator dg(dir, 30);
+        DataGenerator dg(dir, 5);
         dg.generateAndSave(seeds[i - 1], i);
         std::cout << "instance " << std::to_string(i) << " generated.\n";
         string filename = dir + "\\" + dg.filenameBase + std::to_string(i) + ".txt";
@@ -80,9 +80,9 @@ void generateData_Solve(int exampleNum) {
 
 int main(int argc, char *argv[]) { // int main() {
     
-    generateData(1);
-    
-    generateData_Solve(1);
+    generateData(10);
+
+    // generateData_Solve(1);
 
     // system("pause");
     return 0;

@@ -98,7 +98,6 @@ double resource::indexToDistance(int activeDis, double unitLen) {
 }
 
 // 计算两个lengthIndex之间的距离差（包含两端点）
-// lengthIndex 是小方格的 index，而不是某个坐标点
 // disId2 >= disId1
 double resource::indexToDistance(int disId1, int disId2, double unitLen) {
     return indexToDistance(disId2 - disId1, unitLen);

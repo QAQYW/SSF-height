@@ -111,7 +111,7 @@ public:
     Trajectory getTrajectory() const;
     int getSensorNum() const;
     // int getLBoundValue(int index) const;
-    int getRBoundValue(int index) const;
+    // int getRBoundValue(int index) const;
     void solve();
     // 信息素蒸发
     void evaporatePheromone(const vector<int>& dim, vector<vector<vector<double>>> &ph) const;

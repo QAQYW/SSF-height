@@ -13,7 +13,7 @@ ProblemDisc2D::ProblemDisc2D(const Problem2D &prob) {
     minHeight = prob.getMinHeight();
 
     length = prob.getLength();
-    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength);
+    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
 
     sensorNum = prob.getSensorNum();
     sensorList.resize(sensorNum);

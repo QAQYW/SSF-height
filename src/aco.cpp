@@ -99,9 +99,9 @@ int aco::ACOSolver::getSensorNum() const {
 //     return lBound[index];
 // }
 
-int aco::ACOSolver::getRBoundValue(int index) const {
-    return rBound[index];
-}
+// int aco::ACOSolver::getRBoundValue(int index) const {
+//     return rBound[index];
+// }
 
 void aco::ACOSolver::solve() {
     // 信息素矩阵的维度

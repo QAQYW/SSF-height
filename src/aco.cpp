@@ -155,7 +155,7 @@ void aco::ACOSolver::solve() {
             trajectory = bestAnt.getTrajectory();
         }
         ++iter;
-        cout << "Iter: " << iter << "/" << aco::MAX_INTERATOR << "\n";
+        // cout << "Iter: " << iter << "/" << aco::MAX_INTERATOR << "\n";
     }
     // cout << "Iteration over\n";
     ants.clear();

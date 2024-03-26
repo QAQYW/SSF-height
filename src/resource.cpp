@@ -6,10 +6,10 @@ const double resource::V_STAR = 13.98;          // 在论文里有标注
 const double resource::LENGTH_ULP = 0.1;        // ! 慎重取值
 const double resource::HEIGHT_ULP = 0.01;       // ! 慎重取值
 const double resource::TIME_ULP = 0.1;          // ! 慎重取值
-const double resource::HEIGHT_COST_PROPOR = 0; //10; // 0.5; //40; // ! 慎重取值
+const double resource::HEIGHT_COST_PROPOR = 10; //0; // 0.5; //40; // ! 慎重取值
 
 const double resource::REF_UNIT_HEIGHT = 10;
-const double resource::REF_UNIT_LENGTH = resource::LENGTH_ULP * 10;
+const double resource::REF_UNIT_LENGTH = 1; //resource::LENGTH_ULP * 10;
 
 /* -------------------------- basic data structure -------------------------- */
 // void resource::SensorDisc::init() {

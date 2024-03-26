@@ -19,12 +19,12 @@ namespace aco {
 extern const int ANT_NUM;                       // 蚂蚁数量
 extern const double ALPHA;                      // 信息素tau的指数
 extern const double BETA;                       // 启发因子eta的指数
-extern const double INITIAL_PHEROMONE_VALUE;    // 信息素初值
 extern const double EVAPORATE_COEF;             // 信息素蒸发系数
 extern const double ENHANCE_VALUE;              // 信息素增强值
 extern const int MAX_INTERATOR;                 // 最大迭代次数
 extern const double HEURISTIC_BASE;             // 启发式因子的基础值
 extern const double HEURISTIC_REDUCE_FACTOR;    // 计算启发值时分母的系数
+extern const double INITIAL_PHEROMONE_VALUE;    // 信息素初值
 
 /* -------------------------------- roulette -------------------------------- */
 

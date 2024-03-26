@@ -75,7 +75,7 @@ void solve_ACO(int exampleNum, string dir) {
         vector<double> speedSche;
         double hcost = optTraj.calHeightCost();
         double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
-        string filename = dir + "\\" + "answer_aco_prop0_" + std::to_string(i) + ".txt";
+        string filename = dir + "\\" + "answer_aco_prop10_" + std::to_string(i) + ".txt";
         ofstream fout;
         fout.open(filename);
         fout << "distance\tspeed\theight\n";
@@ -124,7 +124,7 @@ void solve_Naive(int exampleNum, string dir) {
         double hcost = optTraj.calHeightCost();
         double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
         
-        string filename = dir + "\\" + "answer_naive_prop0_" + std::to_string(i) + ".txt";
+        string filename = dir + "\\" + "answer_naive_prop10_" + std::to_string(i) + ".txt";
         ofstream fout;
         fout.open(filename);
         fout << "distance\tspeed\theight\n";

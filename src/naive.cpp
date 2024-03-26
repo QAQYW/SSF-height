@@ -60,6 +60,9 @@ void naive_solver::NaiveSolver::generateTrajectory(State curr, aco::Trajectory &
     int l = curr.lenId + 1;
 
     if (l == trajLen) {
+        // 先检查可行性（是否所有传感器的数据都能被收集）
+        if (!isFeasible(traj)) return;
+        // 计算能耗，更新最优路径
         double cost = traj.calHeightCost() + traj.calSpeedCost(*problem);
         if (cost < minCost) {
             minCost = cost;
@@ -82,4 +85,20 @@ void naive_solver::NaiveSolver::generateTrajectory(State curr, aco::Trajectory &
         traj.setHeightIndex(l, next.heiId);
         generateTrajectory(next, traj, trajLen);
     }
+}
+
+bool naive_solver::NaiveSolver::isFeasible(const aco::Trajectory &traj) {
+    int count = 0;
+    bool vis[sensorNum];
+    for (int d = 0; d < lengthIndexNum; d++) {
+        int h = traj.getHeightIndex(d);
+        for (int s = 0; s < sensorNum; s++) {
+            if (vis[s]) continue;
+            if (problem->getSensor(s).isCovered(d, h)) {
+                vis[s] = true;
+                ++count;
+            }
+        }
+    }
+    return (count == sensorNum);
 }

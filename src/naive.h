@@ -39,6 +39,7 @@ public:
 private:
     void checkSensors(int lenId, int heiId, naive_solver::State &state) const;
     void generateTrajectory(State curr, aco::Trajectory &traj, int trajLen);
+    bool isFeasible(const aco::Trajectory &traj);
 };
 
 }

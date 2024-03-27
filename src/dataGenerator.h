@@ -39,7 +39,9 @@ public:
     // 传感器范围x坐标最小放大倍数（仅用于生成传输范围吗）
     const double MIN_X_MULT = 10;
     // 范围膨胀系数
-    const double MIN_SWELL = 0; // ? 可以为0吗
+    // 越小越接近圆形，等于 0 时退化为圆形
+    // 参考 https://zhuanlan.zhihu.com/p/380580061
+    const double MIN_SWELL = 0;
     const double MAX_SWELL = 2;
     // TODO 暂缺
 

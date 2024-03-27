@@ -49,6 +49,11 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
     fout << std::to_string(length) << "\n";
     fout << std::to_string(sensorNum) << "\n";
 
+    /*
+        水滴型曲线参考
+        https://zhuanlan.zhihu.com/p/380580061
+    */
+
     // 随机产生每个传感器的传输范围
     // 几个辅助变量
     double maxXMult = 0.8 * length;
@@ -70,7 +75,6 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
         if (yMax <= minHeight) {
             i--;
             continue;
-            // ? 是要重新生成？
         }
 
         // 保存传输时间

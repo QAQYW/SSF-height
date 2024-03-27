@@ -8,9 +8,6 @@
 #include "tools.h"
 #include "resource.h"
 
-// ? the upper bound and lower bound of parameters
-// ? are defined in namespace resource?
-
 class DataGenerator {
 private:
     // 文件输出

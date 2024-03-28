@@ -303,7 +303,7 @@ void aco::Ant::generateTrajectory(int trajLen, const vector<vector<vector<double
     int countVisit = 0;
     int sensorNum = solver.getSensorNum();
     // 起点高度
-    // 以 minHeightIndex 作为虚拟起点的高度 // ! 暂时先用这个代替
+    // 以 minHeightIndex 作为虚拟起点的高度
     int hMin = solver.getProblem()->getMinHeightIndex();
     int hMax = solver.getProblem()->getMaxHeightIndex();
     int curr = hMin;

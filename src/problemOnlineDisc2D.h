@@ -6,6 +6,9 @@
 
 class ProblemOnlineDisc2D {
 
+// ! control communication range 必须覆盖所有高度
+// ! 否则可能无人机全程都无法获得该传感器的信息
+
 private:
     vector<resource::SensorOnlineDisc2D> sensorList; // 传感器列表
     int sensorNum;  // 传感器数量

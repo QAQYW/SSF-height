@@ -5,7 +5,7 @@
 #include "problemDisc2D.h"
 #include "aco.h"
 
-namespace naive_solver {
+namespace naive {
 
 // 描述当前状态的结构体
 struct State {
@@ -37,7 +37,7 @@ public:
     void solve();
 
 private:
-    void checkSensors(int lenId, int heiId, naive_solver::State &state) const;
+    void checkSensors(int lenId, int heiId, naive::State &state) const;
     void generateTrajectory(State curr, aco::Trajectory &traj, int trajLen);
     bool isFeasible(const aco::Trajectory &traj);
 };

@@ -1,6 +1,6 @@
 #include "naive.h"
 
-bool naive_solver::State::isSubset(const State &s) const {
+bool naive::State::isSubset(const State &s) const {
     int sensorNum = sensorFlag.size();
     for (int i = 0; i < sensorNum; i++) {
         if (s.sensorFlag[i] && !sensorFlag[i]) {
@@ -10,7 +10,7 @@ bool naive_solver::State::isSubset(const State &s) const {
     return true;
 }
 
-naive_solver::NaiveSolver::NaiveSolver(ProblemDisc2D *prob)
+naive::NaiveSolver::NaiveSolver(ProblemDisc2D *prob)
  : problem(prob) {
     sensorNum = prob->getSensorNum();
     lengthIndexNum = prob->getLengthDiscNum();
@@ -19,23 +19,23 @@ naive_solver::NaiveSolver::NaiveSolver(ProblemDisc2D *prob)
     maxHeightIndex = problem->getMaxHeightIndex();
 }
 
-int naive_solver::NaiveSolver::getSensorNum() const {
+int naive::NaiveSolver::getSensorNum() const {
     return sensorNum;
 }
 
-int naive_solver::NaiveSolver::getLengthIndexNum() const {
+int naive::NaiveSolver::getLengthIndexNum() const {
     return lengthIndexNum;
 }
 
-int naive_solver::NaiveSolver::getHeightIndexNum() const {
+int naive::NaiveSolver::getHeightIndexNum() const {
     return heightIndexNum;
 }
 
-aco::Trajectory naive_solver::NaiveSolver::getTrajectory() const {
+aco::Trajectory naive::NaiveSolver::getTrajectory() const {
     return trajectory;
 }
 
-void naive_solver::NaiveSolver::solve() {
+void naive::NaiveSolver::solve() {
     // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
     trajectory = aco::Trajectory(lengthIndexNum, minHeightIndex);
     minCost = trajectory.calHeightCost() + trajectory.calSpeedCost(*problem);
@@ -49,14 +49,14 @@ void naive_solver::NaiveSolver::solve() {
     }
 }
 
-void naive_solver::NaiveSolver::checkSensors(int lenId, int heiId, naive_solver::State &state) const {
+void naive::NaiveSolver::checkSensors(int lenId, int heiId, naive::State &state) const {
     state.sensorFlag.resize(sensorNum, false);
     for (int i = 0; i < sensorNum; i++) {
         state.sensorFlag[i] = problem->getSensor(i).isCovered(lenId, heiId);
     }
 }
 
-void naive_solver::NaiveSolver::generateTrajectory(State curr, aco::Trajectory &traj, int trajLen) {
+void naive::NaiveSolver::generateTrajectory(State curr, aco::Trajectory &traj, int trajLen) {
     int l = curr.lenId + 1;
 
     if (l == trajLen) {
@@ -87,7 +87,7 @@ void naive_solver::NaiveSolver::generateTrajectory(State curr, aco::Trajectory &
     }
 }
 
-bool naive_solver::NaiveSolver::isFeasible(const aco::Trajectory &traj) {
+bool naive::NaiveSolver::isFeasible(const aco::Trajectory &traj) {
     int count = 0;
     bool vis[sensorNum];
     for (int d = 0; d < lengthIndexNum; d++) {

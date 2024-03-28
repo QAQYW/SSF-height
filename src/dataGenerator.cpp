@@ -56,7 +56,7 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
 
     // 随机产生每个传感器的传输范围
     // 几个辅助变量
-    double maxXMult = 0.8 * length;
+    double maxXMult = 0.4 * length;
     double minXMult = MIN_X_MULT;
     double maxYMult = maxHeight / 1.35;
     double minYMult = minHeight / 1.35; // heightList[0] / 1.35;
@@ -99,7 +99,6 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
             double xDiff = std::sqrt(temp2) / xCoef;
             double xLeft = tools::approx(max(0.0, mid - xDiff), resource::LENGTH_ULP);
             double xRight = tools::approx(min(length, mid + xDiff), resource::LENGTH_ULP);
-            // ? data transmission range 有可能不是对称的？？
             
             ++count;
             rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t\n";

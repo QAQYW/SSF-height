@@ -39,6 +39,13 @@ bool resource::SensorDisc2D::isCovered(int lengthIndex, int heightIndex) const {
     return lengthIndex >= rangeList[heightIndex].leftIndex && lengthIndex <= rangeList[heightIndex].rightIndex;
 }
 
+bool resource::SensorOnlineDisc2D::isCovered(int lengthIndex, int heightIndex) const {
+    if (heightIndex >= dataList.size()) {
+        return false;
+    }
+    return lengthIndex >= dataList[heightIndex].leftIndex && lengthIndex <= dataList[heightIndex].rightIndex;
+}
+
 /* -------------------------------- function -------------------------------- */
 double resource::power(double v) {
     if (v < 0) {

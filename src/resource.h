@@ -52,14 +52,26 @@ namespace resource {
     };
     // 传感器 2D
     struct Sensor2D {
-        vector<Range> rangeList;
         double time;
-        // Sensor2D()
+        vector<Range> rangeList;
     };
     // 距离离散化的传感器 2D
     struct SensorDisc2D {
-        vector<RangeDisc> rangeList;
         double time;
+        vector<RangeDisc> rangeList;
+        bool isCovered(int lengthIndex, int heightIndex) const;
+    };
+    // 传感器2D online
+    struct SensorOnline2D {
+        double time;
+        vector<Range> dataList; // data transmission ranges
+        vector<Range> controlList; // control communication ranges
+    };
+    // 距离离散化的传感器2D online
+    struct SensorOnlineDisc2D {
+        double time;
+        vector<RangeDisc> dataList;
+        vector<RangeDisc> controlList;
         bool isCovered(int lengthIndex, int heightIndex) const;
     };
 

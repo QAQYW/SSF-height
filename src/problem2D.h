@@ -16,7 +16,7 @@ private:
     vector<resource::Sensor2D> sensorList;
     // 路径总长度
     double length;
-    // 飞行高度
+    // 离散的高度数量
     int heightDiscNum;
     vector<double> heightList;
     // 最低飞行高度

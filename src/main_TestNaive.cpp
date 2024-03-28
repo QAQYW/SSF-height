@@ -41,7 +41,7 @@
 //         Problem2D prob2D;
 //         prob2D.initFromFile(filenames[exampleIndex - 1]);
 //         ProblemDisc2D probDisc2D(prob2D);
-//         naive_solver::NaiveSolver naiveSolver(&probDisc2D);
+//         naive::NaiveSolver naiveSolver(&probDisc2D);
 //         naiveSolver.solve();
 //         aco::Trajectory optTraj = naiveSolver.getTrajectory();
 
@@ -91,7 +91,7 @@
 //         Problem2D prob2D;
 //         prob2D.initFromFile(filenames[exampleIndex - 1]);
 //         ProblemDisc2D probDisc2D(prob2D);
-//         naive_solver::NaiveSolver naiveSolver(&probDisc2D);
+//         naive::NaiveSolver naiveSolver(&probDisc2D);
 //         naiveSolver.solve();
 //         aco::Trajectory optTraj = naiveSolver.getTrajectory();
 

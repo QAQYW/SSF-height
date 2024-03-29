@@ -29,6 +29,42 @@ ProblemDisc2D::ProblemDisc2D(const Problem2D &prob) {
     }
 }
 
+ProblemDisc2D::ProblemDisc2D(const ProblemOnlineDisc2D &prob, const online::ACOSolver_Online &onlineSolver) {
+    unitLength = prob.getUnitLength();
+    unitHeight = prob.getUnitHeight();
+
+    heightDiscNum = prob.getHeightDiscNum();
+    minHeightIndex = 0;
+    maxHeightIndex = heightDiscNum - 1;
+    minHeight = prob.getMinHeight();
+
+    length = prob.getLength();
+    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+
+    // sensorNum = prob.getSensorNum();
+    // sensorList.resize(sensorNum);
+    sensorNum = 0;
+    vector<resource::SensorOnlineDisc2D> origin = prob.getSensorList();
+    vector<online::Sensor> states = onlineSolver.getSensorState();
+    for (int i = 0; i < sensorNum; i++) {
+        
+        if (!states[i].isActive()) continue;
+
+        ++sensorNum;
+        sensorIndexMap.push_back(i);
+
+        resource::SensorDisc2D sensor;
+        sensor.time = states[i].getTime(); // 应该是online problem中的剩余时间
+        int temp = origin[i].dataList.size();
+        sensor.rangeList.resize(temp);
+        for (int j = 0; j < temp; j++) {
+            sensor.rangeList[j].leftIndex = origin[i].dataList[j].leftIndex;
+            sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex;
+        }
+        sensorList.push_back(sensor);
+    }
+}
+
 int ProblemDisc2D::getSensorNum() const {
     return sensorNum;
 }

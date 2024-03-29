@@ -62,3 +62,11 @@ int ProblemOnlineDisc2D::getHeightDiscNum() const {
 double ProblemOnlineDisc2D::getMinHeight() const {
     return minHeight;
 }
+
+double ProblemOnlineDisc2D::getUnitLength() const {
+    return unitLength;
+}
+
+double ProblemOnlineDisc2D::getUnitHeight() const {
+    return unitHeight;
+}

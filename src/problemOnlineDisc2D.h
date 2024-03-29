@@ -3,6 +3,7 @@
 
 #include "resource.h"
 #include "problemOnline2D.h"
+#include "aco.h"
 
 class ProblemOnlineDisc2D {
 
@@ -32,6 +33,8 @@ public:
     int getLengthDiscNum() const;
     int getHeightDiscNum() const;
     double getMinHeight() const;
+    double getUnitLength() const;
+    double getUnitHeight() const;
 };
 
 

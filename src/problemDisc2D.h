@@ -4,6 +4,8 @@
 #include "resource.h"
 // #include "problemDisc1D.h"
 #include "problem2D.h"
+#include "problemOnlineDisc2D.h"
+#include "acoOnline.h"
 
 class ProblemDisc2D {
 private:
@@ -27,9 +29,12 @@ private:
     double unitLength;
     // 最小高度单位
     double unitHeight;
+    // 与 online problem 的传感器编号映射
+    vector<int> sensorIndexMap;
 
 public:
     ProblemDisc2D(const Problem2D &prob);
+    ProblemDisc2D(const ProblemOnlineDisc2D &prob, const online::ACOSolver_Online &onlineSolver);
     int getSensorNum() const;
     double getLength() const;
     vector<resource::SensorDisc2D> getSensorList() const;

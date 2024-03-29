@@ -141,10 +141,12 @@ void online::ACOSolver_Online::solve() {
         }
         // TODO 更新 visited vector
     }
+    cost = hcost + vcost;
 }
 
+// TODO: complete
 void online::ACOSolver_Online::resolve(int start, int end) {
-    ProblemDisc2D offlineProb(*problem, *this);
+    ProblemDisc2D offlineProb(start, end, *problem, *this);
     aco::ACOSolver offlineSolver(&offlineProb);
 }
 

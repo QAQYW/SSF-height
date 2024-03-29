@@ -29,7 +29,7 @@ ProblemDisc2D::ProblemDisc2D(const Problem2D &prob) {
     }
 }
 
-ProblemDisc2D::ProblemDisc2D(const ProblemOnlineDisc2D &prob, const online::ACOSolver_Online &onlineSolver) {
+ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob, const online::ACOSolver_Online &onlineSolver) {
     unitLength = prob.getUnitLength();
     unitHeight = prob.getUnitHeight();
 
@@ -38,8 +38,10 @@ ProblemDisc2D::ProblemDisc2D(const ProblemOnlineDisc2D &prob, const online::ACOS
     maxHeightIndex = heightDiscNum - 1;
     minHeight = prob.getMinHeight();
 
-    length = prob.getLength();
-    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+    // length = prob.getLength();
+    // lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+    lengthDiscNum = end - start + 1;
+    length = resource::indexToLength(end - start, 0, unitLength);
 
     // sensorNum = prob.getSensorNum();
     // sensorList.resize(sensorNum);
@@ -47,7 +49,7 @@ ProblemDisc2D::ProblemDisc2D(const ProblemOnlineDisc2D &prob, const online::ACOS
     vector<resource::SensorOnlineDisc2D> origin = prob.getSensorList();
     vector<online::Sensor> states = onlineSolver.getSensorState();
     for (int i = 0; i < sensorNum; i++) {
-        
+
         if (!states[i].isActive()) continue;
 
         ++sensorNum;
@@ -58,8 +60,8 @@ ProblemDisc2D::ProblemDisc2D(const ProblemOnlineDisc2D &prob, const online::ACOS
         int temp = origin[i].dataList.size();
         sensor.rangeList.resize(temp);
         for (int j = 0; j < temp; j++) {
-            sensor.rangeList[j].leftIndex = origin[i].dataList[j].leftIndex;
-            sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex;
+            sensor.rangeList[j].leftIndex = origin[i].dataList[j].leftIndex - start;
+            sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex - start;
         }
         sensorList.push_back(sensor);
     }

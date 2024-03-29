@@ -255,9 +255,22 @@ void ssf::Segment::setActiveTime(double time) {
 
 /**
  * 重载“<”
- * 按 velocity 升序（最慢的在最前面）
+ * 按照关键字的优先级由高到低，分别是：
+ * velocity 升序（最慢的在最前面）
+ * sensorList.size() 升序（越少的在越前面）
+ * left 升序
+ * right 升序
 */
 bool ssf::Segment::operator< (const Segment& _segment) const {
+    if (velocity == _segment.getVelocity()) {
+        if (sensorList.size() == _segment.getSensorList().size()) {
+            if (left == _segment.getLeft()) {
+                return right < _segment.getRight();
+            }
+            return left < _segment.getLeft();
+        }
+        return sensorList.size() < _segment.getSensorList().size();
+    }
     return velocity < _segment.getVelocity();
 }
 

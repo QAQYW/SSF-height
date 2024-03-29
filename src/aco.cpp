@@ -121,7 +121,7 @@ void aco::ACOSolver::solve() {
     );
 
     // 所有蚂蚁集合
-    vector<Ant> ants(aco::ANT_NUM, Ant());
+    vector<aco::Ant> ants(aco::ANT_NUM, aco::Ant());
 
     // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
     Ant bestAnt(problem->getLengthDiscNum(), problem->getMinHeightIndex());
@@ -158,6 +158,53 @@ void aco::ACOSolver::solve() {
         // cout << "Iter: " << iter << "/" << aco::MAX_INTERATOR << "\n";
     }
     // cout << "Iteration over\n";
+    ants.clear();
+}
+
+// TODO: adjust the following func to fit the online prob
+void aco::ACOSolver::solveForOnline() {
+    // 信息素矩阵的维度
+    vector<int> dim(3);
+    dim[0] = problem->getLengthDiscNum();
+    dim[1] = dim[2] = problem->getHeightDiscNum();
+    // 定义信息素矩阵：pheromone[d][h1][h2] 表示从(d-1,h1)到(d,h2)的信息素强度
+    vector<vector<vector<double>>> pheromone(
+        dim[0], vector<vector<double>>(
+            dim[1], vector<double> (dim[2], aco::INITIAL_PHEROMONE_VALUE)
+        )
+    );
+
+    // 所有蚂蚁集合
+    vector<aco::Ant> ants(aco::ANT_NUM, aco::Ant());
+
+    // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
+    Ant bestAnt(problem->getLengthDiscNum(), problem->getMinHeightIndex());
+    bestAnt.calCost(*problem);
+    double optimalCost = bestAnt.getCost();
+    trajectory = bestAnt.getTrajectory();
+
+    int iter = 0;
+    while (iter < aco::MAX_INTERATOR) {
+        int bestIndex = 0;
+        for (int i = 0; i < aco::ANT_NUM; i++) {
+            ants[i].init(problem->getLengthDiscNum());
+            ants[i].generateTrajectory(lengthIndexNum, pheromone, *this);
+            ants[i].calCost(*problem);
+            if (ants[i].getCost() < ants[bestIndex].getCost()) {
+                bestIndex = i;
+            }
+        }
+        if (ants[bestIndex].getCost() < bestAnt.getCost()) {
+            bestAnt = ants[bestIndex];
+        }
+        evaporatePheromone(dim, pheromone);   // 蒸发
+        enhancePheromone(bestAnt, pheromone); // 增强
+        if (bestAnt.getCost() < optimalCost) {
+            optimalCost = bestAnt.getCost();
+            trajectory = bestAnt.getTrajectory();
+        }
+        ++iter;
+    }
     ants.clear();
 }
 

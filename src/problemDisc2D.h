@@ -34,7 +34,7 @@ private:
 
 public:
     ProblemDisc2D(const Problem2D &prob);
-    ProblemDisc2D(const ProblemOnlineDisc2D &prob, const online::ACOSolver_Online &onlineSolver);
+    ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob, const online::ACOSolver_Online &onlineSolver);
     int getSensorNum() const;
     double getLength() const;
     vector<resource::SensorDisc2D> getSensorList() const;

@@ -117,6 +117,7 @@ public:
     // int getLBoundValue(int index) const;
     // int getRBoundValue(int index) const;
     void solve();
+    void solveForOnline();
     // 信息素蒸发
     void evaporatePheromone(const vector<int>& dim, vector<vector<vector<double>>> &ph) const;
     // 用 bestAnt 的轨迹来增强信息素

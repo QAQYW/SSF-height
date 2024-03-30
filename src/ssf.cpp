@@ -28,6 +28,7 @@ void ssf::SSFSolverDisc::init(vector<ssf::Sensor> &sensors) {
         int l = problem->getSensor(i).range.leftIndex;
         int r = problem->getSensor(i).range.rightIndex;
         ssf::Sensor sensor(i, l, r);
+        // i是在problem中的编号，如果是online problem，还需要在获取解时映射一次编号
         sensors.push_back(sensor);
     }
     // 先按leftIndex升序排序
@@ -44,7 +45,7 @@ void ssf::SSFSolverDisc::solve() {
     while (countActiveSensor > 0) {
         ssf::Segment seg = findSlowestSegment(isActDis, sensors);
         if (seg.getVelocity() >= resource::V_STAR) {
-            // set all empty speedSche as V_STAR
+            // 剩余速度都设为 V_STAR
             int num = problem->getLengthDiscNum();
             for (int i = 0; i < num; i++) {
                 if (isActDis[i]) {
@@ -66,7 +67,7 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const vector<bool>& isActDis
         // segment 的基本信息
         int lMost = sensors[il].getLeftIndex();  // segment的最左端
         int rMost = sensors[il].getRightIndex(); // segment的最右端
-        int dis = getActiveDistance(lMost, rMost, isActDis);
+        int dis = getActiveDistance(lMost, rMost, isActDis); // active distance
         // ! active distance 假如中间被挖空了呢
         double time = problem->getSensor(sensors[il].getSensorIndex()).time; // active time
 
@@ -86,11 +87,13 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const vector<bool>& isActDis
 
             // 更新 segment 的基本信息
             if (sensors[ir].getRightIndex() > rMost) {
+                rMost = sensors[ir].getRightIndex();
                 dis += getActiveDistance(rMost + 1, sensors[ir].getRightIndex(), isActDis); // 更新 active distance
             }
             time += problem->getSensor(sensors[ir].getSensorIndex()).time; // 更新 active time
-            rMost = sensors[ir].getRightIndex();
-            // 新的 segment 加入集合 segments 中
+            // rMost = sensors[ir].getRightIndex(); // ! sensors[ir].getRightIndex()也可能比原rMost小（被包含）
+            
+            // 生成新的 segment 加入集合 segments 中
             // ssf::Segment seg(lMost, rMost, dis, time);
             seg.setActiveDistance(dis);
             seg.setActiveTime(time);
@@ -125,7 +128,7 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const vector<bool>& isActDis
 }
 
 void ssf::SSFSolverDisc::update(const ssf::Segment& seg, vector<bool>& isActDis, vector<ssf::Sensor>& sensors, int& count) {
-    // TODO 确定slowest segment对应的速度，并更新active distance和active time
+    // 确定slowest segment对应的速度，并更新active distance和active time
     double v = seg.getVelocity();
     int l = seg.getLeft(), r = seg.getRight();
     for (int i = l; i <= r; i++) {
@@ -157,6 +160,77 @@ void ssf::SSFSolverDisc::calCost() {
 
 double ssf::SSFSolverDisc::getCost() const {
     return cost;
+}
+
+void ssf::SSFSolverDisc::solveOnline(int start, int end, vector<vector<int>> &linked) {
+    std::vector<ssf::Sensor> sensors; // 所有传感器集合
+    std::vector<bool> isActDis(problem->getLengthDiscNum(), true); // true 代表 active，未分配
+    this->init(sensors); // 对所有传感器初始化，并排序
+
+    int countActSen = sensorNum; // 剩余未传输传感器数量
+    while (countActSen > 0) {
+        ssf::Segment seg = findSlowestSegmentForOnline(isActDis, sensors);
+        if (seg.getVelocity() >= resource::V_STAR) {
+            // TODO 这里的sensorList是剩余所有传感器的集合
+            // 剩余速度都设为V_STAR
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            break;
+        }
+        update(seg, isActDis, sensors, countActSen);
+    }
+}
+
+ssf::Segment ssf::SSFSolverDisc::findSlowestSegmentForOnline(const vector<bool> &isActDis, const vector<ssf::Sensor> &sensors) const {
+    vector<ssf::Segment> segments;
+    for (int il = 0; il < sensorNum; il++) {
+        // 若该传感器数据已传输，则跳过
+        if (!sensors[il].isActive()) continue;
+
+        // segment 的基本信息
+        int lMost = sensors[il].getLeftIndex();  // segment的最左端
+        int rMost = sensors[il].getRightIndex(); // segment的最右端
+        int dis = getActiveDistance(lMost, rMost, isActDis); // active distance
+        double time = problem->getSensor(sensors[il].getSensorIndex()).time; // active time
+
+        // 单独一个传感器的 segment 也要记录
+        ssf::Segment seg(lMost, rMost, dis, time);
+        seg.addSensor(il);
+        seg.calVelocity();
+        segments.push_back(seg);
+
+        for (int ir = il + 1; ir < sensorNum; ir++) {
+            // 若该传感器数据已传输，则跳过
+            if (!sensors[ir].isActive()) continue;
+
+            // 若该传感器与当前segment无重叠部分，则无法组成新的segment
+            if (sensors[ir].getLeftIndex() > rMost) break;
+
+            // 更新 segment 的基本信息
+            if (sensors[ir].getRightIndex() > rMost) {
+                rMost = sensors[ir].getRightIndex();
+                dis += getActiveDistance(rMost + 1, sensors[ir].getRightIndex(), isActDis); // 更新 active distance
+            }
+            time += problem->getSensor(sensors[ir].getSensorIndex()).time; // 更新 active time
+            
+            // 生成新的 segment 假如集合 segments 中
+            seg.setActiveDistance(dis);
+            seg.setActiveTime(time);
+            seg.setRight(rMost);
+            // seg.addSensor(ir);
+            seg.addSensorWithOrder(ir, sensors);
+            seg.calVelocity();
+            segments.push_back(seg);
+        }
+    }
+
+    int index = 0;
+    for (int i = segments.size() - 1; i; i--) {
+        if (segments[i] < segments[index]) {
+            index = i;
+        }
+    }
+
+    return segments[index];
 }
 
 /* --------------------------------- Sensor --------------------------------- */
@@ -239,6 +313,22 @@ void ssf::Segment::calVelocity() {
 */
 void ssf::Segment::addSensor(int index) {
     sensorList.push_back(index);
+}
+
+/**
+ * 增加这个 segment 中所包含的传感器，且按照 rightIndex 升序插入
+ * ! 这个 index 应为排序后的 index，即在 sensors 中的索引，而非 sensorIndex
+ * 普通的插入排序（传感器数量不多）
+*/
+void ssf::Segment::addSensorWithOrder(int index, const vector<ssf::Sensor> &sensors) {
+    // if (sensorList.empty()) {
+    //     sensorList.push_back(index);
+    //     return;
+    // }
+    int r = sensors[index].getRightIndex();
+    int pos = sensorList.size();
+    while (pos && r < sensors[sensorList[pos - 1]].getRightIndex()) --pos;
+    sensorList.insert(sensorList.begin() + pos, index);
 }
 
 void ssf::Segment::setRight(int r) {

@@ -38,18 +38,15 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
     maxHeightIndex = heightDiscNum - 1;
     minHeight = prob.getMinHeight();
 
-    // length = prob.getLength();
-    // lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
     lengthDiscNum = end - start + 1;
     length = resource::indexToLength(end - start, 0, unitLength);
 
-    // sensorNum = prob.getSensorNum();
-    // sensorList.resize(sensorNum);
     sensorNum = 0;
     vector<resource::SensorOnlineDisc2D> origin = prob.getSensorList();
     vector<online::Sensor> states = onlineSolver.getSensorState();
     for (int i = 0; i < sensorNum; i++) {
-
+        
+        // 只采集活跃（已发现，且未传输完成）的传感器
         if (!states[i].isActive()) continue;
 
         ++sensorNum;
@@ -60,7 +57,7 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
         int temp = origin[i].dataList.size();
         sensor.rangeList.resize(temp);
         for (int j = 0; j < temp; j++) {
-            sensor.rangeList[j].leftIndex = origin[i].dataList[j].leftIndex - start;
+            sensor.rangeList[j].leftIndex = max(0, origin[i].dataList[j].leftIndex - start);
             sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex - start;
         }
         sensorList.push_back(sensor);

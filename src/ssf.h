@@ -82,6 +82,11 @@ public:
     void setActiveTime(double time);
     // overload "<"
     bool operator< (const Segment& _segment) const;
+    /**
+     * Online
+    */
+    // 按 rightIndex 升序插入到 sensorList
+    void addSensorWithOrder(int index, const vector<ssf::Sensor> &sensors);
 };
 
 class SSFSolverDisc {
@@ -103,14 +108,23 @@ public:
     double getCost() const;
 
 private:
-    // 初始化
+    // 初始化所有传感器，并排序
     void init(vector<ssf::Sensor> &sensors);
     // 寻找最慢段
-    Segment findSlowestSegment(const vector<bool>& isActDis, const vector<Sensor>& sensors) const;
+    Segment findSlowestSegment(const vector<bool> &isActDis, const vector<ssf::Sensor> &sensors) const;
     // 找到最慢段后，更新各参数
-    void update(const Segment& seg, vector<bool>& isActDis, vector<Sensor>& sensors, int& count);
+    void update(const Segment& seg, vector<bool>& isActDis, vector<ssf::Sensor>& sensors, int& count);
     // 计算某区间（段）的active distance
     int getActiveDistance(int l, int r, const vector<bool>& isActDis) const;
+
+/**
+ * Online
+*/
+public:
+    void solveOnline(int start, int end, vector<vector<int>> &linked);
+private:
+   // 寻找最慢段
+    Segment findSlowestSegmentForOnline(const vector<bool> &isActDis, const vector<ssf::Sensor> &sensors) const;
 };
 
 }

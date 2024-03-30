@@ -107,7 +107,7 @@ double resource::indexToDistance(int activeDis, double unitLen) {
 // 计算两个lengthIndex之间的距离差（包含两端点）
 // disId2 >= disId1
 double resource::indexToDistance(int disId1, int disId2, double unitLen) {
-    return indexToDistance(disId2 - disId1, unitLen);
-    // return indexToDistance(disId2 - disId1 + 1, unitLen);
+    // return indexToDistance(disId2 - disId1, unitLen);
+    return indexToDistance(disId2 - disId1 + 1, unitLen);
     // return (disId2 - disId1 + 1) * unitLen;
 }

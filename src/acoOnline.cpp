@@ -95,11 +95,18 @@ void online::ACOSolver_Online::solve() {
         }
     }
 
+    int curr = hMin, next;
     int trajLen = lengthIndexNum;
-    trajectory = aco::Trajectory(trajLen, hMin);
-    int curr = hMin, next; // 当前无人机飞行高度
-    bool newInfo = true;
-    vector<double> speedSche(trajLen, -1); // -1 表示尚未规划
+    
+    trajectory = aco::Trajectory(trajLen, hMin); // 先默认全程以hMin高度飞行
+    
+    bool newInfo = true;// 是否获得新的传感器信息
+
+    // 速度调度，-1 表示尚未规划
+    vector<double> speedSche(trajLen, -1);
+    // 每个离散位置所连接的传感器
+    vector<vector<int>> linked(trajLen);
+
     for (int d = 0; d < trajLen; d++) {
         // TODO 若获得了新的信息，则重新求解当前问题；否则，按原方案飞行
         double v;
@@ -148,6 +155,11 @@ void online::ACOSolver_Online::solve() {
 void online::ACOSolver_Online::resolve(int start, int end) {
     ProblemDisc2D offlineProb(start, end, *problem, *this);
     aco::ACOSolver offlineSolver(&offlineProb);
+    // TODO
+    // TODO
+    // TODO
+    // TODO
+    // TODO
 }
 
 void online::ACOSolver_Online::collectData(const vector<int> &linked, double v) {

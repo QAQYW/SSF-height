@@ -59,12 +59,12 @@ public:
     aco::Trajectory getTrajectory() const;
     vector<online::Sensor> getSensorState() const;
     void solve();
-    void resolve(int start, int end); // ? 每次获得新信息的时候调用
+    void resolve(int start, int end, vector<double> &speedSche, vector<vector<int>> &linked); // ? 每次获得新信息的时候调用
     // 在一段unitLength内以v的速度飞行，并收集linked中传感器的数据
     void collectData(const vector<int> &linked, double v);
     // 更新无人机的能耗（仅hcost, vcost）
     void updateEnergy(double v, int currh, int nexth);
-    // 接收新的传感器信息（若有）
+    // 在 (currd,currh) 尝试接收新的传感器信息（若有）
     vector<int> exploreNewSensor(int d, int h, const vector<resource::SensorOnlineDisc2D> &sensorList, vector<bool> &informed);
 };
 

@@ -131,6 +131,9 @@ public:
     // void copyTrajectory(const aco::Trajectory &traj);
 
     // Online
+    
+    // 在线问题下的使用这个函数代替 solve()
+    // 将速度调度与传感器连接方案分别从 speedSche 与 linked 传出
     void solveForOnline(int start, int end, vector<double> &speedSche, vector<vector<int>> &linked);
 };
 

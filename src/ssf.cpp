@@ -191,6 +191,9 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, vector<double> &spee
             int tempcnt = list.size();
             for (int j = 0; j < tempcnt; j++) {
                 if (sensors[list[j]].getLeftIndex() <= i && sensors[list[j]].getRightIndex() >= j) {
+                    // int offlineIndex = sensors[list[j]].getSensorIndex();
+                    // int onlineIndex = problemFrom->mapSensor(offlineIndex);
+                    // linked[i + start].push_back(onlineIndex);
                     linked[i + start].push_back(problemFrom->mapSensor(sensors[list[j]].getSensorIndex()));
                 }
             }

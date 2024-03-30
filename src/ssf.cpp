@@ -181,8 +181,9 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, vector<double> &spee
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             break;
         }
+
         // 将所连接的传感器结果传出
-        // ! 不能每次都存，只存最后的optimal，加一个saveFlag来表示是否要存
+        // // ! 不能每次都存，只存最后的optimal，加一个saveFlag来表示是否要存
         int tempr = seg.getRight();
         vector<int> list = seg.getSensorList();
         for (int i = seg.getLeft(); i <= tempr; i++) {
@@ -194,12 +195,14 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, vector<double> &spee
                 }
             }
         }
-        
+
+        // 更新状态
         update(seg, isActDis, sensors, countActSen);
     }
 
+    // // ? 速度调度好像没必要，直接在ACOSolver里面传出即可
     // 将速度调度结果传出
-    // ! 不能每次都存，只存最后的optimal，加一个saveFlag来表示是否要存
+    // // ! 不能每次都存，只存最后的optimal，加一个saveFlag来表示是否要存
     vector<double> sche = solution.getSpeedSche();
     for (int i = start; i <= end; i++) {
         // if (i - start >= sche.size()) {

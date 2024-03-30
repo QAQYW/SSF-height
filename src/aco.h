@@ -66,7 +66,7 @@ public:
     double calHeightCost() const;
     // 计算速度调度的能耗（不包含高度变化）
     double calSpeedCost(const ProblemDisc2D &problem2D) const;
-    // 计算速度调度的能耗（不包含高度变化），并获得解
+    // 计算速度调度的能耗（不包含高度变化），并将速度调度由参数speedSche传出
     double calSpeedCost(const ProblemDisc2D &problem2D, vector<double> &speedSche) const;
 };
 
@@ -117,7 +117,6 @@ public:
     // int getLBoundValue(int index) const;
     // int getRBoundValue(int index) const;
     void solve();
-    void solveForOnline();
     // 信息素蒸发
     void evaporatePheromone(const vector<int>& dim, vector<vector<vector<double>>> &ph) const;
     // 用 bestAnt 的轨迹来增强信息素
@@ -130,6 +129,9 @@ public:
     double calHeuristic(int d, int curr, int next) const;
     // 复制轨迹
     // void copyTrajectory(const aco::Trajectory &traj);
+
+    // Online
+    void solveForOnline(int start, int end, vector<double> &speedSche, vector<vector<int>> &linked);
 };
 
 }

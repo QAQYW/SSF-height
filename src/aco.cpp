@@ -162,7 +162,12 @@ void aco::ACOSolver::solve() {
 }
 
 // TODO: adjust the following func to fit the online prob
-void aco::ACOSolver::solveForOnline() {
+void aco::ACOSolver::solveForOnline(int start, int end, vector<double> &speedSche, vector<vector<int>> &linked) {
+    /**
+     * 刚开始都正常求解，最后才调用online版本的ssf
+     * 把传感器连接方案、速度调度方案的结果传出
+    */
+
     // 信息素矩阵的维度
     vector<int> dim(3);
     dim[0] = problem->getLengthDiscNum();
@@ -206,6 +211,13 @@ void aco::ACOSolver::solveForOnline() {
         ++iter;
     }
     ants.clear();
+
+    // 最后统一把结果传出
+    ProblemDisc1D probDisc1D;
+    probDisc1D.transformFromProblemDisc2D(*problem, trajectory);
+    ssf::SSFSolverDisc ssfSolver(&probDisc1D, problem);
+    // 结果保存在speedSche和linked当中
+    ssfSolver.solveForOnline(start, end, speedSche, linked);
 }
 
 void aco::ACOSolver::evaporatePheromone(const vector<int>& dim, vector<vector<vector<double>>> &ph) const {
@@ -303,16 +315,6 @@ double aco::ACOSolver::calHeuristic(int d, int curr, int next) const {
 }
 
 /* ----------------------------------- Ant ---------------------------------- */
-
-// ? 两个构造函数都简化了，直接写在.h里面
-
-// aco::Ant::Ant() {
-//     trajectory = new Trajectory();
-// }
-
-// aco::Ant::Ant(int lengthDiscNum, int heightIndex) {
-//     trajectory = new Trajectory(lengthDiscNum, heightIndex);
-// }
 
 // aco::Ant::~Ant() {
 //     if (trajectory != nullptr) {
@@ -446,7 +448,7 @@ double aco::Trajectory::calHeightCost() const {
 }
 
 double aco::Trajectory::calSpeedCost(const ProblemDisc2D &problem2D) const {
-    double cost = 0;
+    // double cost = 0;
     ProblemDisc1D problem1D;
     problem1D.transformFromProblemDisc2D(problem2D, *this);
     ssf::SSFSolverDisc ssfSolver(&problem1D);
@@ -456,7 +458,7 @@ double aco::Trajectory::calSpeedCost(const ProblemDisc2D &problem2D) const {
 }
 
 double aco::Trajectory::calSpeedCost(const ProblemDisc2D &problem2D, vector<double> &speedSche) const {
-    double cost = 0;
+    // double cost = 0;
     ProblemDisc1D problem1D;
     problem1D.transformFromProblemDisc2D(problem2D, *this);
     ssf::SSFSolverDisc ssfSolver(&problem1D);

@@ -99,3 +99,7 @@ int ProblemDisc2D::getHeightDiscNum() const {
 double ProblemDisc2D::getMinHeight() const {
     return minHeight;
 }
+
+int ProblemDisc2D::mapSensor(int offlineIndex) const {
+    return sensorIndexMap[offlineIndex];
+}

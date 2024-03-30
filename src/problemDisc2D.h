@@ -44,6 +44,7 @@ public:
     int getLengthDiscNum() const;
     int getHeightDiscNum() const;
     double getMinHeight() const;
+    int mapSensor(int offlineIndex) const;
 };
 
 #endif

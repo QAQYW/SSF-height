@@ -91,6 +91,7 @@ public:
 
 class SSFSolverDisc {
 private:
+    ProblemDisc2D *problemFrom;
     ProblemDisc1D* problem;
     int sensorNum;
     Solution solution;
@@ -98,6 +99,7 @@ private:
 
 public:
     SSFSolverDisc(ProblemDisc1D* prob);
+    SSFSolverDisc(ProblemDisc1D* prob, ProblemDisc2D* from);
     // 析构函数，只释放了solution的内存，没释放problem的
     // ~SSFSolverDisc();
     Solution getSolution() const;
@@ -121,10 +123,12 @@ private:
  * Online
 */
 public:
-    void solveOnline(int start, int end, vector<vector<int>> &linked);
+    void solveForOnline(int start, int end, vector<double> &speedSche, vector<vector<int>> &linked);
 private:
-   // 寻找最慢段
+    // 寻找最慢段
     Segment findSlowestSegmentForOnline(const vector<bool> &isActDis, const vector<ssf::Sensor> &sensors) const;
+    // 将所连接传感器的对应关系传出
+    // void updateLinked(const Segment &seg, const vector<bool> &isActDis, vector<vector<int>> &linked) const;
 };
 
 }

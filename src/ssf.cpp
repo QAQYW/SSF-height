@@ -11,6 +11,11 @@ ssf::SSFSolverDisc::SSFSolverDisc(ProblemDisc1D* prob): problem(prob) {
     // solution.reInit(prob->getLengthDiscNum(), resource::V_STAR);
 }
 
+ssf::SSFSolverDisc::SSFSolverDisc(ProblemDisc1D* prob, ProblemDisc2D* from): problem(prob), problemFrom(from) {
+    sensorNum = prob->getSensorNum();
+    this->solution = ssf::Solution(prob->getLengthDiscNum());
+}
+
 // ssf::SSFSolverDisc::~SSFSolverDisc() {
 //     if (solution != nullptr) {
 //         delete solution;
@@ -162,9 +167,9 @@ double ssf::SSFSolverDisc::getCost() const {
     return cost;
 }
 
-void ssf::SSFSolverDisc::solveOnline(int start, int end, vector<vector<int>> &linked) {
-    std::vector<ssf::Sensor> sensors; // 所有传感器集合
-    std::vector<bool> isActDis(problem->getLengthDiscNum(), true); // true 代表 active，未分配
+void ssf::SSFSolverDisc::solveForOnline(int start, int end, vector<double> &speedSche, vector<vector<int>> &linked) {
+    vector<ssf::Sensor> sensors; // 所有传感器集合
+    vector<bool> isActDis(problem->getLengthDiscNum(), true); // true 代表 active，未分配
     this->init(sensors); // 对所有传感器初始化，并排序
 
     int countActSen = sensorNum; // 剩余未传输传感器数量
@@ -176,9 +181,47 @@ void ssf::SSFSolverDisc::solveOnline(int start, int end, vector<vector<int>> &li
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             break;
         }
+        // 将所连接的传感器结果传出
+        // ! 不能每次都存，只存最后的optimal，加一个saveFlag来表示是否要存
+        int tempr = seg.getRight();
+        vector<int> list = seg.getSensorList();
+        for (int i = seg.getLeft(); i <= tempr; i++) {
+            if (!isActDis[i]) continue;
+            int tempcnt = list.size();
+            for (int j = 0; j < tempcnt; j++) {
+                if (sensors[list[j]].getLeftIndex() <= i && sensors[list[j]].getRightIndex() >= j) {
+                    linked[i + start].push_back(problemFrom->mapSensor(sensors[list[j]].getSensorIndex()));
+                }
+            }
+        }
+        
         update(seg, isActDis, sensors, countActSen);
     }
+
+    // 将速度调度结果传出
+    // ! 不能每次都存，只存最后的optimal，加一个saveFlag来表示是否要存
+    vector<double> sche = solution.getSpeedSche();
+    for (int i = start; i <= end; i++) {
+        // if (i - start >= sche.size()) {
+        //     std::cout << "ssf::SSFSolverDisc::solveOnline()\n";
+        // } else speedSche[i] = sche[i - start];
+        speedSche[i] = sche[i - start];
+    }
 }
+
+// void ssf::SSFSolverDisc::updateLinked(const Segment &seg, const vector<bool> &isActDis, vector<vector<int>> &linked) const {
+//     int l = seg.getLeft(), r = seg.getRight();
+//     for (int i = l; i <= r; i++) {
+//         if (isActDis[i]) {
+//             linked[i].clear();
+//             vector<int> list = seg.getSensorList();
+//             int cnt = list.size();
+//             for (int j = 0; j < cnt; j++) {
+//                 if (sensors)
+//             }
+//         }
+//     }
+// }
 
 ssf::Segment ssf::SSFSolverDisc::findSlowestSegmentForOnline(const vector<bool> &isActDis, const vector<ssf::Sensor> &sensors) const {
     vector<ssf::Segment> segments;

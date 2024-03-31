@@ -315,12 +315,14 @@ double aco::ACOSolver::calHeuristic(int d, int curr, int next) const {
 }
 
 /* ----------------------------------- Ant ---------------------------------- */
+#include "trajectory.h"
+aco::Ant::Ant() {
+    trajectory = Trajectory();
+}
 
-// aco::Ant::~Ant() {
-//     if (trajectory != nullptr) {
-//         delete trajectory;
-//     }
-// }
+aco::Ant::Ant(int lengthDiscNum, int heightIndex) {
+    trajectory = Trajectory(lengthDiscNum, heightIndex);
+}
 
 double aco::Ant::getCost() const {
     return cost;

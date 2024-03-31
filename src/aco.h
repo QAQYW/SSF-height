@@ -76,13 +76,13 @@ int roulette(vector<aco::Candidate> &candList, double sum);
 class ACOSolver; // 前置声明
 class Ant {
 private:
-    Trajectory trajectory;
+    Trajectory Trajectory;
     double cost;
 
 public:
-    Ant(): trajectory() {};
+    Ant();//: trajectory() {};
     // 初始化为以固定高度heightIndex飞行的轨迹，但不会自动计算cost
-    Ant(int lengthDiscNum, int heightIndex): trajectory(lengthDiscNum, heightIndex) {};
+    Ant(int lengthDiscNum, int heightIndex);//: trajectory(lengthDiscNum, heightIndex) {};
     // 析构函数，释放trajectory的内存
     // ~Ant();
     double getCost() const;

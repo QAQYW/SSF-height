@@ -3,7 +3,7 @@
 
 #include "resource.h"
 #include "ssf.h"
-// #include "problemDisc2D.h"
+#include "problemDisc1D.h"
 
 // 前置声明
 class ProblemDisc2D;

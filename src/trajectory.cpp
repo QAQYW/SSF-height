@@ -40,7 +40,7 @@ double Trajectory::calHeightCost() const {
 double Trajectory::calSpeedCost(const ProblemDisc2D &problem2D) const {
     // double cost = 0;
     ProblemDisc1D problem1D;
-    problem1D.transformFromProblemDisc2D(problem2D, *this);
+    problem1D.transformFromProblemDisc2D(problem2D, *this); // ????????????
     ssf::SSFSolverDisc ssfSolver(&problem1D);
     ssfSolver.solve();
     ssfSolver.calCost();
@@ -50,7 +50,7 @@ double Trajectory::calSpeedCost(const ProblemDisc2D &problem2D) const {
 double Trajectory::calSpeedCost(const ProblemDisc2D &problem2D, vector<double> &speedSche) const {
     // double cost = 0;
     ProblemDisc1D problem1D;
-    problem1D.transformFromProblemDisc2D(problem2D, *this);
+    problem1D.transformFromProblemDisc2D(problem2D, *this); // ????????????
     ssf::SSFSolverDisc ssfSolver(&problem1D);
     ssfSolver.solve();
     ssfSolver.calCost();

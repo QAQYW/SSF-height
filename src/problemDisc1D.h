@@ -4,10 +4,10 @@
 #include <iostream>
 #include <fstream>
 
+#include "trajectory.h"
 #include "resource.h"
 #include "problemDisc2D.h"
 // #include "aco.h"
-#include "trajectory.h"
 
 // 前置声明
 class ProblemDisc2D;

@@ -57,7 +57,19 @@ vector<online::Sensor> online::ACOSolver_Online::getSensorState() const {
     return sensorState;
 }
 
-void online::ACOSolver_Online::solve() {
+double online::ACOSolver_Online::getCost() const {
+    return cost;
+}
+
+double online::ACOSolver_Online::getHcost() const {
+    return hcost;
+}
+
+double online::ACOSolver_Online::getVcost() const {
+    return vcost;
+}
+
+void online::ACOSolver_Online::solve(vector<double> &speedSche) {
     int countInformed = 0;
     vector<bool> informed(sensorNum, false); // 对应的是原传感器编号
     // vector<bool> visited(sensorNum, false);  // 对应的是原传感器编号
@@ -95,7 +107,9 @@ void online::ACOSolver_Online::solve() {
     trajectory = aco::Trajectory(trajLen, hMin);
 
     // 速度调度，-1 表示尚未规划
-    vector<double> speedSche(trajLen, -1);
+    // vector<double> speedSche(trajLen, -1);
+    speedSche.clear();
+    speedSche.resize(trajLen, -1);
     // 每个离散位置所连接的传感器
     vector<vector<int>> linked(trajLen);
 

@@ -52,6 +52,7 @@ private:
 public:
     // 构造函数（若不指定sensorNum，则默认为0，后续随机生成）
     DataGenerator(string path): savePath(path), sensorNum(0), unit_height(resource::REF_UNIT_HEIGHT), unit_length(0.1) {};
+    // 构造函数，num表示传感器数量sensorNum
     DataGenerator(string path, int num): savePath(path), sensorNum(num), unit_height(10), unit_length(0.1) {};
     // 生成离线问题数据，并保存到文件
     void generateAndSave(unsigned int seed, int dataIndex);

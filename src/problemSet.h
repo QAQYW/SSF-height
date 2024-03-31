@@ -5,5 +5,7 @@
 #include "problem2D.h"
 #include "problemDisc1D.h"
 #include "problemDisc2D.h"
+#include "problemOnline2D.h"
+#include "problemOnlineDisc2D.h"
 
 #endif

@@ -58,7 +58,11 @@ public:
     ProblemOnlineDisc2D* getProblem() const;
     aco::Trajectory getTrajectory() const;
     vector<online::Sensor> getSensorState() const;
-    void solve();
+    double getCost() const;
+    double getHcost() const;
+    double getVcost() const;
+    // 速度调度结果从speedSche传出
+    void solve(vector<double> &speedSche);
     void resolve(int start, int end, vector<double> &speedSche, vector<vector<int>> &linked); // ? 每次获得新信息的时候调用
     // 在一段unitLength内以v的速度飞行，并收集linked中传感器的数据
     void collectData(const vector<int> &linked, double v);

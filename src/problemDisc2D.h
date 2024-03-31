@@ -7,6 +7,12 @@
 #include "problemOnlineDisc2D.h"
 #include "acoOnline.h"
 
+// 前置声明
+class ProblemOnlineDisc2D;
+namespace online {
+    class ACOSolver_Online;
+};
+
 class ProblemDisc2D {
 private:
     // 传感器数量

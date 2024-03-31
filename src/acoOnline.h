@@ -5,10 +5,23 @@
 /*                            ACO (online version)                            */
 /* -------------------------------------------------------------------------- */
 
-#include "aco.h"
-#include "problemOnlineDisc2D.h"
 #include "problemDisc2D.h"
+#include "problemOnline2D.h"
+#include "problemOnlineDisc2D.h"
+#include "aco.h"
+#include "resource.h"
+#include "trajectory.h"
 
+// class aco::ACOSolver;
+// class aco::Trajectory;
+
+// 前置声明
+// namespace aco {
+//     class Trajectory;
+//     // class Ant;
+//     class ACOSolver;
+// }
+class ProblemOnlineDisc2D;
 
 namespace online {
 
@@ -46,7 +59,7 @@ private:
     int sensorNum;
     int lengthIndexNum;
     int heightIndexNum;
-    aco::Trajectory trajectory; // 路径
+    Trajectory trajectory; // 路径
     vector<int> rBound;         // 辅助变量
     vector<online::Sensor> sensorState; // 传感器集合
     double cost;
@@ -56,7 +69,7 @@ private:
 public:
     ACOSolver_Online(ProblemOnlineDisc2D *prob);
     ProblemOnlineDisc2D* getProblem() const;
-    aco::Trajectory getTrajectory() const;
+    Trajectory getTrajectory() const;
     vector<online::Sensor> getSensorState() const;
     double getCost() const;
     double getHcost() const;

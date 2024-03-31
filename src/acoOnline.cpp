@@ -49,7 +49,7 @@ ProblemOnlineDisc2D* online::ACOSolver_Online::getProblem() const {
     return problem;
 }
 
-aco::Trajectory online::ACOSolver_Online::getTrajectory() const {
+Trajectory online::ACOSolver_Online::getTrajectory() const {
     return trajectory;
 }
 
@@ -104,7 +104,7 @@ void online::ACOSolver_Online::solve(vector<double> &speedSche) {
     int trajLen = lengthIndexNum;
     
     // 先默认全程以hMin高度飞行
-    trajectory = aco::Trajectory(trajLen, hMin);
+    trajectory = Trajectory(trajLen, hMin);
 
     // 速度调度，-1 表示尚未规划
     // vector<double> speedSche(trajLen, -1);
@@ -148,7 +148,7 @@ void online::ACOSolver_Online::resolve(int start, int end, vector<double> &speed
     // 求解，并获得速度调度和传感器连接方案
     offlineSolver.solveForOnline(start, end, speedSche, linked);
     // 更新 trajectory
-    aco::Trajectory subOptTraj = offlineSolver.getTrajectory();
+    Trajectory subOptTraj = offlineSolver.getTrajectory();
     for (int i = start; i <= end; i++) {
         trajectory.setHeightIndex(i, subOptTraj.getHeightIndex(i - start));
     }
@@ -190,4 +190,5 @@ vector<int> online::ACOSolver_Online::exploreNewSensor(int currd, int currh, con
             // sensorState[s].setTime(sensorList[s].time);
         }
     }
+    return newSensors;
 }

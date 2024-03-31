@@ -6,12 +6,11 @@
 
 #include "resource.h"
 #include "problemDisc2D.h"
-#include "aco.h"
+// #include "aco.h"
+#include "trajectory.h"
 
+// 前置声明
 class ProblemDisc2D;
-namespace aco {
-    class Trajectory;
-}
 
 class ProblemDisc1D {
 private:
@@ -27,7 +26,7 @@ private:
 public:
     // 这个构造函数仅用于测试ssf，从文件读取内容，并初始化
     // ProblemDisc1D(string filename);
-    void transformFromProblemDisc2D(const ProblemDisc2D &prob, const aco::Trajectory &traj);
+    void transformFromProblemDisc2D(const ProblemDisc2D &prob, const Trajectory &traj);
     vector<resource::SensorDisc> getSensorList() const;
     resource::SensorDisc getSensor(int index) const;
     double getLength() const;

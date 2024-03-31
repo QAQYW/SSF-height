@@ -9,6 +9,7 @@
 #include "aco.h"
 #include "naive.h"
 #include "acoOnline.h"
+#include "trajectory.h"
 
 string direction = ".\\tiny_test";
 int exampleNum = 1;
@@ -105,7 +106,7 @@ void solve_Online_ACO(int exampleNum, string dir) {
         double cost = onlineSolver.getCost();
         double hcost = onlineSolver.getHcost();
         double vcost = onlineSolver.getVcost();
-        aco::Trajectory optTraj = onlineSolver.getTrajectory();
+        Trajectory optTraj = onlineSolver.getTrajectory();
 
         string filename = dir + "\\online_answer_aco_prop10_" + std::to_string(i) + ".txt";
         ofstream fout;
@@ -150,7 +151,7 @@ void solve_ACO(int exampleNum, string dir) {
         ProblemDisc2D probDisc2D(prob2D);
         aco::ACOSolver acoSolver(&probDisc2D);
         acoSolver.solve();
-        aco::Trajectory optTraj = acoSolver.getTrajectory();
+        Trajectory optTraj = acoSolver.getTrajectory();
 
         vector<double> speedSche;
         double hcost = optTraj.calHeightCost();
@@ -198,7 +199,7 @@ void solve_Naive(int exampleNum, string dir) {
         ProblemDisc2D probDisc2D(prob2D);
         naive::NaiveSolver naiveSolver(&probDisc2D);
         naiveSolver.solve();
-        aco::Trajectory optTraj = naiveSolver.getTrajectory();
+        Trajectory optTraj = naiveSolver.getTrajectory();
 
         vector<double> speedSche;
         double hcost = optTraj.calHeightCost();

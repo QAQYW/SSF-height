@@ -2,7 +2,7 @@
 using namespace resource;
 
 
-void ProblemDisc1D::transformFromProblemDisc2D(const ProblemDisc2D &prob, const aco::Trajectory &traj) {
+void ProblemDisc1D::transformFromProblemDisc2D(const ProblemDisc2D &prob, const Trajectory &traj) {
     sensorNum = prob.getSensorNum();
     length = prob.getLength();
     lengthDiscNum = prob.getLengthDiscNum();

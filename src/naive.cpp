@@ -31,16 +31,16 @@ int naive::NaiveSolver::getHeightIndexNum() const {
     return heightIndexNum;
 }
 
-aco::Trajectory naive::NaiveSolver::getTrajectory() const {
+Trajectory naive::NaiveSolver::getTrajectory() const {
     return trajectory;
 }
 
 void naive::NaiveSolver::solve() {
     // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
-    trajectory = aco::Trajectory(lengthIndexNum, minHeightIndex);
+    trajectory = Trajectory(lengthIndexNum, minHeightIndex);
     minCost = trajectory.calHeightCost() + trajectory.calSpeedCost(*problem);
 
-    aco::Trajectory tempTraj(lengthIndexNum);
+    Trajectory tempTraj(lengthIndexNum);
     for (int h = minHeightIndex; h <= maxHeightIndex; h++) {
         tempTraj.setHeightIndex(0, h);
         State start(0, h);
@@ -56,7 +56,7 @@ void naive::NaiveSolver::checkSensors(int lenId, int heiId, naive::State &state)
     }
 }
 
-void naive::NaiveSolver::generateTrajectory(State curr, aco::Trajectory &traj, int trajLen) {
+void naive::NaiveSolver::generateTrajectory(State curr, Trajectory &traj, int trajLen) {
     int l = curr.lenId + 1;
 
     if (l == trajLen) {
@@ -87,7 +87,7 @@ void naive::NaiveSolver::generateTrajectory(State curr, aco::Trajectory &traj, i
     }
 }
 
-bool naive::NaiveSolver::isFeasible(const aco::Trajectory &traj) {
+bool naive::NaiveSolver::isFeasible(const Trajectory &traj) {
     int count = 0;
     bool vis[sensorNum];
     for (int d = 0; d < lengthIndexNum; d++) {

@@ -3,7 +3,8 @@
 
 #include "resource.h"
 #include "problemDisc2D.h"
-#include "aco.h"
+// #include "aco.h"
+#include "trajectory.h"
 
 namespace naive {
 
@@ -25,7 +26,7 @@ private:
     int heightIndexNum;
     int minHeightIndex;
     int maxHeightIndex;
-    aco::Trajectory trajectory;
+    Trajectory trajectory;
     double minCost;
 
 public:
@@ -33,13 +34,13 @@ public:
     int getSensorNum() const;
     int getLengthIndexNum() const;
     int getHeightIndexNum() const;
-    aco::Trajectory getTrajectory() const;
+    Trajectory getTrajectory() const;
     void solve();
 
 private:
     void checkSensors(int lenId, int heiId, naive::State &state) const;
-    void generateTrajectory(State curr, aco::Trajectory &traj, int trajLen);
-    bool isFeasible(const aco::Trajectory &traj);
+    void generateTrajectory(State curr, Trajectory &traj, int trajLen);
+    bool isFeasible(const Trajectory &traj);
 };
 
 }

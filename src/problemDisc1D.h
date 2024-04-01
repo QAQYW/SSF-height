@@ -4,13 +4,14 @@
 #include <iostream>
 #include <fstream>
 
-#include "trajectory.h"
+// #include "trajectory.h"
 #include "resource.h"
 #include "problemDisc2D.h"
 // #include "aco.h"
 
 // 前置声明
 class ProblemDisc2D;
+// class Trajectory;
 
 class ProblemDisc1D {
 private:

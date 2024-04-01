@@ -181,6 +181,23 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, vector<double> &spee
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             break;
         }
+        // if (seg.getVelocity() >= resource::V_STAR) {
+        //     // TODO 这里的sensorList是剩余所有传感器的集合
+        //     int l = 0, r = problem->getLengthDiscNum() - 1;
+        //     int dis = getActiveDistance(l, r, isActDis);
+        //     ssf::Segment segStar(l, r, dis, 0);
+        //     double time = 0;
+        //     for (int i = 0; i < sensorNum; i++) {
+        //         if (sensors[i].isActive()) {
+        //             time += problem->getSensor(sensors[i].getSensorIndex()).time;
+        //             segStar.addSensorWithOrder(i, sensors);
+        //         }
+        //     }
+        //     segStar.setActiveTime(time);
+        //     // TODO 最后还要再update一下
+        //     update(segStar, isActDis, sensors, countActiveSensor);
+        //     break;
+        // }
 
         // 将所连接的传感器结果传出
         // // ! 不能每次都存，只存最后的optimal，加一个saveFlag来表示是否要存
@@ -323,7 +340,8 @@ bool ssf::Sensor::operator< (const ssf::Sensor& _sensor) const {
 /* --------------------------------- Segment -------------------------------- */
 
 ssf::Segment::Segment(int l, int r, int d, double t): left(l), right(r), activeDistance(d), activeTime(t) {
-    velocity = activeDistance / activeTime;
+    // velocity = activeDistance / activeTime;
+    calVelocity();
 }
 
 double ssf::Segment::getVelocity() const {
@@ -370,10 +388,10 @@ void ssf::Segment::addSensor(int index) {
  * 普通的插入排序（传感器数量不多）
 */
 void ssf::Segment::addSensorWithOrder(int index, const vector<ssf::Sensor> &sensors) {
-    // if (sensorList.empty()) {
-    //     sensorList.push_back(index);
-    //     return;
-    // }
+    if (sensorList.empty()) {
+        sensorList.push_back(index);
+        return;
+    }
     int r = sensors[index].getRightIndex();
     int pos = sensorList.size();
     while (pos && r < sensors[sensorList[pos - 1]].getRightIndex()) --pos;

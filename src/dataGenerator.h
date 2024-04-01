@@ -3,7 +3,6 @@
 
 #include <string>
 #include <fstream>
-#include <string>
 
 #include "tools.h"
 #include "resource.h"

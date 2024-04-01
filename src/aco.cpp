@@ -231,7 +231,7 @@ void aco::ACOSolver::evaporatePheromone(const vector<int>& dim, vector<vector<ve
     }
 }
 
-void aco::ACOSolver::enhancePheromone(const Ant& ant, vector<vector<vector<double>>> &ph) const {
+void aco::ACOSolver::enhancePheromone(const aco::Ant& ant, vector<vector<vector<double>>> &ph) const {
     // TODO 增强信息素
     // trajectory 的长度是 lengthIndexNum
     // vector<int> sche = trajectory.getHeightSche();
@@ -315,7 +315,7 @@ double aco::ACOSolver::calHeuristic(int d, int curr, int next) const {
 }
 
 /* ----------------------------------- Ant ---------------------------------- */
-#include "trajectory.h"
+// #include "trajectory.h"
 aco::Ant::Ant() {
     trajectory = Trajectory();
 }

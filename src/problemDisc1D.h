@@ -1,38 +1,39 @@
 #ifndef PROBLEM_DISC_1D_H
 #define PROBLEM_DISC_1D_H
 
-#include <iostream>
-#include <fstream>
-
-// #include "trajectory.h"
 #include "resource.h"
-#include "problemDisc2D.h"
-// #include "aco.h"
+#include "trajectory.h"
+// #include "problemDisc2D.h"
 
 // 前置声明
-class ProblemDisc2D;
 // class Trajectory;
+// class ProblemDisc2D;
 
 class ProblemDisc1D {
 private:
     // 传感器数量
     int sensorNum;
     // 传感器列表
-    vector<resource::SensorDisc> sensorList;
+    std::vector<resource::SensorDisc> sensorList;
     // 路径总长度
     double length;
     // 离散化后从x=0到x=length共有多少个单位距离，编号范围0~lengthDiscNum-1
     int lengthDiscNum;
 
 public:
-    // 这个构造函数仅用于测试ssf，从文件读取内容，并初始化
-    // ProblemDisc1D(string filename);
-    void transformFromProblemDisc2D(const ProblemDisc2D &prob, const Trajectory &traj);
-    vector<resource::SensorDisc> getSensorList() const;
+    /// @brief 构造函数
+    /// @param num 传感器数量 sensorNum
+    /// @param len 路径长度 length
+    /// @param lenNum 路径长度离散后的数量 lengthDiscNum
+    /// @param list ProblemDisc2D的传感器集合
+    /// @param traj 轨迹
+    ProblemDisc1D(int num, double len, int lenNum, const std::vector<resource::SensorDisc2D> &list, const Trajectory &traj);
+    std::vector<resource::SensorDisc> getSensorList() const;
     resource::SensorDisc getSensor(int index) const;
     double getLength() const;
     int getLengthDiscNum() const;
     int getSensorNum() const;
 };
+
 
 #endif

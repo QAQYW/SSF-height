@@ -1,19 +1,18 @@
 #include "dataGenerator.h"
 
-// ? seed为什么要保存
 void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
 
-    ofstream fout;
-    string filename = this->savePath + "\\" + filenameBase + std::to_string(dataIndex) + ".txt";
+    std::ofstream fout;
+    std::string filename = this->savePath + "\\" + filenameBase + std::to_string(dataIndex) + ".txt";
     fout.open(filename);
 
     // 保存随机数种子
     fout << std::to_string(seed) << "\n";
 
-    srand(seed);
+    std::srand(seed);
 
     // 等间隔（unit_height）产生离散后的高度，存于heightList中
-    vector<double> heightList;
+    std::vector<double> heightList;
     double h = MIN_HEIGHT;
     while (h <= MAX_HEIGHT) {
         heightList.push_back(h);
@@ -79,7 +78,7 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
         fout << std::to_string(time) << "\n";
 
         int count = 0;
-        string rangeStr = "";
+        std::string rangeStr = "";
         for (int j = 0; j < heightDiscNum; j++) {
             double y = heightList[j];
             if (y >= yMax) break;
@@ -95,8 +94,8 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
             if (temp2 <= 0) break;
 
             double xDiff = std::sqrt(temp2) / xCoef;
-            double xLeft = tools::approx(max(0.0, mid - xDiff), resource::LENGTH_ULP);
-            double xRight = tools::approx(min(length, mid + xDiff), resource::LENGTH_ULP);
+            double xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
+            double xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
             
             ++count;
             rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t\n";
@@ -112,8 +111,8 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
 
 void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
 
-    ofstream fout;
-    string filename = this->savePath + "\\online_" + filenameBase + std::to_string(dataIndex) + ".txt";
+    std::ofstream fout;
+    std::string filename = this->savePath + "\\online_" + filenameBase + std::to_string(dataIndex) + ".txt";
     fout.open(filename);
 
     // 保存随机数种子
@@ -122,7 +121,7 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
     srand(seed);
 
     // 等间隔（unit_height）产生离散后的高度，存于heightList中
-    vector<double> heightList;
+    std::vector<double> heightList;
     double h = MIN_HEIGHT;
     while (h <= MAX_HEIGHT) {
         heightList.push_back(h);
@@ -188,7 +187,7 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
         fout << std::to_string(time) << "\n";
 
         int count = 0;
-        string rangeStr = "";
+        std::string rangeStr = "";
         for (int j = 0; j < heightDiscNum; j++) {
             double y = heightList[j];
             if (y >= yMax) break;
@@ -205,14 +204,14 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
 
             // 数据传输范围
             double xDiff = std::sqrt(temp2) / xCoef;
-            double xLeft = tools::approx(max(0.0, mid - xDiff), resource::LENGTH_ULP);
-            double xRight = tools::approx(min(length, mid + xDiff), resource::LENGTH_ULP);
+            double xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
+            double xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
             rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t";
             
             // 控制通信范围 (control communication range / control information delivery range)
             xDiff *= DataGenerator::CONTROL_RANGE_PROP;
-            xLeft = tools::approx(max(0.0, mid - xDiff), resource::LENGTH_ULP);
-            xRight = tools::approx(min(length, mid + xDiff), resource::LENGTH_ULP);
+            xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
+            xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
             rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t\n";
 
             ++count;

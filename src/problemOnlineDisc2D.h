@@ -3,17 +3,13 @@
 
 #include "resource.h"
 #include "problemOnline2D.h"
-// #include "aco.h"
 
 class ProblemOnlineDisc2D {
 
-// ! control communication range 必须覆盖所有高度
-// ! 否则可能无人机全程都无法获得该传感器的信息
-
 private:
-    vector<resource::SensorOnlineDisc2D> sensorList; // 传感器列表
-    int sensorNum;  // 传感器数量
-    double length;  // 路径总长度
+    std::vector<resource::SensorOnlineDisc2D> sensorList; // 传感器列表
+    int sensorNum;      // 传感器数量
+    double length;      // 路径总长度
     double minHeight;   // 最低飞行高度
     int minHeightIndex; // 最低飞行高度编号
     int maxHeightIndex; // 最高飞行高度编号
@@ -26,7 +22,7 @@ public:
     ProblemOnlineDisc2D(const ProblemOnline2D &prob);
     int getSensorNum() const;
     double getLength() const;
-    vector<resource::SensorOnlineDisc2D> getSensorList() const;
+    std::vector<resource::SensorOnlineDisc2D> getSensorList() const;
     resource::SensorOnlineDisc2D getSensor(int index) const;
     int getMinHeightIndex() const;
     int getMaxHeightIndex() const;
@@ -35,7 +31,7 @@ public:
     double getMinHeight() const;
     double getUnitLength() const;
     double getUnitHeight() const;
-};
 
+};
 
 #endif

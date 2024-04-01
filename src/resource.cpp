@@ -1,52 +1,35 @@
 #include "resource.h"
-// using namespace resource;
 
-/* -------------------------- constant or parameter ------------------------- */
-const double resource::V_STAR = 13.98;          // 在论文里有标注
-const double resource::LENGTH_ULP = 0.1;        // ! 慎重取值
-const double resource::HEIGHT_ULP = 0.01;       // ! 慎重取值
-const double resource::TIME_ULP = 0.1;          // ! 慎重取值
+/* -------------------------------- parameter ------------------------------- */
+
+const double resource::V_STAR = 13.98; // 在论文里有标注
+
+const double resource::LENGTH_ULP = 0.1;    // ! 慎重取值
+const double resource::HEIGHT_ULP = 0.01;   // ! 慎重取值
+const double resource::TIME_ULP = 0.1;      // ! 慎重取值
 const double resource::HEIGHT_COST_PROPOR = 10; //0; // 0.5; //40; // ! 慎重取值
 
 const double resource::REF_UNIT_HEIGHT = 10;
 const double resource::REF_UNIT_LENGTH = 1; //resource::LENGTH_ULP * 10;
 
-/* -------------------------- basic data structure -------------------------- */
-// void resource::SensorDisc::init() {
-//     range.leftIndex = coverList[0];/     range.rightIndex = coverList.back();
-//     countCover = coverList.size();
-//     // TODO: unitLength还没定义
-//     // length = countCover * unitLength;
-// }
+/* ----------------------------- data structure ----------------------------- */
 
 void resource::SensorDisc::updateByCoverList() {
     range.leftIndex = coverList[0];
     range.rightIndex = coverList.back();
     countCover = coverList.size();
-    // TODO: unitLength还没定义
-    // length = countCover * unitLength;
 }
 
 bool resource::SensorDisc2D::isCovered(int lengthIndex, int heightIndex) const {
-    if (heightIndex >= rangeList.size()) {
-        // 出错 or 传感器的范围无法覆盖到这个高度
-        // std::cout<<"Invalid height index in function: isCovered()\n";
-        // std::cout<<"\tsize = "<<rangeList.size()<<"\n";
-        // std::cout<<"\tindex = "<<heightIndex<<"\n";
-        return false;
-        // throw "Invalid height index in function: 'isCovered()'";
-    }
+    if (heightIndex >= rangeList.size()) return false;
     return lengthIndex >= rangeList[heightIndex].leftIndex && lengthIndex <= rangeList[heightIndex].rightIndex;
 }
 
 bool resource::SensorOnlineDisc2D::isCovered(int lengthIndex, int heightIndex) const {
-    if (heightIndex >= dataList.size()) {
-        return false;
-    }
+    if (heightIndex >= dataList.size()) return false;
     return lengthIndex >= dataList[heightIndex].leftIndex && lengthIndex <= dataList[heightIndex].rightIndex;
 }
 
-/* -------------------------------- function -------------------------------- */
 double resource::power(double v) {
     if (v < 0) {
         std::cout <<"ERROR: Invalid velocity.\n";
@@ -79,10 +62,6 @@ int resource::lengthToIndex(double len, double minLen, double unitLen) {
     return resource::valueToIndex(len, minLen, 0, unitLen);
 }
 
-// int resource::lengthToIndex(double len) {
-//     return resource::valueToIndex(len, 0, 0, resource::LENGTH_ULP);
-// }
-
 double resource::indexToValue(int id, int minId, double minVal, double unitVal) {
     return (id - minId) * unitVal + minVal;
 }
@@ -95,10 +74,6 @@ double resource::indexToLength(int lenId, double minLen, double unitLen) {
     return resource::indexToValue(lenId, 0, minLen, unitLen);
 }
 
-// double resource::indexToLength(int lenId) {
-//     return resource::indexToValue(lenId, 0, 0, resource::LENGTH_ULP);
-// }
-
 // 计算两个距离差
 double resource::indexToDistance(int activeDis, double unitLen) {
     return activeDis * unitLen;
@@ -109,5 +84,5 @@ double resource::indexToDistance(int activeDis, double unitLen) {
 double resource::indexToDistance(int disId1, int disId2, double unitLen) {
     // return indexToDistance(disId2 - disId1, unitLen);
     return indexToDistance(disId2 - disId1 + 1, unitLen);
-    // return (disId2 - disId1 + 1) * unitLen;
 }
+

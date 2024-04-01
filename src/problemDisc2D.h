@@ -2,23 +2,21 @@
 #define PROBLEM_DISC_2D_H
 
 #include "resource.h"
-// #include "problemDisc1D.h"
 #include "problem2D.h"
 #include "problemOnlineDisc2D.h"
-#include "acoOnline.h"
+// #include "acoOnline.h"
+#include "trajectory.h"
 
-// 前置声明
-class ProblemOnlineDisc2D;
 namespace online {
     class ACOSolver_Online;
-};
+}
 
 class ProblemDisc2D {
 private:
     // 传感器数量
     int sensorNum;
     // 传感器列表
-    vector<resource::SensorDisc2D> sensorList;
+    std::vector<resource::SensorDisc2D> sensorList;
     // 路径总长度
     double length;
     // 最低飞行高度
@@ -36,14 +34,14 @@ private:
     // 最小高度单位
     double unitHeight;
     // 与 online problem 的传感器编号映射
-    vector<int> sensorIndexMap;
+    std::vector<int> sensorIndexMap;
 
 public:
     ProblemDisc2D(const Problem2D &prob);
     ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob, const online::ACOSolver_Online &onlineSolver);
     int getSensorNum() const;
     double getLength() const;
-    vector<resource::SensorDisc2D> getSensorList() const;
+    std::vector<resource::SensorDisc2D> getSensorList() const;
     resource::SensorDisc2D getSensor(int index) const;
     int getMinHeightIndex() const;
     int getMaxHeightIndex() const;
@@ -51,6 +49,8 @@ public:
     int getHeightDiscNum() const;
     double getMinHeight() const;
     int mapSensor(int offlineIndex) const;
+    // ProblemDisc1D transformToProblemDisc1D(const Trajectory &traj) const;
 };
+
 
 #endif

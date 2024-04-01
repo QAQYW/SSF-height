@@ -1,115 +1,116 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+#include <string>
+#include <vector>
 
 #include "resource.h"
-#include "problemSet.h"
 #include "tools.h"
 #include "dataGenerator.h"
 #include "aco.h"
-#include "naive.h"
+// #include "naive.h"
 #include "acoOnline.h"
 #include "trajectory.h"
+#include "energy.h"
 
-string direction = ".\\tiny_test";
+std::string direction = ".\\tiny_test";
 int exampleNum = 1;
-vector<unsigned int> seeds;
-vector<string> filenames;
+std::vector<unsigned int> seeds;
+std::vector<std::string> filenames;
 
-/**
- * 批量生成数据 (offline)
- * exampleNum: 数据个数
- * dir: 数据存储目录
-*/
-void generateData_Offline(int exampleNum, string dir) {
-    if (exampleNum <= 0) {
+/// @brief 批量生成离线问题数据
+/// @param expNum 数据样例数量
+/// @param dir 样例存储目录
+void generateData_Offline(int expNum, std::string dir) {
+    if (expNum <= 0) {
         std::cout << "Input the number of test instances: ";
-        std::cin >> exampleNum;
+        std::cin >> expNum;
     }
-    for (int i = 1; i <= exampleNum; i++) {
+    for (int i = 1; i <= expNum; i++) {
         unsigned int seed = rand();
         seeds.push_back(seed);
     }
-    for (int i = 1; i <= exampleNum; i++) {
+    for (int i = 1; i <= expNum; i++) {
         DataGenerator dg(dir, 5);
         dg.generateAndSave(seeds[i - 1], i);
         std::cout << "instance " << std::to_string(i) << " generated.\n";
-        string filename = dir + "\\" + dg.filenameBase + std::to_string(i) + ".txt";
+        std::string filename = dir + "\\" + dg.filenameBase + std::to_string(i) + ".txt";
         filenames.push_back(filename);
     }
     // 存下所有测试数据的文件名
-    ofstream fout;
+    std::ofstream fout;
     fout.open(dir + "\\filename_set.txt");
-    fout << std::to_string(exampleNum) << "\n";
-    for (int i = 1; i <= exampleNum; i++) {
+    fout << std::to_string(expNum) << "\n";
+    for (int i = 1; i <= expNum; i++) {
         fout << filenames[i - 1] << "\n";
     }
     fout.close();
     std::cout << "generateData_Offline\n";
 }
 
-/**
- * 批量生成数据 (online)
- * exampleNum: 数据个数
- * dir: 数据存储目录
-*/
-void generateData_Online(int exampleNum, string dir) {
-    if (exampleNum <= 0) {
+/// @brief 批量生成在线问题数据
+/// @param expNum 数据样例数量
+/// @param dir 样例存储目录
+void generateData_Online(int expNum, std::string dir) {
+    if (expNum <= 0) {
         std::cout << "Input the number of test instances: ";
-        std::cin >> exampleNum;
+        std::cin >> expNum;
     }
-    for (int i = 1; i <= exampleNum; i++) {
+    for (int i = 1; i <= expNum; i++) {
         unsigned int seed = rand();
         seeds.push_back(seed);
     }
-    for (int i = 1; i <= exampleNum; i++) {
+    for (int i = 1; i <= expNum; i++) {
         DataGenerator dg(dir, 5);
         dg.generateAndSave_Online(seeds[i - 1], i);
         std::cout << "online instance " << std::to_string(i) << " has generated.\n";
-        string filename = dir + "\\online_" + dg.filenameBase + std::to_string(i) + ".txt";
+        std::string filename = dir + "\\online_" + dg.filenameBase + std::to_string(i) + ".txt";
         filenames.push_back(filename);
     }
     // 存下所有测试数据的文件名
-    ofstream fout;
+    std::ofstream fout;
     fout.open(dir + "\\online_filename_set.txt");
-    fout << std::to_string(exampleNum) << "\n";
-    for (int i = 1; i <= exampleNum; i++) {
+    fout << std::to_string(expNum) << "\n";
+    for (int i = 1; i <= expNum; i++) {
         fout << filenames[i - 1] << "\n";
     }
     fout.close();
     std::cout << "generateData_Online\n";
 }
 
-void solve_Online_ACO(int exampleNum, string dir) {
+/// @brief 蚁群算法求解在线问题
+/// @param expNum 数据样例数量
+/// @param dir 样例读取目录
+void solve_Online_ACO(int expNum, std::string dir) {
     // Read filenames
     if (filenames.empty()) {
-        ifstream fin;
+        std::ifstream fin;
         fin.open(dir + "\\online_filename_set.txt");
         int num;
         fin >> num;
-        if (exampleNum <= 0 || exampleNum > num) exampleNum = num;
+        if (expNum <= 0 || expNum > num) expNum = num;
         for (int i = 1; i <= num; i++) {
-            string filename;
+            std::string filename;
             fin >> filename;
             filenames.push_back(filename);
         }
         fin.close();
     }
 
-    for (int i = 1; i <= exampleNum; i++) {
+    for (int i = 1; i <= expNum; i++) {
         ProblemOnline2D prob2D;
         prob2D.initFromFile(filenames[i - 1]);
         ProblemOnlineDisc2D probDisc2D = ProblemOnlineDisc2D(prob2D);
         online::ACOSolver_Online onlineSolver = online::ACOSolver_Online(&probDisc2D);
-        vector<double> speedSche;
+        std::vector<double> speedSche;
         onlineSolver.solve(speedSche);
         double cost = onlineSolver.getCost();
         double hcost = onlineSolver.getHcost();
         double vcost = onlineSolver.getVcost();
         Trajectory optTraj = onlineSolver.getTrajectory();
 
-        string filename = dir + "\\online_answer_aco_prop10_" + std::to_string(i) + ".txt";
-        ofstream fout;
+        std::string filename = dir + "\\online_answer_aco_prop10_" + std::to_string(i) + ".txt";
+        std::ofstream fout;
         fout.open(filename);
         fout << "distance\tspeed\theight\n";
         int num = probDisc2D.getLengthDiscNum();
@@ -122,30 +123,33 @@ void solve_Online_ACO(int exampleNum, string dir) {
         fout << "hcost = " << std::to_string(hcost) << "\n";
         fout << "vcost = " << std::to_string(vcost) << "\n";
         fout.close();
-        std::cout << "online aco: " << i << "/" << exampleNum << "\n";
+        std::cout << "online aco: " << i << "/" << expNum << "\n";
     }
     std::cout << "solve_online_aco\n";
 }
 
-void solve_ACO(int exampleNum, string dir) {
+/// @brief 蚁群算法求解离线问题
+/// @param expNum 数据样例数量
+/// @param dir 样例读取目录
+void solve_ACO(int expNum, std::string dir) {
     // Read filenames
     if (filenames.empty()) {
-        ifstream fin;
+        std::ifstream fin;
         fin.open(dir + "\\filename_set.txt");
         int num;
         fin >> num;
-        if (exampleNum <= 0 || exampleNum > num) {
-            exampleNum = num;
+        if (expNum <= 0 || expNum > num) {
+            expNum = num;
         }
         for (int i = 1; i <= num; i++) {
-            string filename;
+            std::string filename;
             fin >> filename;
             filenames.push_back(filename);
         }
         fin.close();
     }
 
-    for (int i = 1; i <= exampleNum; i++) {
+    for (int i = 1; i <= expNum; i++) {
         Problem2D prob2D;
         prob2D.initFromFile(filenames[i - 1]);
         ProblemDisc2D probDisc2D(prob2D);
@@ -153,11 +157,12 @@ void solve_ACO(int exampleNum, string dir) {
         acoSolver.solve();
         Trajectory optTraj = acoSolver.getTrajectory();
 
-        vector<double> speedSche;
+        std::vector<double> speedSche;
         double hcost = optTraj.calHeightCost();
-        double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
-        string filename = dir + "\\" + "answer_aco_prop10_" + std::to_string(i) + ".txt";
-        ofstream fout;
+        // double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
+        double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj);
+        std::string filename = dir + "\\" + "answer_aco_prop10_" + std::to_string(i) + ".txt";
+        std::ofstream fout;
         fout.open(filename);
         fout << "distance\tspeed\theight\n";
         int num = probDisc2D.getLengthDiscNum();
@@ -170,63 +175,16 @@ void solve_ACO(int exampleNum, string dir) {
         fout << "hcost = " << std::to_string(hcost) << "\n";
         fout << "vcost = " << std::to_string(vcost) << "\n";
         fout.close();
-        std::cout << "aco: " << i << "/" << exampleNum << "\n";
+        std::cout << "aco: " << i << "/" << expNum << "\n";
     }
     std::cout << "solve_ACO\n";
 }
 
-void solve_Naive(int exampleNum, string dir) {
-    // Read filenames
-    if (filenames.empty()) {
-        ifstream fin;
-        fin.open(dir + "\\filename_set.txt");
-        int num;
-        fin >> num;
-        if (exampleNum <= 0 || exampleNum > num) {
-            exampleNum = num;
-        }
-        for (int i = 1; i <= num; i++) {
-            string filename;
-            fin >> filename;
-            filenames.push_back(filename);
-        }
-        fin.close();
-    }
+// void solve_Naive(int expNum, std::string dir);
 
-    for (int i = 1; i <= exampleNum; i++) {
-        Problem2D prob2D;
-        prob2D.initFromFile(filenames[i - 1]);
-        ProblemDisc2D probDisc2D(prob2D);
-        naive::NaiveSolver naiveSolver(&probDisc2D);
-        naiveSolver.solve();
-        Trajectory optTraj = naiveSolver.getTrajectory();
+int main(int argc, char *argv[]) {
 
-        vector<double> speedSche;
-        double hcost = optTraj.calHeightCost();
-        double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
-        
-        string filename = dir + "\\" + "answer_naive_prop10_" + std::to_string(i) + ".txt";
-        ofstream fout;
-        fout.open(filename);
-        fout << "distance\tspeed\theight\n";
-        int num = probDisc2D.getLengthDiscNum();
-        for (int i = 0; i < num; i++) {
-            double dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
-            double hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob2D.getMinHeight(), resource::REF_UNIT_HEIGHT);
-            fout << std::to_string(dis) << "\t" << std::to_string(speedSche[i]) << "\t" << std::to_string(hei) << "\n";
-        }
-        fout << " cost = " << std::to_string(hcost + vcost) << "\n";
-        fout << "hcost = " << std::to_string(hcost) << "\n";
-        fout << "vcost = " << std::to_string(vcost) << "\n";
-        fout.close();
-        std::cout << "naive: " << i << "/" << exampleNum << "\n";
-    }
-    std::cout << "solve_Naive\n";
-}
-
-int main(int argc, char *argv[]) { // int main() {
-
-    srand((unsigned int) time(NULL));
+    std::srand((unsigned int) time(NULL));
 
     exampleNum = 10;
     direction = ".\\tiny_test";

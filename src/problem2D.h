@@ -13,12 +13,12 @@ private:
     // 传感器数量
     int sensorNum;
     // 传感器信息表
-    vector<resource::Sensor2D> sensorList;
+    std::vector<resource::Sensor2D> sensorList;
     // 路径总长度
     double length;
     // 离散的高度数量
     int heightDiscNum;
-    vector<double> heightList;
+    std::vector<double> heightList;
     // 最低飞行高度
     double minHeight;
     // 最高飞行高度
@@ -29,13 +29,13 @@ private:
 public:
     int getSensorNum() const;
     double getLength() const;
-    vector<resource::Sensor2D> getSensorList() const;
+    std::vector<resource::Sensor2D> getSensorList() const;
     resource::Sensor2D getSensor(int index) const;
     double getMinHeight() const;
     double getMaxHeight() const;
     int getHeightDiscNum() const;
-    vector<double> getHeightList() const;
-    void initFromFile(const string &filename);
+    std::vector<double> getHeightList() const;
+    void initFromFile(const std::string &filename);
 };
 
 #endif

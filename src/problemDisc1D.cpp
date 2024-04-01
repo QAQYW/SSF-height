@@ -1,32 +1,48 @@
 #include "problemDisc1D.h"
-using namespace resource;
 
+// void ProblemDisc1D::transformFromProblemDisc2D(const ProblemDisc2D &prob, const Trajectory &traj) {
+//     sensorNum = prob.getSensorNum();
+//     length = prob.getLength();
+//     lengthDiscNum = prob.getLengthDiscNum();
+//     // 构造 sensorList
+//     sensorList.resize(sensorNum);
+//     for (int lenid = 0; lenid < lengthDiscNum; lenid++) {
+//         int hid = traj.getHeightIndex(lenid);
+//         for (int sid = 0; sid < sensorNum; sid++) {
+//             if (prob.getSensor(sid).isCovered(lenid, hid)) {
+//                 sensorList[sid].coverList.push_back(lenid);
+//             }
+//         }
+//     }
+//     for (int sid = 0; sid < sensorNum; sid++) {
+//         sensorList[sid].time = prob.getSensor(sid).time;
+//         sensorList[sid].updateByCoverList();
+//     }
+// }
 
-void ProblemDisc1D::transformFromProblemDisc2D(const ProblemDisc2D &prob, const Trajectory &traj) {
-    sensorNum = prob.getSensorNum();
-    length = prob.getLength();
-    lengthDiscNum = prob.getLengthDiscNum();
+ProblemDisc1D::ProblemDisc1D(int num, double len, int lenNum, const std::vector<resource::SensorDisc2D> &list, const Trajectory &traj)
+ : sensorNum(num), length(len), lengthDiscNum(lenNum) {
     // 构造 sensorList
     sensorList.resize(sensorNum);
-    for (int lenId = 0; lenId < lengthDiscNum; lenId++) {
-        int hId = traj.getHeightIndex(lenId);
-        for (int sId = 0; sId < sensorNum; sId++) {
-            if (prob.getSensor(sId).isCovered(lenId, hId)) {
-                sensorList[sId].coverList.push_back(lenId);
+    for (int lenid = 0; lenid < lengthDiscNum; lenid++) {
+        int hid = traj.getHeightIndex(lenid);
+        for (int sid = 0; sid < sensorNum; sid++) {
+            if (list[sid].isCovered(lenid, hid)) {
+                sensorList[sid].coverList.push_back(lenid);
             }
         }
     }
-    for (int sId = 0; sId < sensorNum; sId++) {
-        sensorList[sId].time = prob.getSensor(sId).time;
-        sensorList[sId].updateByCoverList();
+    for (int sid = 0; sid < sensorNum; sid++) {
+        sensorList[sid].time = list[sid].time;
+        sensorList[sid].updateByCoverList();
     }
 }
 
-vector<SensorDisc> ProblemDisc1D::getSensorList() const {
+std::vector<resource::SensorDisc> ProblemDisc1D::getSensorList() const {
     return sensorList;
 }
 
-SensorDisc ProblemDisc1D::getSensor(int index) const {
+resource::SensorDisc ProblemDisc1D::getSensor(int index) const {
     return sensorList[index];
 }
 

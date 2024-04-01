@@ -5,52 +5,42 @@
 /*                            ACO (online version)                            */
 /* -------------------------------------------------------------------------- */
 
-#include "problemDisc2D.h"
-#include "problemOnline2D.h"
-#include "problemOnlineDisc2D.h"
+#include <vector>
+
+// #include "problemDisc2D.h"
+// #include "problemOnline2D.h"
+// #include "problemOnlineDisc2D.h"
 #include "aco.h"
 #include "resource.h"
 #include "trajectory.h"
 
-// class aco::ACOSolver;
-// class aco::Trajectory;
-
-// 前置声明
-// namespace aco {
-//     class Trajectory;
-//     // class Ant;
-//     class ACOSolver;
-// }
-class ProblemOnlineDisc2D;
-
 namespace online {
 
+/* --------------------------------- Sensor --------------------------------- */
+
+/// @brief 描述传感器及其数据的状态
 class Sensor {
 private:
-    // int sensorIndex;     // 传感器原来的编号
-    double time;         // 剩余时间
-    // int leftIndex;       // 数据传输范围的左端点
-    // int rightIndex;      // 数据传输范围的右端点
-    // int controlBoundary; // 控制通信范围的左端点（右端点用不到）
-    bool active;
-
+    double time; // 剩余所需的传输时间
+    bool active; // 是否活跃
 public:
-    // 构造函数，默认初始时是不活跃的（未被发现，active=false）
-    // Sensor(int i, double t): sensorIndex(i), time(t), active(false) {};
+    /// @brief 构造函数，传感器默认不活跃
+    /// @param t 传输时间
     Sensor(double t): time(t), active(false) {};
-    // 获得（剩余）所需的传输时间
     double getTime() const;
-    // 查询是否活跃
     bool isActive() const;
-    // 减去 dTime 的时间
+    /// @brief 减去 dTime 的时间
+    /// @param dTime 减去的时间
     void reduceTime(double dTime);
-    // 数据采集完成，清空剩余时间
+    /// @brief 数据采集完成，清空剩余时间
     void clearTime();
-    // 设为活跃状态（被发现）
+    /// @brief 设为活跃状态（被无人机探索到）
     void setActive();
-    // 设为不活跃状态（采集完成）
+    /// @brief 设为不活跃状态（采集完成）
     void setInactive();
 };
+
+/* ---------------------------- ACOSolver_Online ---------------------------- */
 
 class ACOSolver_Online {
 
@@ -59,9 +49,9 @@ private:
     int sensorNum;
     int lengthIndexNum;
     int heightIndexNum;
-    Trajectory trajectory; // 路径
-    vector<int> rBound;         // 辅助变量
-    vector<online::Sensor> sensorState; // 传感器集合
+    Trajectory trajectory;   // 路径
+    std::vector<int> rBound; // 辅助变量 // ? 好像没用到
+    std::vector<online::Sensor> sensorState; // 传感器集合
     double cost;
     double hcost;
     double vcost;
@@ -70,21 +60,32 @@ public:
     ACOSolver_Online(ProblemOnlineDisc2D *prob);
     ProblemOnlineDisc2D* getProblem() const;
     Trajectory getTrajectory() const;
-    vector<online::Sensor> getSensorState() const;
+    std::vector<online::Sensor> getSensorState() const;
     double getCost() const;
     double getHcost() const;
     double getVcost() const;
-    // 速度调度结果从speedSche传出
-    void solve(vector<double> &speedSche);
-    void resolve(int start, int end, vector<double> &speedSche, vector<vector<int>> &linked); // ? 每次获得新信息的时候调用
-    // 在一段unitLength内以v的速度飞行，并收集linked中传感器的数据
-    void collectData(const vector<int> &linked, double v);
-    // 更新无人机的能耗（仅hcost, vcost）
+    /// @brief 求解在线问题，并传出结果
+    /// @param speedSche 速度调度结果从speedSche传出
+    void solve(std::vector<double> &speedSche);
+    /// @brief 除去已飞行的部分路径，将当前已知信息作为子问题求解，规划子问题的调度。每次获得新信息的时候调用。
+    /// @param start 子问题起点
+    /// @param end 子问题终点
+    /// @param speedSche 速度调度
+    /// @param linked 传感器连接方案
+    void resolve(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked); // ? 每次获得新信息的时候调用
+    /// @brief 在一段unitLength内匀速飞行，并收集linked中传感器的数据
+    /// @param linked 传感器连接方案
+    /// @param v 无人机飞行速度
+    void collectData(const std::vector<int> &linked, double v);
+    // 更新无人机的能耗（仅计算hcost, vcost）
     void updateEnergy(double v, int currh, int nexth);
     // 在 (currd,currh) 尝试接收新的传感器信息（若有）
-    vector<int> exploreNewSensor(int d, int h, const vector<resource::SensorOnlineDisc2D> &sensorList, vector<bool> &informed);
+    std::vector<int> exploreNewSensor(int d, int h, const std::vector<resource::SensorOnlineDisc2D> &sensorList, std::vector<bool> &informed);
 };
 
-}
+} // namespace online
+
+
+
 
 #endif

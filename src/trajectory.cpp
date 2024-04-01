@@ -1,6 +1,7 @@
 #include "trajectory.h"
 
 Trajectory::Trajectory(int size) {
+    // 最低飞行高度的编号为0
     heightSche.resize(size, 0);
 }
 
@@ -20,7 +21,7 @@ void Trajectory::addList(int heightIndex) {
     heightSche.push_back(heightIndex);
 }
 
-vector<int> Trajectory::getHeightSche() const {
+std::vector<int> Trajectory::getHeightSche() const {
     return heightSche;
 }
 
@@ -37,23 +38,27 @@ double Trajectory::calHeightCost() const {
     return cost;
 }
 
-double Trajectory::calSpeedCost(const ProblemDisc2D &problem2D) const {
-    // double cost = 0;
-    ProblemDisc1D problem1D;
-    problem1D.transformFromProblemDisc2D(problem2D, *this); // ????????????
-    ssf::SSFSolverDisc ssfSolver(&problem1D);
-    ssfSolver.solve();
-    ssfSolver.calCost();
-    return ssfSolver.getCost();
-}
+// // TODO 把这个函数移动到别的类（ProblemDisc2D）下面去
 
-double Trajectory::calSpeedCost(const ProblemDisc2D &problem2D, vector<double> &speedSche) const {
-    // double cost = 0;
-    ProblemDisc1D problem1D;
-    problem1D.transformFromProblemDisc2D(problem2D, *this); // ????????????
-    ssf::SSFSolverDisc ssfSolver(&problem1D);
-    ssfSolver.solve();
-    ssfSolver.calCost();
-    speedSche = ssfSolver.getSolution().getSpeedSche();
-    return ssfSolver.getCost();
-}
+// double Trajectory::calSpeedCost(const ProblemDisc2D &problem2D) const {
+//     // ProblemDisc1D problem1D;
+//     // problem1D.transformFromProblemDisc2D(problem2D, *this);
+//     // ssf::SSFSolverDisc ssfSolver(&problem1D);
+//     // ssfSolver.solve();
+//     // ssfSolver.calCost();
+//     // return ssfSolver.getCost();
+//     return 0;
+// }
+
+// // TODO 把这个函数移动到别的类（ProblemDisc2D）下面去
+
+// double Trajectory::calSpeedCost(const ProblemDisc2D &problem2D, std::vector<double> &speedSche) const {
+//     // ProblemDisc1D problem1D;
+//     // problem1D.transformFromProblemDisc2D(problem2D, *this);
+//     // ssf::SSFSolverDisc ssfSolver(&problem1D);
+//     // ssfSolver.solve();
+//     // ssfSolver.calCost();
+//     // speedSche = ssfSolver.getSolution().getSpeedSche();
+//     // return ssfSolver.getCost();
+//     return 0;
+// }

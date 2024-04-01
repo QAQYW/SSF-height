@@ -66,7 +66,6 @@ public:
     Trajectory getTrajectory() const;
     // 生成轨迹之前先初始化各变量（轨迹）
     void init(int lengthDiscNum);
-    
     /// @brief 生成轨迹
     /// @param trajLen 轨迹长度
     /// @param ph 信息素矩阵

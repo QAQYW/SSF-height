@@ -8,7 +8,7 @@
 #include "tools.h"
 #include "dataGenerator.h"
 #include "aco.h"
-// #include "naive.h"
+#include "naive.h"
 #include "acoOnline.h"
 #include "trajectory.h"
 #include "energy.h"
@@ -187,7 +187,54 @@ void solve_ACO(int expNum, std::string dir) {
     std::cout << "solve_ACO\n";
 }
 
-// void solve_Naive(int expNum, std::string dir);
+void solve_Naive(int expNum, std::string dir) {
+    // Read filenames
+    if (filenames.empty()) {
+        std::ifstream fin;
+        fin.open(dir + "\\filename_set.txt");
+        int num;
+        fin >> num;
+        if (expNum <= 0 || expNum > num) {
+            expNum = num;
+        }
+        for (int i = 1; i <= num; i++) {
+            std::string filename;
+            fin >> filename;
+            filenames.push_back(filename);
+        }
+        fin.close();
+    }
+
+    for (int i = 1; i <= expNum; i++) {
+        Problem2D prob2D;
+        prob2D.initFromFile(filenames[i - 1]);
+        ProblemDisc2D probDisc2D(prob2D);
+        naive::NaiveSolver naiveSolver(&probDisc2D);
+        naiveSolver.solve();
+        Trajectory optTraj = naiveSolver.getTrajectory();
+
+        std::vector<double> speedSche;
+        double hcost = optTraj.calHeightCost();
+        // double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
+        double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj);
+        std::string filename = dir + "\\" + "answer_naive_prop10_" + std::to_string(i) + ".txt";
+        std::ofstream fout;
+        fout.open(filename);
+        fout << "distance\tspeed\theight\n";
+        int num = probDisc2D.getLengthDiscNum();
+        for (int i = 0; i < num; i++) {
+            double dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
+            double hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob2D.getMinHeight(), resource::REF_UNIT_HEIGHT);
+            fout << std::to_string(dis) << "\t" << std::to_string(speedSche[i]) << "\t" << std::to_string(hei) << "\n";
+        }
+        fout << " cost = " << std::to_string(hcost + vcost) << "\n";
+        fout << "hcost = " << std::to_string(hcost) << "\n";
+        fout << "vcost = " << std::to_string(vcost) << "\n";
+        fout.close();
+        std::cout << "aco: " << i << "/" << expNum << "\n";
+    }
+    std::cout << "solve_Naive\n";
+}
 
 int main(int argc, char *argv[]) {
 

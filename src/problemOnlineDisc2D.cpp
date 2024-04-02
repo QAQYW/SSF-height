@@ -11,7 +11,8 @@ ProblemOnlineDisc2D::ProblemOnlineDisc2D(const ProblemOnline2D &prob) {
 
     length = prob.getLength();
     lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
-    
+
+    sensorList.clear();
     sensorList.resize(sensorNum);
     std::vector<resource::SensorOnline2D> origin = prob.getSensorList();
     for (int i = 0; i < sensorNum; i++) {
@@ -24,6 +25,9 @@ ProblemOnlineDisc2D::ProblemOnlineDisc2D(const ProblemOnline2D &prob) {
             sensorList[i].controlList[j].rightIndex = resource::lengthToIndex(origin[i].controlList[j].right, 0, unitLength);
         }
     }
+
+    // 手动释放
+    delete &origin;
 }
 
 int ProblemOnlineDisc2D::getSensorNum() const {

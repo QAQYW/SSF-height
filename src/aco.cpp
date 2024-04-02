@@ -119,6 +119,9 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
             }
         }
     }
+
+    // 手动释放
+    delete &visit;
 }
 
 double aco::Ant::calHeightCost() const {
@@ -224,6 +227,13 @@ void aco::ACOSolver::solve() {
     }
     // cout << "Iteration over\n";
     ants.clear();
+
+    // 手动释放
+    pheromone.~vector();
+    ants.~vector();
+    // delete &dim;
+    // delete &pheromone;
+    // delete &ants;
 }
 
 void aco::ACOSolver::evaporatePheromone(const std::vector<int>& dim, std::vector<std::vector<std::vector<double>>> &ph) const {
@@ -372,4 +382,8 @@ void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &spe
     ssf::SSFSolverDisc ssfSolver = ssf::SSFSolverDisc(&probDisc1D, problem);
     // 结果保存在speedSche和linked当中
     ssfSolver.solveForOnline(start, end, speedSche, linked);
+
+    // 手动释放
+    pheromone.~vector();
+    ants.~vector();
 }

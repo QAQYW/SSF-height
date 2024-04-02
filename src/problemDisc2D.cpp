@@ -38,8 +38,10 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
     maxHeightIndex = heightDiscNum - 1;
     minHeight = prob.getMinHeight();
 
-    length = prob.getLength();
-    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+    // length = prob.getLength();
+    // lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+    lengthDiscNum = end - start + 1;
+    length = resource::indexToLength(lengthDiscNum, 0, unitLength);
 
     sensorNum = 0;
     std::vector<resource::SensorOnlineDisc2D> origin = prob.getSensorList();
@@ -48,7 +50,6 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
         // 只采集活跃（已发现，且未传输完成）的传感器
         if (!states[i].isActive()) continue;
 
-        ++sensorNum;
         sensorIndexMap.push_back(i);
 
         resource::SensorDisc2D sensor;
@@ -59,8 +60,13 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
             // 要减去start
             sensor.rangeList[j].leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
             sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex - start;
+            // !!!!!!!!!! 是否会有rightIndex小于0的情况
+            if (sensor.rangeList[j].rightIndex < 0) {
+                std::cout << "ERROR: negative right index\n";
+            }
         }
         sensorList.push_back(sensor);
+        ++sensorNum;
     }
 }
 

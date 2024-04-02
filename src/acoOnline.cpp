@@ -111,7 +111,7 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
     speedSche.clear();
     speedSche.resize(trajLen, -1);
     // 每个离散位置所连接的传感器
-    std::vector<std::vector<int>> linked(trajLen);
+    std::vector<std::vector<int>> linked(trajLen + 1); // ? 加个 1 试试
 
     for (int d = 0; d < trajLen; d++) {
         // 若获得了新的传感器信息，则需重新规划
@@ -134,10 +134,18 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
                 newInfo = true;
                 countInformed += newSensors.size();
             }
+
+            // 手动释放
+            delete &newSensors;
         }
     }
     // 统计 cost
     cost = hcost + vcost;
+
+    // 手动释放
+    delete &sensorList;
+    delete &informed;
+    delete &linked;
 }
 
 void online::ACOSolver_Online::resolve(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {
@@ -153,6 +161,10 @@ void online::ACOSolver_Online::resolve(int start, int end, std::vector<double> &
 }
 
 void online::ACOSolver_Online::collectData(const std::vector<int> &linked, double v) {
+    if (linked.empty()) {
+        std::cout << "empty linked in function 'collectData'\n";
+        return;
+    }
     // 采集数据
     int num = linked.size();
     double time = problem->getUnitLength() / v;
@@ -170,7 +182,7 @@ void online::ACOSolver_Online::collectData(const std::vector<int> &linked, doubl
 
 void online::ACOSolver_Online::updateEnergy(double v, int currh, int nexth) {
     if (currh != nexth) {
-        // 高度差的绝对值（真实值）
+        // 高度差的绝对值（真实值），所以要乘上unitHeight
         double dh = std::abs(nexth - currh) * problem->getUnitHeight();
         hcost += resource::costByHeight(dh);
     }

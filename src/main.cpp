@@ -96,12 +96,17 @@ void solve_Online_ACO(int expNum, std::string dir) {
         }
         fin.close();
     }
+    std::cout << "test break point\n";
 
     for (int i = 1; i <= expNum; i++) {
         ProblemOnline2D prob2D;
         prob2D.initFromFile(filenames[i - 1]);
+        std::cout << "prob2D.initFromFile\n";
+
         ProblemOnlineDisc2D probDisc2D = ProblemOnlineDisc2D(prob2D);
         online::ACOSolver_Online onlineSolver = online::ACOSolver_Online(&probDisc2D);
+        std::cout << "create online solver\n";
+
         std::vector<double> speedSche;
         onlineSolver.solve(speedSche);
         double cost = onlineSolver.getCost();

@@ -79,10 +79,10 @@ void ProblemOnline2D::initFromFile(const std::string &filename) {
             std::vector<std::string> rangeStr;
             tools::splitString(rangeStr, buff, '\t');
             // data transmission range
-            sensorList[i].dataList[j].left = std::stod(rangeStr[0]);
+            sensorList[i].dataList[j].left  = std::stod(rangeStr[0]);
             sensorList[i].dataList[j].right = std::stod(rangeStr[1]);
             // control communication range
-            sensorList[i].controlList[j].left = std::stod(rangeStr[2]);
+            sensorList[i].controlList[j].left  = std::stod(rangeStr[2]);
             sensorList[i].controlList[j].right = std::stod(rangeStr[3]);
         }
     }

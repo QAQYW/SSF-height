@@ -136,16 +136,16 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
             }
 
             // 手动释放
-            delete &newSensors;
+            // delete &newSensors;
         }
     }
     // 统计 cost
     cost = hcost + vcost;
 
     // 手动释放
-    delete &sensorList;
-    delete &informed;
-    delete &linked;
+    // delete &sensorList;
+    // delete &informed;
+    // delete &linked;
 }
 
 void online::ACOSolver_Online::resolve(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {

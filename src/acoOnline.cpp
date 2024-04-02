@@ -92,11 +92,16 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
         }
         if (informed[s]) {
             sensorState[s].setActive();
-            for (int h = hMin; h <= hMax; h++) {
-                currEnd = std::max(currEnd, sensorList[s].dataList[h].rightIndex);
+            for (resource::RangeDisc rg : sensorList[s].dataList) {
+                currEnd = std::max(currEnd, rg.rightIndex);
             }
+            // ! data range 并不能覆盖所有高度
+            // for (int h = hMin; h <= hMax; h++) {
+            //     currEnd = std::max(currEnd, sensorList[s].dataList[h].rightIndex);
+            // }
         }
     }
+    
     // 是否获得新的传感器信息
     bool newInfo = true;
 

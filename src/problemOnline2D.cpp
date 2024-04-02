@@ -67,25 +67,54 @@ void ProblemOnline2D::initFromFile(const std::string &filename) {
         std::getline(fin, buff);
         sensorList[i].time = std::stod(buff);
 
-        // range跨过的高度数量
+        // data range 跨过的高度
         std::getline(fin, buff);
         int num = std::stoi(buff);
 
-        // 各高度下的range
+        std::vector<std::string> rangeStr;
+        // 各高度下data range
         sensorList[i].dataList.resize(num);
-        sensorList[i].controlList.resize(num);
         for (int j = 0; j < num; j++) {
             std::getline(fin, buff);
-            std::vector<std::string> rangeStr;
+            rangeStr.clear();
             tools::splitString(rangeStr, buff, '\t');
-            // data transmission range
-            sensorList[i].dataList[j].left  = std::stod(rangeStr[0]);
+            sensorList[i].dataList[j].left = std::stod(rangeStr[0]);
             sensorList[i].dataList[j].right = std::stod(rangeStr[1]);
-            // control communication range
-            sensorList[i].controlList[j].left  = std::stod(rangeStr[2]);
-            sensorList[i].controlList[j].right = std::stod(rangeStr[3]);
+        }
+        // 各高度下的control range
+        for (int j = 0; j < this->heightDiscNum; j++) {
+            std::getline(fin, buff);
+            tools::splitString(rangeStr, buff, '\t');
+            sensorList[i].controlList[j].left = std::stod(rangeStr[0]);
+            sensorList[i].controlList[j].right = std::stod(rangeStr[1]);
         }
     }
+    // // 各传感器信息
+    // this->sensorList.resize(this->sensorNum);
+    // for (int i = 0; i < this->sensorNum; i++) {
+    //     // 传输时间
+    //     std::getline(fin, buff);
+    //     sensorList[i].time = std::stod(buff);
+
+    //     // range跨过的高度数量
+    //     std::getline(fin, buff);
+    //     int num = std::stoi(buff);
+
+    //     // 各高度下的range
+    //     sensorList[i].dataList.resize(num);
+    //     sensorList[i].controlList.resize(num);
+    //     for (int j = 0; j < num; j++) {
+    //         std::getline(fin, buff);
+    //         std::vector<std::string> rangeStr;
+    //         tools::splitString(rangeStr, buff, '\t');
+    //         // data transmission range
+    //         sensorList[i].dataList[j].left  = std::stod(rangeStr[0]);
+    //         sensorList[i].dataList[j].right = std::stod(rangeStr[1]);
+    //         // control communication range
+    //         sensorList[i].controlList[j].left  = std::stod(rangeStr[2]);
+    //         sensorList[i].controlList[j].right = std::stod(rangeStr[3]);
+    //     }
+    // }
 
     fin.close();
 }

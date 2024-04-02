@@ -126,7 +126,7 @@ void solve_Online_ACO(int expNum, std::string dir) {
             double hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob2D.getMinHeight(), resource::REF_UNIT_HEIGHT);
             fout << std::to_string(dis) << "\t" << std::to_string(speedSche[i]) << "\t" << std::to_string(hei) << "\n";
         }
-        fout << " cost = " << std::to_string(cost) << " or " << std::to_string(hcost + vcost) << "\n";
+        fout << " cost = " << std::to_string(cost) << "\n"; // << " or " << std::to_string(hcost + vcost) << "\n";
         fout << "hcost = " << std::to_string(hcost) << "\n";
         fout << "vcost = " << std::to_string(vcost) << "\n";
         fout.close();

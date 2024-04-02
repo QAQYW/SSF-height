@@ -186,8 +186,10 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
         // 保存传输时间
         fout << std::to_string(time) << "\n";
 
+        // 传输范围
         int count = 0;
-        std::string rangeStr = "";
+        std::vector<double> dataLeft, dataRight;
+        std::vector<double> controlLeft, controlRight;
         for (int j = 0; j < heightDiscNum; j++) {
             double y = heightList[j];
             if (y >= yMax) break;
@@ -195,31 +197,88 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
             double yBar = yCoef * y;
             double p = 2 * yBar * (yBar - 1) + swell;
             double q = yBar * yBar * yBar * (yBar - 2);
-
+            
             double temp1 = p * p - 4 * q;
             if (temp1 <= 0) break;
 
             double temp2 = (std::sqrt(temp1) - p) / 2;
             if (temp2 <= 0) break;
 
+            ++count;
+
             // 数据传输范围
             double xDiff = std::sqrt(temp2) / xCoef;
             double xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
             double xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
-            rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t";
-            
+            dataLeft.push_back(xLeft);
+            dataRight.push_back(xRight);
+
             // 控制通信范围 (control communication range / control information delivery range)
             xDiff *= DataGenerator::CONTROL_RANGE_PROP;
             xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
             xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
-            rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t\n";
-
-            ++count;
+            controlLeft.push_back(xLeft);
+            controlRight.push_back(xRight);
         }
-        
-        // 保存单个传感器range数量，以及各高度下（若有）的范围
+        double lmost = dataLeft[0];
+        double rmost = dataRight[0];
+        for (double left : dataLeft)
+            lmost = std::min(lmost, left);
+        for (double right : dataRight)
+            rmost = std::max(rmost, right);
+        for (int j = 0; j < heightDiscNum; j++) {
+            if (j < count) {
+                controlLeft[j] = std::min(lmost, controlLeft[j]);
+                controlRight[j] = std::max(rmost, controlRight[j]);
+            } else {
+                controlLeft.push_back(lmost);
+                controlRight.push_back(rmost);
+            }
+        }
+        // 保存单个传感器data range数量
         fout << std::to_string(count) << "\n";
-        fout << rangeStr;
+        // 保存各高度下（若有）的数据传输范围
+        for (int j = 0; j < count; j++)
+            fout << std::to_string(dataLeft[j]) << "\t" << std::to_string(dataRight[j]) << "\t\n";
+        // 保存各高度下的控制通信范围（覆盖所有高度）
+        for (int j = 0; j < heightDiscNum; j++)
+            fout << std::to_string(controlLeft[j]) << "\t" << std::to_string(controlRight[j]) << "\t\n";
+
+        // // 传输范围
+        // int count = 0;
+        // std::string rangeStr = "";
+        // for (int j = 0; j < heightDiscNum; j++) {
+        //     double y = heightList[j];
+        //     if (y >= yMax) break;
+
+        //     double yBar = yCoef * y;
+        //     double p = 2 * yBar * (yBar - 1) + swell;
+        //     double q = yBar * yBar * yBar * (yBar - 2);
+
+        //     double temp1 = p * p - 4 * q;
+        //     if (temp1 <= 0) break;
+
+        //     double temp2 = (std::sqrt(temp1) - p) / 2;
+        //     if (temp2 <= 0) break;
+
+        //     // 数据传输范围
+        //     double xDiff = std::sqrt(temp2) / xCoef;
+        //     double xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
+        //     double xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
+        //     rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t";
+            
+        //     // 控制通信范围 (control communication range / control information delivery range)
+        //     xDiff *= DataGenerator::CONTROL_RANGE_PROP;
+        //     xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
+        //     xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
+        //     rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t\n";
+
+        //     ++count;
+        // }
+        
+        // // 保存单个传感器range数量，以及各高度下（若有）的范围
+        // fout << std::to_string(count) << "\n";
+        // fout << rangeStr;
     }
 
     fout.close();

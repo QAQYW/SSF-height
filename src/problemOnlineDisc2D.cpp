@@ -18,14 +18,14 @@ ProblemOnlineDisc2D::ProblemOnlineDisc2D(const ProblemOnline2D &prob) {
     // std::cout << "\nclear 'sensorList'\n";
 
     sensorNum = prob.getSensorNum();
-    std::cout << "\nsensorNum = " << std::to_string(sensorNum) << "\n";
+    // std::cout << "\nsensorNum = " << std::to_string(sensorNum) << "\n";
     sensorList.resize(sensorNum);
     // std::cout << "\nresize 'sensorList'\n";
 
     std::vector<resource::SensorOnline2D> origin = prob.getSensorList();
     // std::cout << "\ncreate new vector 'origin'\n";
     
-    std::cout << "\norigin.size() = " << std::to_string(origin.size()) << "\n";
+    // std::cout << "\norigin.size() = " << std::to_string(origin.size()) << "\n";
 
     for (int i = 0; i < sensorNum; i++) {
         sensorList[i].time = origin[i].time;

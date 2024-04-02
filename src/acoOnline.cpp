@@ -107,9 +107,9 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
     trajectory = Trajectory(trajLen, hMin);
 
     // 速度调度，-1 表示尚未规划
-    // vector<double> speedSche(trajLen, -1);
     speedSche.clear();
     speedSche.resize(trajLen, -1);
+    
     // 每个离散位置所连接的传感器
     std::vector<std::vector<int>> linked(trajLen + 1); // ? 加个 1 试试
 

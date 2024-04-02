@@ -1,5 +1,5 @@
 #include "problemDisc1D.h"
-
+#include <iostream>
 // void ProblemDisc1D::transformFromProblemDisc2D(const ProblemDisc2D &prob, const Trajectory &traj) {
 //     sensorNum = prob.getSensorNum();
 //     length = prob.getLength();
@@ -22,6 +22,7 @@
 
 ProblemDisc1D::ProblemDisc1D(int num, double len, int lenNum, const std::vector<resource::SensorDisc2D> &list, const Trajectory &traj)
  : sensorNum(num), length(len), lengthDiscNum(lenNum) {
+    // std::cout << "in func: 'ProblemDisc1D::ProblemDisc1D', sensorNum = " << std::to_string(num) << "\n";
     // 构造 sensorList
     sensorList.resize(sensorNum);
     for (int lenid = 0; lenid < lengthDiscNum; lenid++) {

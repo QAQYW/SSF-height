@@ -1,5 +1,5 @@
 #include "ssf.h"
-
+#include <iostream>
 #include "problemDisc1D.h"
 #include "problemDisc2D.h"
 
@@ -152,6 +152,7 @@ ssf::SSFSolverDisc::SSFSolverDisc(const ProblemDisc1D *prob): problem(prob), pro
 }
 
 ssf::SSFSolverDisc::SSFSolverDisc(const ProblemDisc1D* prob, const ProblemDisc2D* from): problem(prob), problemFrom(from) {
+    // std::cout << "in func: 'ssf::SSFSolverDisc::SSFSolverDisc', sensorNum = " << std::to_string(prob->getSensorNum()) << "\n";
     sensorNum = prob->getSensorNum();
     solution = ssf::Solution(prob->getLengthDiscNum());
 }
@@ -290,6 +291,8 @@ int ssf::SSFSolverDisc::getActiveDistance(int l, int r, const std::vector<bool>&
 }
 
 void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {
+    // std::cout << "in func: ssf::SSFSolverDisc::solveForOnline(...)\n";
+    
     // 所有传感器集合
     std::vector<ssf::Sensor> sensors;
     // true 代表 active，数据未采集
@@ -299,8 +302,11 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
 
     // 剩余未传输传感器数量
     int countActiveSensor = sensorNum;
+    // std::cout << "number of sensors is " << std::to_string(sensorNum) << "\n";
     while (countActiveSensor > 0) {
         ssf::Segment seg = findSlowestSegmentForOnline(isActDis, sensors);
+        // std::cout << "check the slowest segment\n";
+        // TODO 加个断点看看seg.velocity
         if (seg.getVelocity() >= resource::V_STAR) {
             // 这里的sensorList是剩余所有传感器的集合
             int l = 0, r = problem->getLengthDiscNum() - 1;

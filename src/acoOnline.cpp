@@ -111,21 +111,30 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
     // 先默认全程以hMin高度飞行
     trajectory = Trajectory(trajLen, hMin);
 
-    // 速度调度，-1 表示尚未规划
+    // 速度调度
     speedSche.clear();
-    speedSche.resize(trajLen, -1);
+    // speedSche.resize(trajLen, -1); // -1 表示尚未规划  方便调试
+    speedSche.resize(trajLen, resource::V_STAR);
     
     // 每个离散位置所连接的传感器
-    std::vector<std::vector<int>> linked(trajLen + 1); // ? 加个 1 试试
+    std::vector<std::vector<int>> linked(trajLen);
+    // std::vector<std::vector<int>> linked(trajLen + 1); // ? 加个 1 试试
 
     for (int d = 0; d < trajLen; d++) {
         // 若获得了新的传感器信息，则需重新规划
-        if (newInfo) resolve(d, currEnd, speedSche, linked); // ? 还需要记录什么信息
+        if (newInfo) {
+            // ? 还需要记录什么信息
+            resolve(d, currEnd, speedSche, linked);
+            // std::cout << "new info. d=" << std::to_string(d) << " and then resolve\n";
+        }
         
         next = trajectory.getHeightIndex(d);
         double v = speedSche[d];
 
         // 采集数据
+        // if (linked[d].empty()) {
+        //     std::cout << "empty linked["<< std::to_string(d) << "] before calling function 'collectData'\n";
+        // }
         collectData(linked[d], v);
         // 统计无人机能耗（hcost & vcost）
         updateEnergy(v, curr, next);
@@ -154,7 +163,10 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
 }
 
 void online::ACOSolver_Online::resolve(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {
-    ProblemDisc2D offlineProb(start, end, *problem, *this);
+    // std::cout << "in func: online::ACOSolver_Online::resolve(...)\n";
+    ProblemDisc2D offlineProb = ProblemDisc2D(start, end, *problem, *this);
+    // std::cout << "sensorNum = " << std::to_string(problem->getSensorNum()) << "\n";
+    // std::cout << "sensorNum = " << std::to_string(offlineProb.getSensorNum()) << "\n";
     aco::ACOSolver offlineSolver(&offlineProb);
     // 求解，并获得速度调度和传感器连接方案
     offlineSolver.solveForOnline(start, end, speedSche, linked);
@@ -167,7 +179,7 @@ void online::ACOSolver_Online::resolve(int start, int end, std::vector<double> &
 
 void online::ACOSolver_Online::collectData(const std::vector<int> &linked, double v) {
     if (linked.empty()) {
-        std::cout << "empty linked in function 'collectData'\n";
+        // std::cout << "empty linked in function 'collectData'\n";
         return;
     }
     // 采集数据

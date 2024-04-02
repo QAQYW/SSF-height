@@ -142,6 +142,7 @@ aco::ACOSolver::ACOSolver(ProblemDisc2D *prob): problem(prob), trajectory() {
     // 构造 lBound 和 rBound
     // lBound.resize(lengthIndexNum, 0);
     rBound.resize(lengthIndexNum, 0);
+    // rBound.resize(lengthIndexNum + 10, 0); // ? 加个10看看
     for (resource::SensorDisc2D s : problem->getSensorList()) {
         // int lMost = s.rangeList[0].leftIndex;
         int rMost = s.rangeList[0].rightIndex;
@@ -150,10 +151,18 @@ aco::ACOSolver::ACOSolver(ProblemDisc2D *prob): problem(prob), trajectory() {
             rMost = std::max(rMost, rg.rightIndex);
         }
         // lBound[lMost]++;
+        // if (rMost >= lengthIndexNum) {
+        //     std::cout << "\n\tout of boundary here: 1";
+        //     std::cout << "\n";
+        // }
         rBound[rMost]++;
     }
     for (int i = 1; i < lengthIndexNum; i++) {
         // lBound[i] += lBound[i - 1];
+        // if (i >= lengthIndexNum) {
+        //     std::cout << "\n\tout of boundary here: 2";
+        //     std::cout << "\n";
+        // }
         rBound[i] += rBound[i - 1];
     }
     // this->trajectory = nullptr;
@@ -267,6 +276,10 @@ bool aco::ACOSolver::isUrgent(int d, std::vector<aco::Candidate> & candList, con
    // 0 ~ (d-1)的轨迹都已经确定
     for (int nd = d; nd < dMax; nd++) { // nd: next d
         // if (_d - d + 1 <= getRBoundValue(_d) - countVisit) {
+        // if (nd >= lengthIndexNum) {
+        //     std::cout << "\n\tout of boundary here: 3";
+        //     std::cout << "\n";
+        // }
         if (nd - d + 1 <= rBound[nd] - countVisit) {
             // 是否urgent
             std::vector<bool> hFlag(heightIndexNum, false);
@@ -330,6 +343,8 @@ void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &spe
      * 刚开始都正常求解，最后才调用online版本的ssf
      * 把传感器连接方案、速度调度方案的结果传出
     */
+
+    // std::cout << "in func: aco::ACOSolver::solveForOnline(...)\n";
 
     // 信息素矩阵的维度
     std::vector<int> dim(3);

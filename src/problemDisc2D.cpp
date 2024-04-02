@@ -46,7 +46,7 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
     sensorNum = 0;
     std::vector<resource::SensorOnlineDisc2D> origin = prob.getSensorList();
     std::vector<online::Sensor> states = onlineSolver.getSensorState();
-    for (int i = 0; i < sensorNum; i++) {
+    for (int i = 0; i < prob.getSensorNum(); i++) {
         // 只采集活跃（已发现，且未传输完成）的传感器
         if (!states[i].isActive()) continue;
 
@@ -61,9 +61,9 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
             sensor.rangeList[j].leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
             sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex - start;
             // !!!!!!!!!! 是否会有rightIndex小于0的情况
-            if (sensor.rangeList[j].rightIndex < 0) {
-                std::cout << "ERROR: negative right index\n";
-            }
+            // if (sensor.rangeList[j].rightIndex < 0) {
+            //     std::cout << "ERROR: negative right index\n";
+            // }
         }
         sensorList.push_back(sensor);
         ++sensorNum;

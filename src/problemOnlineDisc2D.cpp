@@ -10,6 +10,8 @@ ProblemOnlineDisc2D::ProblemOnlineDisc2D(const ProblemOnline2D &prob) {
     minHeight = prob.getMinHeight();
 
     length = prob.getLength();
+    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+    
     sensorList.resize(sensorNum);
     std::vector<resource::SensorOnline2D> origin = prob.getSensorList();
     for (int i = 0; i < sensorNum; i++) {

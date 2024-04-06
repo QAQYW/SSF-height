@@ -43,7 +43,7 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
     lengthDiscNum = end - start + 1;
     length = resource::indexToLength(lengthDiscNum, 0, unitLength);
 
-    sensorNum = 0;
+    sensorNum = 0; // 逐个统计active的传感器数量
     std::vector<resource::SensorOnlineDisc2D> origin = prob.getSensorList();
     std::vector<online::Sensor> states = onlineSolver.getSensorState();
     for (int i = 0; i < prob.getSensorNum(); i++) {

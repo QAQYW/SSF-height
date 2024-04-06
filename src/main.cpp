@@ -240,7 +240,7 @@ int main(int argc, char *argv[]) {
 
     std::srand((unsigned int) time(NULL));
 
-    exampleNum = 1;
+    exampleNum = 10;
     direction = ".\\tiny_test";
 
     // generateData_Offline(exampleNum, direction);

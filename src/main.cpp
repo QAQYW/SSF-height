@@ -61,7 +61,7 @@ void generateData_Online(int expNum, std::string dir) {
         seeds.push_back(seed);
     }
     for (int i = 1; i <= expNum; i++) {
-        DataGenerator dg(dir, 5);
+        DataGenerator dg(dir, 10);
         dg.generateAndSave_Online(seeds[i - 1], i);
         std::cout << "online instance " << std::to_string(i) << " has generated.\n";
         std::string filename = dir + "\\online_" + dg.filenameBase + std::to_string(i) + ".txt";
@@ -116,7 +116,8 @@ void solve_Online_ACO(int expNum, std::string dir) {
         double vcost = onlineSolver.getVcost();
         Trajectory optTraj = onlineSolver.getTrajectory();
 
-        std::string filename = dir + "\\online_answer_aco_prop10_" + std::to_string(i) + ".txt";
+        // std::string filename = dir + "\\online_answer_aco_prop10_" + std::to_string(i) + ".txt";
+        std::string filename = dir + "\\online_answer_aco_prop" + std::to_string((int) resource::HEIGHT_COST_PROPOR) + "_" + std::to_string(i) + ".txt";
         std::ofstream fout;
         fout.open(filename);
         fout << "distance\tspeed\theight\n";
@@ -167,8 +168,9 @@ void solve_ACO(int expNum, std::string dir) {
         std::vector<double> speedSche;
         double hcost = optTraj.calHeightCost();
         // double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
-        double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj);
-        std::string filename = dir + "\\" + "answer_aco_prop10_" + std::to_string(i) + ".txt";
+        double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj, speedSche);
+        // std::string filename = dir + "\\" + "offline_answer_aco_prop10_" + std::to_string(i) + ".txt";
+        std::string filename = dir + "\\offline_answer_aco_prop" + std::to_string((int) resource::HEIGHT_COST_PROPOR) + "_" + std::to_string(i) + ".txt";
         std::ofstream fout;
         fout.open(filename);
         fout << "distance\tspeed\theight\n";
@@ -217,7 +219,8 @@ void solve_Naive(int expNum, std::string dir) {
         double hcost = optTraj.calHeightCost();
         // double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
         double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj);
-        std::string filename = dir + "\\" + "answer_naive_prop10_" + std::to_string(i) + ".txt";
+        // std::string filename = dir + "\\" + "offline_answer_naive_prop10_" + std::to_string(i) + ".txt";
+        std::string filename = dir + "\\offline_answer_aco_prop" + std::to_string((int) resource::HEIGHT_COST_PROPOR) + "_" + std::to_string(i) + ".txt";
         std::ofstream fout;
         fout.open(filename);
         fout << "distance\tspeed\theight\n";
@@ -240,7 +243,7 @@ int main(int argc, char *argv[]) {
 
     std::srand((unsigned int) time(NULL));
 
-    exampleNum = 10;
+    exampleNum = 2;
     direction = ".\\tiny_test";
 
     // generateData_Offline(exampleNum, direction);
@@ -248,10 +251,12 @@ int main(int argc, char *argv[]) {
     // solve_Naive(exampleNum, direction);
 
     // generateData(10);
+    generateData_Offline(exampleNum, direction);
+    solve_ACO(exampleNum, direction);
     // generateData_Solve(10, false, true);
 
-    generateData_Online(exampleNum, direction);
-    solve_Online_ACO(exampleNum, direction);
+    // generateData_Online(exampleNum, direction);
+    // solve_Online_ACO(exampleNum, direction);
     
     // system("pause");
     return 0;

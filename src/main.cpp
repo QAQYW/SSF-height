@@ -139,7 +139,7 @@ void solve_Online_ACO(int expNum, std::string dir) {
 /// @brief 蚁群算法求解离线问题
 /// @param expNum 数据样例数量
 /// @param dir 样例读取目录
-void solve_ACO(int expNum, std::string dir) {
+void solve_Offline_ACO(int expNum, std::string dir) {
     // Read filenames
     if (filenames.empty()) {
         std::ifstream fin;
@@ -186,10 +186,13 @@ void solve_ACO(int expNum, std::string dir) {
         fout.close();
         std::cout << "aco: " << i << "/" << expNum << "\n";
     }
-    std::cout << "solve_ACO\n";
+    std::cout << "solve_Offline_ACO\n";
 }
 
-void solve_Naive(int expNum, std::string dir) {
+/// @brief dfs枚举所有路径+剪枝
+/// @param expNum 数据样例数量
+/// @param dir 样例读取目录
+void solve_Offline_Naive(int expNum, std::string dir) {
     // Read filenames
     if (filenames.empty()) {
         std::ifstream fin;
@@ -236,7 +239,7 @@ void solve_Naive(int expNum, std::string dir) {
         fout.close();
         std::cout << "aco: " << i << "/" << expNum << "\n";
     }
-    std::cout << "solve_Naive\n";
+    std::cout << "solve_Offline_Naive\n";
 }
 
 int main(int argc, char *argv[]) {
@@ -246,17 +249,17 @@ int main(int argc, char *argv[]) {
     exampleNum = 2;
     direction = ".\\tiny_test";
 
-    // generateData_Offline(exampleNum, direction);
-    // solve_ACO(exampleNum, direction);
-    // solve_Naive(exampleNum, direction);
+    /* --------------------------------- Offline -------------------------------- */
 
-    // generateData(10);
     generateData_Offline(exampleNum, direction);
-    solve_ACO(exampleNum, direction);
-    // generateData_Solve(10, false, true);
+    solve_Offline_ACO(exampleNum, direction);
+    solve_Offline_Naive(exampleNum, direction);
+
+    /* --------------------------------- Online --------------------------------- */
 
     // generateData_Online(exampleNum, direction);
     // solve_Online_ACO(exampleNum, direction);
+    
     
     // system("pause");
     return 0;

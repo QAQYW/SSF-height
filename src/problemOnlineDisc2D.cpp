@@ -31,10 +31,15 @@ ProblemOnlineDisc2D::ProblemOnlineDisc2D(const ProblemOnline2D &prob) {
         sensorList[i].time = origin[i].time;
         int temp = origin[i].dataList.size();
         sensorList[i].dataList.resize(temp);
-        sensorList[i].controlList.resize(temp);
+        // sensorList[i].controlList.resize(temp);
         for (int j = 0; j < temp; j++) {
             sensorList[i].dataList[j].leftIndex     = resource::lengthToIndex(origin[i].dataList[j].left, 0, unitLength);
             sensorList[i].dataList[j].rightIndex    = resource::lengthToIndex(origin[i].dataList[j].right, 0, unitLength);
+            // sensorList[i].controlList[j].leftIndex  = resource::lengthToIndex(origin[i].controlList[j].left, 0, unitLength);
+            // sensorList[i].controlList[j].rightIndex = resource::lengthToIndex(origin[i].controlList[j].right, 0, unitLength);
+        }
+        sensorList[i].controlList.resize(heightDiscNum);
+        for (int j = 0; j < heightDiscNum; j++) {
             sensorList[i].controlList[j].leftIndex  = resource::lengthToIndex(origin[i].controlList[j].left, 0, unitLength);
             sensorList[i].controlList[j].rightIndex = resource::lengthToIndex(origin[i].controlList[j].right, 0, unitLength);
         }

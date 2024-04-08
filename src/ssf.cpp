@@ -173,6 +173,14 @@ void ssf::SSFSolverDisc::solve() {
     int countActiveSensor = sensorNum;
     while (countActiveSensor > 0) {
         ssf::Segment seg = findSlowestSegment(isActDis, sensors);
+        // std::cout << "check the slowest segment\n";
+        // // TODO 加个断点看看seg.velocity
+        // std::cout << "velocity = " << std::to_string(seg.getVelocity()) << "\n";
+        // std::cout << "{ ";
+        // for (int s : seg.getSensorList()) {
+        //     std::cout << std::to_string(s) << " ";
+        // }
+        // std::cout << "}\n";
         if (seg.getVelocity() >= resource::V_STAR) {
             // 剩余速度都设为 V_STAR
             int num = problem->getLengthDiscNum();
@@ -290,8 +298,7 @@ int ssf::SSFSolverDisc::getActiveDistance(int l, int r, const std::vector<bool>&
     return dis;
 }
 
-void ssf::SSFSolverDisc::
-solveForOnline(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {
+void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {
     // std::cout << "in func: ssf::SSFSolverDisc::solveForOnline(...)\n";
     
     // 所有传感器集合
@@ -311,14 +318,14 @@ solveForOnline(int start, int end, std::vector<double> &speedSche, std::vector<s
     // std::cout << "number of sensors is " << std::to_string(sensorNum) << "\n";
     while (countActiveSensor > 0) {
         ssf::Segment seg = findSlowestSegmentForOnline(isActDis, sensors);
-        // std::cout << "check the slowest segment\n";
-        // TODO 加个断点看看seg.velocity
-        std::cout << "velocity = " << std::to_string(seg.getVelocity()) << "\n";
-        std::cout << "{ ";
-        for (int s : seg.getSensorList()) {
-            std::cout << std::to_string(s) << " ";
-        }
-        std::cout << "}\n";
+        // std::cout << "check the slowest segment (for online)\n";
+        // // TODO 加个断点看看seg.velocity
+        // std::cout << "velocity = " << std::to_string(seg.getVelocity()) << "\n";
+        // std::cout << "{ ";
+        // for (int s : seg.getSensorList()) {
+        //     std::cout << std::to_string(s) << " ";
+        // }
+        // std::cout << "}\n";
         if (seg.getVelocity() >= resource::V_STAR) {
             // 这里的sensorList是剩余所有传感器的集合
             int l = 0, r = problem->getLengthDiscNum() - 1;

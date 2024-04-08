@@ -59,7 +59,8 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
         for (int j = 0; j < temp; j++) {
             // 要减去start
             sensor.rangeList[j].leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
-            sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex - start;
+            // sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex - start;
+            sensor.rangeList[j].rightIndex = std::max(0, origin[i].dataList[j].rightIndex - start);
             // !!!!!!!!!! 是否会有rightIndex小于0的情况
             // if (sensor.rangeList[j].rightIndex < 0) {
             //     std::cout << "ERROR: negative right index\n";

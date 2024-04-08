@@ -70,6 +70,7 @@ double online::ACOSolver_Online::getVcost() const {
 }
 
 void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
+    int countActive = 0;
     int countInformed = 0;
     std::vector<bool> informed(sensorNum, false); // 对应的是原传感器编号
     // std::vector<bool> visited(sensorNum, false);  // 对应的是原传感器编号
@@ -77,33 +78,45 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
     int hMin = problem->getMinHeightIndex();
     int hMax = problem->getMaxHeightIndex();
     std::vector<resource::SensorOnlineDisc2D> sensorList = problem->getSensorList();
-
+    
+    // 是否获得新的传感器信息
+    bool newInfo = false;//true;
     // 当前已获得的信息中range所能覆盖的最远距离 (index)
     int currEnd = 0;
     // 刚开始可以获得所有control range覆盖了d=0的传感器信息
     // 满足 min{sensorList[i].controlList[j] == 0} 即可
     for (int s = 0; s < sensorNum; s++) {
+        // for (int h = hMin; h <= hMax; h++) {
+        //     if (sensorList[s].controlList[h].leftIndex == 0) {
+        //         informed[s] = true;
+        //         ++countInformed;
+        //         break;
+        //     }
+        // }
+        // if (informed[s]) {
+        //     sensorState[s].setActive();
+        //     for (resource::RangeDisc rg : sensorList[s].dataList) {
+        //         currEnd = std::max(currEnd, rg.rightIndex);
+        //     }
+        //     // ! data range 并不能覆盖所有高度
+        //     // for (int h = hMin; h <= hMax; h++) {
+        //     //     currEnd = std::max(currEnd, sensorList[s].dataList[h].rightIndex);
+        //     // }
+        // }
         for (int h = hMin; h <= hMax; h++) {
-            if (sensorList[s].controlList[h].leftIndex == 0) {
-                informed[s] = true;
-                ++countInformed;
-                break;
+            std::vector<int> newSensors = exploreNewSensor(0, h, sensorList, informed, currEnd);
+            if (!newSensors.empty()) {
+                newInfo = true;
+                countInformed += newSensors.size();
+                countActive += newSensors.size();
+                // for (int sid : newSensors) {
+                //     for (resource::RangeDisc rg : sensorList[sid].dataList) {
+                //         currEnd = std::max(currEnd, rg.rightIndex);
+                //     }
+                // }
             }
-        }
-        if (informed[s]) {
-            sensorState[s].setActive();
-            for (resource::RangeDisc rg : sensorList[s].dataList) {
-                currEnd = std::max(currEnd, rg.rightIndex);
-            }
-            // ! data range 并不能覆盖所有高度
-            // for (int h = hMin; h <= hMax; h++) {
-            //     currEnd = std::max(currEnd, sensorList[s].dataList[h].rightIndex);
-            // }
         }
     }
-    
-    // 是否获得新的传感器信息
-    bool newInfo = true;
 
     int curr = hMin, next;
     int trajLen = lengthIndexNum;
@@ -120,9 +133,12 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
     std::vector<std::vector<int>> linked(trajLen);
     // std::vector<std::vector<int>> linked(trajLen + 1); // ? 加个 1 试试
 
-    for (int d = 0; d < trajLen; d++) {
+    for (int d = 0; /*d < trajLen*/; /*d++*/) {
+        
+        if (d == trajLen) break;
+
         // 若获得了新的传感器信息，则需重新规划
-        if (newInfo) {
+        if (newInfo && countActive > 0) {
             // ? 还需要记录什么信息
             resolve(d, currEnd, speedSche, linked);
             // std::cout << "new info. d=" << std::to_string(d) << " and then resolve\n";
@@ -140,10 +156,14 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
         updateEnergy(v, curr, next);
         // 更新无人机的高度
         curr = next;
+
+        ++d;
+
         // 尝试获得新的传感器信息（若有）
         newInfo = false;
         if (countInformed < sensorNum) {
-            std::vector<int> newSensors = exploreNewSensor(d, next, sensorList, informed);
+            // std::vector<int> newSensors = exploreNewSensor(d, next, sensorList, informed);
+            std::vector<int> newSensors = exploreNewSensor(d, next, sensorList, informed, currEnd);
             if (!newSensors.empty()) {
                 newInfo = true;
                 countInformed += newSensors.size();
@@ -186,6 +206,30 @@ void online::ACOSolver_Online::collectData(const std::vector<int> &linked, doubl
     int num = linked.size();
     double time = problem->getUnitLength() / v;
     for (int i = 0; i < num; i++) {
+        if (tools::approx(sensorState[linked[i]].getTime() - time, resource::ANS_TIME_ULP) > 0) {
+            sensorState[linked[i]].reduceTime(time);
+            break;
+        }
+        // if (sensorState[linked[i]].getTime() >= time) {
+        //     sensorState[linked[i]].reduceTime(time);
+        //     break;
+        // }
+        // 若有传感器的数据采集完成，则设为不活跃
+        time -= sensorState[linked[i]].getTime();
+        sensorState[linked[i]].clearTime();
+        sensorState[linked[i]].setInactive();
+    }
+}
+
+void online::ACOSolver_Online::collectData(const std::vector<int> &linked, double v, int &countActive) {
+    if (linked.empty()) {
+        // std::cout << "empty linked in function 'collectData'\n";
+        return;
+    }
+    // 采集数据
+    int num = linked.size();
+    double time = problem->getUnitLength() / v;
+    for (int i = 0; i < num; i++) {
         if (sensorState[linked[i]].getTime() >= time) {
             sensorState[linked[i]].reduceTime(time);
             break;
@@ -194,6 +238,7 @@ void online::ACOSolver_Online::collectData(const std::vector<int> &linked, doubl
         time -= sensorState[linked[i]].getTime();
         sensorState[linked[i]].clearTime();
         sensorState[linked[i]].setInactive();
+        --countActive;
     }
 }
 
@@ -206,7 +251,7 @@ void online::ACOSolver_Online::updateEnergy(double v, int currh, int nexth) {
     vcost += resource::costByFly(problem->getUnitLength(), v);
 }
 
-std::vector<int> online::ACOSolver_Online::exploreNewSensor(int currd, int currh, const std::vector<resource::SensorOnlineDisc2D> &sensorList, std::vector<bool> &informed) {
+std::vector<int> online::ACOSolver_Online::exploreNewSensor(int currd, int currh, const std::vector<resource::SensorOnlineDisc2D> &sensorList, std::vector<bool> &informed, int &currEnd) {
     std::vector<int> newSensors;
     for (int s = 0; s < sensorNum; s++) {
         if (informed[s]) continue;
@@ -216,6 +261,9 @@ std::vector<int> online::ACOSolver_Online::exploreNewSensor(int currd, int currh
             sensorState[s].setActive();
             // 初始传输时间在初始化时已经设置过
             // sensorState[s].setTime(sensorList[s].time);
+            for (resource::RangeDisc rg : sensorList[s].dataList) {
+                currEnd = std::max(currEnd, rg.rightIndex);
+            }
         }
     }
     return newSensors;

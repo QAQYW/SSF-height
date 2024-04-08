@@ -15,6 +15,7 @@ extern const double LENGTH_ULP;     // ? 是精度 不是距离离散化的单�
 extern const double HEIGHT_ULP;     // ? 是精度 不是高度离散化的单位
 extern const double HEIGHT_COST_PROPOR; // 高度变化造成的能耗的比例
 extern const double TIME_ULP;       // 时间精度
+extern const double ANS_TIME_ULP; // 计算答案（剩余传输时间时的时间精度）在online solver中用到
 
 extern const double REF_UNIT_HEIGHT; // 高度离散化间隔的参考值
 extern const double REF_UNIT_LENGTH; // 距离离散化间隔的参考值

@@ -8,6 +8,7 @@ const double resource::LENGTH_ULP = 0.1;    // ! 慎重取值
 const double resource::HEIGHT_ULP = 0.01;   // ! 慎重取值
 const double resource::TIME_ULP = 0.1;      // ! 慎重取值
 const double resource::HEIGHT_COST_PROPOR = 10; //0; // 0.5; //40; // ! 慎重取值
+const double resource::ANS_TIME_ULP = resource::TIME_ULP / 100;
 
 const double resource::REF_UNIT_HEIGHT = 10;
 const double resource::REF_UNIT_LENGTH = 1; //resource::LENGTH_ULP * 10;
@@ -15,9 +16,12 @@ const double resource::REF_UNIT_LENGTH = 1; //resource::LENGTH_ULP * 10;
 /* ----------------------------- data structure ----------------------------- */
 
 void resource::SensorDisc::updateByCoverList() {
-    range.leftIndex = coverList[0];
-    range.rightIndex = coverList.back();
     countCover = coverList.size();
+
+    if (coverList.empty()) return;
+    
+    range.leftIndex = coverList[0]; // ! 段错误
+    range.rightIndex = coverList.back();
 }
 
 bool resource::SensorDisc2D::isCovered(int lengthIndex, int heightIndex) const {

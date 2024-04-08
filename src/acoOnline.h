@@ -77,10 +77,15 @@ public:
     /// @param linked 传感器连接方案
     /// @param v 无人机飞行速度
     void collectData(const std::vector<int> &linked, double v);
+    /// @brief 在一段unitLength内匀速飞行，并收集linked中传感器的数据
+    /// @param linked 传感器连接方案
+    /// @param v 无人机飞行速度
+    /// @param countActive 活跃的传感器数量
+    void collectData(const std::vector<int> &linked, double v, int &countActive);
     // 更新无人机的能耗（仅计算hcost, vcost）
     void updateEnergy(double v, int currh, int nexth);
     // 在 (currd,currh) 尝试接收新的传感器信息（若有）
-    std::vector<int> exploreNewSensor(int d, int h, const std::vector<resource::SensorOnlineDisc2D> &sensorList, std::vector<bool> &informed);
+    std::vector<int> exploreNewSensor(int d, int h, const std::vector<resource::SensorOnlineDisc2D> &sensorList, std::vector<bool> &informed, int &currEnd);
 };
 
 } // namespace online

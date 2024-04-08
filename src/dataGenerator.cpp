@@ -200,7 +200,6 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
             
             double temp1 = p * p - 4 * q;
             if (temp1 <= 0) break;
-
             double temp2 = (std::sqrt(temp1) - p) / 2;
             if (temp2 <= 0) break;
 

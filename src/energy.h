@@ -18,8 +18,17 @@ class ProblemDisc2D;
 
 namespace energy_calculator {
 
-double calSpeedCost(const ProblemDisc2D &prob2D, const Trajectory &traj);
-double calSpeedCost(const ProblemDisc2D &prob2D, const Trajectory &traj, std::vector<double> &speedSche);
+    /// @brief 计算速度调度的能耗
+    /// @param prob2D 离散化二维问题
+    /// @param traj 飞行轨迹（高度调度）
+    /// @return 能耗
+    double calSpeedCost(const ProblemDisc2D &prob2D, const Trajectory &traj);
+    /// @brief 计算速度调度的能耗，并传出速度调度的结果
+    /// @param prob2D 离散化二维问题
+    /// @param traj 飞行轨迹（高度调度）
+    /// @param speedSche 保存速度调度的结果
+    /// @return 能耗
+    double calSpeedCost(const ProblemDisc2D &prob2D, const Trajectory &traj, std::vector<double> &speedSche);
 
 } // namespace energy_calculator
 

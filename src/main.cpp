@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+// #include <filesystem> // need at least c++17
+#include <windows.h>
 
 #include "resource.h"
 #include "tools.h"
@@ -21,7 +23,8 @@ std::vector<std::string> filenames;
 /// @brief 批量生成离线问题数据
 /// @param expNum 数据样例数量
 /// @param dir 样例存储目录
-void generateData_Offline(int expNum, std::string dir) {
+/// @param senNum 传感器数量（若输入0，则视为默认值5）
+void generateData_Offline(int expNum, std::string dir, int senNum) {
     if (expNum <= 0) {
         std::cout << "Input the number of test instances: ";
         std::cin >> expNum;
@@ -30,8 +33,9 @@ void generateData_Offline(int expNum, std::string dir) {
         unsigned int seed = rand();
         seeds.push_back(seed);
     }
+    if (senNum <= 0) senNum = 5;
     for (int i = 1; i <= expNum; i++) {
-        DataGenerator dg(dir, 5);
+        DataGenerator dg(dir, senNum);
         dg.generateAndSave(seeds[i - 1], i);
         std::cout << "instance " << std::to_string(i) << " generated.\n";
         std::string filename = dir + "\\" + dg.filenameBase + std::to_string(i) + ".txt";
@@ -51,7 +55,8 @@ void generateData_Offline(int expNum, std::string dir) {
 /// @brief 批量生成在线问题数据
 /// @param expNum 数据样例数量
 /// @param dir 样例存储目录
-void generateData_Online(int expNum, std::string dir) {
+/// @param senNum 传感器数量（若输入0，则视为默认值5）
+void generateData_Online(int expNum, std::string dir, int senNum) {
     if (expNum <= 0) {
         std::cout << "Input the number of test instances: ";
         std::cin >> expNum;
@@ -60,8 +65,9 @@ void generateData_Online(int expNum, std::string dir) {
         unsigned int seed = rand();
         seeds.push_back(seed);
     }
+    if (senNum <= 0) senNum = 5;
     for (int i = 1; i <= expNum; i++) {
-        DataGenerator dg(dir, 5);
+        DataGenerator dg(dir, senNum);
         dg.generateAndSave_Online(seeds[i - 1], i);
         std::cout << "online instance " << std::to_string(i) << " has generated.\n";
         std::string filename = dir + "\\online_" + dg.filenameBase + std::to_string(i) + ".txt";
@@ -242,23 +248,48 @@ void solve_Offline_Naive(int expNum, std::string dir) {
     std::cout << "solve_Offline_Naive\n";
 }
 
+std::string getTimeString() {
+    time_t now;
+    // 获取1900年1月1日0点0分0秒到现在经过的秒数
+    time(&now);
+    // 将秒数转换为本地时间
+    // 年份从1900年算起，所以要+1900
+    // 月份为0~11，所以要+1
+    tm *local = localtime(&now);
+    std::string str = std::to_string(local->tm_year + 1900) + "_"
+        + std::to_string(local->tm_mon + 1) + "_"
+        + std::to_string(local->tm_mday) + "_"
+        + std::to_string(local->tm_hour) + "_"
+        + std::to_string(local->tm_min) + "_"
+        + std::to_string(local->tm_sec);
+    
+    std::cout << "\n\ttimestr = " << str << "\n\n";
+    return str;
+}
+
 int main(int argc, char *argv[]) {
 
     std::srand((unsigned int) time(NULL));
 
+    std::string timestr = getTimeString();
+
     exampleNum = 2;
-    direction = ".\\tiny_test";
+    // direction = ".\\tiny_test";
+    direction = ".\\tiny_test\\" + timestr;
+    // std::filesystem::create_direction(direction);
+    std::wstring wstr(direction.begin(), direction.end());
+    CreateDirectory(wstr.c_str(), NULL); // 仅在windows平台能用
 
     /* --------------------------------- Offline -------------------------------- */
 
-    // generateData_Offline(exampleNum, direction);
+    // generateData_Offline(exampleNum, direction, 5);
     // solve_Offline_ACO(exampleNum, direction);
     // solve_Offline_Naive(exampleNum, direction);
 
     /* --------------------------------- Online --------------------------------- */
 
-    generateData_Online(exampleNum, direction);
-    solve_Online_ACO(exampleNum, direction);
+    // generateData_Online(exampleNum, direction, 5);
+    // solve_Online_ACO(exampleNum, direction);
     
     
     // system("pause");

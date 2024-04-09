@@ -109,6 +109,9 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
     fout.close();
 }
 
+/// @brief 
+/// @param seed 
+/// @param dataIndex 
 void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
 
     std::ofstream fout;
@@ -160,12 +163,21 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
         https://zhuanlan.zhihu.com/p/380580061
     */
 
+   /**
+    * 保存用于python绘图的形状参数
+    * shape[i][0]: mid
+    * shape[i][1]: xCoef
+    * shape[i][2]: yCoef
+    * shape[i][3]: swell
+   */
+   double shape[sensorNum][4];
+
     // 随机产生每个传感器的传输范围
     // 几个辅助变量
     double maxXMult = 0.4 * length;
     double minXMult = MIN_X_MULT;
-    double maxYMult = maxHeight / 1.35;
-    double minYMult = minHeight / 1.35; // heightList[0] / 1.35;
+    double maxYMult = maxHeight / 1.5;//1.35;
+    double minYMult = minHeight / 1.5;//1.35; // heightList[0] / 1.35;
     for (int i = 0; i < sensorNum; i++) {
         // 数据传输时间
         double time = tools::approx(tools::randDouble(MIN_TRANSMISSION_TIME, MAX_TRANSMISSION_TIME), resource::TIME_ULP);
@@ -242,43 +254,50 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
         // 保存各高度下的控制通信范围（覆盖所有高度）
         for (int j = 0; j < heightDiscNum; j++)
             fout << std::to_string(controlLeft[j]) << "\t" << std::to_string(controlRight[j]) << "\t\n";
-
-        // // 传输范围
-        // int count = 0;
-        // std::string rangeStr = "";
-        // for (int j = 0; j < heightDiscNum; j++) {
-        //     double y = heightList[j];
-        //     if (y >= yMax) break;
-
-        //     double yBar = yCoef * y;
-        //     double p = 2 * yBar * (yBar - 1) + swell;
-        //     double q = yBar * yBar * yBar * (yBar - 2);
-
-        //     double temp1 = p * p - 4 * q;
-        //     if (temp1 <= 0) break;
-
-        //     double temp2 = (std::sqrt(temp1) - p) / 2;
-        //     if (temp2 <= 0) break;
-
-        //     // 数据传输范围
-        //     double xDiff = std::sqrt(temp2) / xCoef;
-        //     double xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
-        //     double xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
-        //     rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t";
-            
-        //     // 控制通信范围 (control communication range / control information delivery range)
-        //     xDiff *= DataGenerator::CONTROL_RANGE_PROP;
-        //     xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
-        //     xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
-        //     rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t\n";
-
-        //     ++count;
-        // }
         
-        // // 保存单个传感器range数量，以及各高度下（若有）的范围
-        // fout << std::to_string(count) << "\n";
-        // fout << rangeStr;
+        // 记录形状参数
+        shape[i][0] = mid;
+        shape[i][1] = xCoef;
+        shape[i][2] = yCoef;
+        shape[i][3] = swell;
     }
 
     fout.close();
+
+    saveSensorShape(shape, dataIndex);
+}
+
+void DataGenerator::saveSensorShape(double shape[][4], int dataIndex) const {
+    std::ofstream fout;
+    std::string filename = this->savePath + "\\online_shape_" + std::to_string(dataIndex) + ".txt";
+    fout.open(filename);
+
+    std::cout << "\nsave shape param to file:" << filename << "\n";
+
+    // 路径长度
+    fout << std::to_string(this->length) << "\n";
+    std::cout << std::to_string(this->length) << "\n";
+    // 最小高度
+    fout << std::to_string(this->MIN_HEIGHT) << "\n";
+    std::cout << std::to_string(this->MIN_HEIGHT) << "\n";
+    // 最大高度
+    fout << std::to_string(this->MAX_HEIGHT) << "\n";
+    std::cout << std::to_string(this->MAX_HEIGHT) << "\n";
+    // 传感器数量
+    fout << std::to_string(this->sensorNum) << "\n";
+    std::cout << std::to_string(this->sensorNum) << "\n";
+
+    // 输出每个传感器的形状参数
+    for (int sid = 0; sid < this->sensorNum; sid++) {
+        for (int i = 0; i < 4; i++) {
+            fout << std::to_string(shape[sid][i]) << "\t";
+            std::cout << std::to_string(shape[sid][i]) << "\t";
+        }
+        fout << "\n";
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+
+    fout.close();
+
 }

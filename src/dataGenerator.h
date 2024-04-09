@@ -80,6 +80,7 @@ public:
     /// @param seed 随机种子
     /// @param dataIndex 样例数据序号
     void generateAndSave_Online(unsigned int seed, int dataIndex);
+    void saveSensorShape(double shape[][4], int dataIndex) const;
 };
 
 #endif

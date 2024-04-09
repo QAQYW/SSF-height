@@ -61,7 +61,7 @@ void generateData_Online(int expNum, std::string dir) {
         seeds.push_back(seed);
     }
     for (int i = 1; i <= expNum; i++) {
-        DataGenerator dg(dir, 10);
+        DataGenerator dg(dir, 5);
         dg.generateAndSave_Online(seeds[i - 1], i);
         std::cout << "online instance " << std::to_string(i) << " has generated.\n";
         std::string filename = dir + "\\online_" + dg.filenameBase + std::to_string(i) + ".txt";
@@ -251,14 +251,14 @@ int main(int argc, char *argv[]) {
 
     /* --------------------------------- Offline -------------------------------- */
 
-    generateData_Offline(exampleNum, direction);
-    solve_Offline_ACO(exampleNum, direction);
-    solve_Offline_Naive(exampleNum, direction);
+    // generateData_Offline(exampleNum, direction);
+    // solve_Offline_ACO(exampleNum, direction);
+    // solve_Offline_Naive(exampleNum, direction);
 
     /* --------------------------------- Online --------------------------------- */
 
-    // generateData_Online(exampleNum, direction);
-    // solve_Online_ACO(exampleNum, direction);
+    generateData_Online(exampleNum, direction);
+    solve_Online_ACO(exampleNum, direction);
     
     
     // system("pause");

@@ -5,6 +5,7 @@
 #include <vector>
 // #include <filesystem> // need at least c++17
 #include <windows.h>
+#include <unistd.h>
 
 #include "resource.h"
 #include "tools.h"
@@ -276,9 +277,25 @@ int main(int argc, char *argv[]) {
     exampleNum = 2;
     // direction = ".\\tiny_test";
     direction = ".\\tiny_test\\" + timestr;
+
+    // std:: = direction;
+
+    // wchar_t *pwszUnicode = direction;
+    // std::wstring wstr(direction.begin(), direction.end());
+    // const wchar_t *pUnicode = wstr.c_str();
+    // int iSize = WideCharToMultiByte(CP_ACP, 0, pUnicode, -1, NULL, 0, NULL, NULL);;
+    // char *pMultiByte = (char *) malloc(iSize * sizeof(char));
+    // WideCharToMultiByte(CP_ACP, 0, pUnicode, -1, pMultiByte, iSize, NULL, NULL);
+    // const char * p = pMultiByte;
+    // CreateDirectory(p, NULL); // LPCWSTR
+
     // std::filesystem::create_direction(direction);
     std::wstring wstr(direction.begin(), direction.end());
-    CreateDirectory(wstr.c_str(), NULL); // 仅在windows平台能用
+    LPCWSTR p = wstr.c_str();
+    CreateDirectoryW(p, NULL);
+    // CreateDirectory(WideCharToMultiByte(CP_UTF8, 0, direction, -1, widecha), NULL);
+    // std::mkdir(direction, 0777);
+    // system("mkdir "+direction);
 
     /* --------------------------------- Offline -------------------------------- */
 

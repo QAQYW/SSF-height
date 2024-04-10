@@ -14,7 +14,10 @@ struct State {
     int heiId;  // height index
     std::vector<bool> sensorFlag; // 当前位置覆盖的传感器集合，true表示覆盖
     State(int l, int h): lenId(l), heiId(h) {};
-    // s覆盖的传感器集合是否是this覆盖的传感器集合的子集
+
+    /// @brief s覆盖的传感器集合是否是自己（this）覆盖的传感器集合的自己
+    /// @param s 状态
+    /// @return 若s覆盖的传感器集合是自己的子集，则返回True；否则，返回False
     bool isSubset(const State &s) const;
 };
 

@@ -95,7 +95,10 @@ void solve_Online_ACO(int expNum, std::string dir) {
         fin.open(dir + "\\online_filename_set.txt");
         int num;
         fin >> num;
-        if (expNum <= 0 || expNum > num) expNum = num;
+        if (expNum <= 0 || expNum > num) {
+            expNum = num;
+            exampleNum = num;
+        }
         for (int i = 1; i <= num; i++) {
             std::string filename;
             fin >> filename;
@@ -155,6 +158,7 @@ void solve_Offline_ACO(int expNum, std::string dir) {
         fin >> num;
         if (expNum <= 0 || expNum > num) {
             expNum = num;
+            exampleNum = num;
         }
         for (int i = 1; i <= num; i++) {
             std::string filename;
@@ -208,6 +212,7 @@ void solve_Offline_Naive(int expNum, std::string dir) {
         fin >> num;
         if (expNum <= 0 || expNum > num) {
             expNum = num;
+            exampleNum = num;
         }
         for (int i = 1; i <= num; i++) {
             std::string filename;
@@ -272,18 +277,31 @@ int main(int argc, char *argv[]) {
 
     std::srand((unsigned int) time(NULL));
 
-    std::string timestr = getTimeString();
-
-    exampleNum = 2;
     // direction = ".\\tiny_test";
+
+    const std::string special_data_timestr = "1900_1_1_0_0_0";
+    // std::string timestr = getTimeString();
+    std::string timestr = special_data_timestr;
     direction = ".\\tiny_test\\" + timestr;
     std::wstring wstr(direction.begin(), direction.end());
     LPCWSTR p = wstr.c_str();
-    CreateDirectoryW(p, NULL);
+    
+    if (timestr == special_data_timestr) {
+        std::cout << "\n\tSpecial data\n\n";
+        exampleNum = 0;
+    } else {
+        std::cout << "\n\tRandom data\n\n";
+
+        exampleNum = 2;
+
+        CreateDirectoryW(p, NULL);
+    }
+
+    filenames.clear();
 
     /* --------------------------------- Offline -------------------------------- */
 
-    generateData_Offline(exampleNum, direction, 5);
+    // generateData_Offline(exampleNum, direction, 5);
     solve_Offline_ACO(exampleNum, direction);
     solve_Offline_Naive(exampleNum, direction);
 

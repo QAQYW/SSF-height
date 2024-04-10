@@ -228,7 +228,7 @@ void solve_Offline_Naive(int expNum, std::string dir) {
         std::vector<double> speedSche;
         double hcost = optTraj.calHeightCost();
         // double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
-        double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj);
+        double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj, speedSche);
         // std::string filename = dir + "\\" + "offline_answer_naive_prop10_" + std::to_string(i) + ".txt";
         std::string filename = dir + "\\offline_answer_aco_prop" + std::to_string((int) resource::HEIGHT_COST_PROPOR) + "_" + std::to_string(i) + ".txt";
         std::ofstream fout;
@@ -283,9 +283,9 @@ int main(int argc, char *argv[]) {
 
     /* --------------------------------- Offline -------------------------------- */
 
-    // generateData_Offline(exampleNum, direction, 5);
-    // solve_Offline_ACO(exampleNum, direction);
-    // solve_Offline_Naive(exampleNum, direction);
+    generateData_Offline(exampleNum, direction, 5);
+    solve_Offline_ACO(exampleNum, direction);
+    solve_Offline_Naive(exampleNum, direction);
 
     /* --------------------------------- Online --------------------------------- */
 

@@ -424,15 +424,21 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
 }
 
 ssf::Segment ssf::SSFSolverDisc::findSlowestSegmentForOnline(const std::vector<bool> &isActDis, const std::vector<ssf::Sensor> &sensors) const {
+    // 所有segment集合
     std::vector<ssf::Segment> segments;
+    // 辅助变量，是否被当前segment选中
+    bool isChosen[isActDis.size()];
     for (int il = 0; il < sensorNum; il++) {
         // 若该传感器数据已传输，则跳过
         if (!sensors[il].isActive()) continue;
 
+        std::memset(isChosen, false, sizeof(isChosen));
+
         // segment 的基本信息
         int lMost = sensors[il].getLeftIndex();  // segment的最左端
         int rMost = sensors[il].getRightIndex(); // segment的最右端
-        int dis = getActiveDistance(lMost, rMost, isActDis); // active distance
+        // int dis = getActiveDistance(lMost, rMost, isActDis); // active distance
+        int dis = getActiveDistance(sensors[il], isActDis, isChosen);
         double time = problem->getSensor(sensors[il].getSensorIndex()).time; // active time
 
         // 单独一个传感器的 segment 也要记录
@@ -446,13 +452,15 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegmentForOnline(const std::vector<b
             if (!sensors[ir].isActive()) continue;
 
             // 若该传感器与当前segment无重叠部分，则无法组成新的segment
-            if (sensors[ir].getLeftIndex() > rMost) break;
+            // if (sensors[ir].getLeftIndex() > rMost) break;
+            if (!isOverlap(sensors[ir].getSensorIndex(), isActDis, isChosen)) break; // 若无重叠则break
 
             // 更新 segment 的基本信息
             if (sensors[ir].getRightIndex() > rMost) {
                 rMost = sensors[ir].getRightIndex();
-                dis += getActiveDistance(rMost + 1, sensors[ir].getRightIndex(), isActDis); // 更新 active distance
+                // dis += getActiveDistance(rMost + 1, sensors[ir].getRightIndex(), isActDis); // 更新 active distance
             }
+            dis += getActiveDistance(sensors[ir], isActDis, isChosen);
             time += problem->getSensor(sensors[ir].getSensorIndex()).time; // 更新 active time
             
             // 生成新的 segment 假如集合 segments 中

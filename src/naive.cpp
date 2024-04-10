@@ -49,7 +49,7 @@ void naive::NaiveSolver::solve() {
         naive::State start(0, h);
         checkSensors(0, h, start);
         generateTrajectory(start, tempTraj, lengthIndexNum);
-        std::cout << "mincost = " << std::to_string(minCost) << " when start h = " << std::to_string(h) << "\n";
+        // std::cout << "mincost = " << std::to_string(minCost) << " when start h = " << std::to_string(h) << "\n";
     }
 }
 
@@ -70,10 +70,10 @@ void naive::NaiveSolver::generateTrajectory(naive::State curr, Trajectory &traj,
         // std::cout << "\n";
         // 先检查可行性（是否所有传感器的数据都能被收集）
         if (!isFeasible(traj)) {
-            std::cout << "Infeasible\n";
+            // std::cout << "Infeasible\n";
             return;
         }
-        std::cout << "Feasible\n";
+        // std::cout << "Feasible\n";
         // 计算能耗，更新最优路径
         // double cost = traj.calHeightCost() + traj.calSpeedCost(*problem);
         double cost = traj.calHeightCost() + energy_calculator::calSpeedCost(*problem, traj);

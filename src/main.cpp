@@ -244,7 +244,7 @@ void solve_Offline_Naive(int expNum, std::string dir) {
         fout << "hcost = " << std::to_string(hcost) << "\n";
         fout << "vcost = " << std::to_string(vcost) << "\n";
         fout.close();
-        std::cout << "aco: " << i << "/" << expNum << "\n";
+        std::cout << "naive: " << i << "/" << expNum << "\n";
     }
     std::cout << "solve_Offline_Naive\n";
 }

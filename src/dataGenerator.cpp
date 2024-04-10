@@ -51,6 +51,15 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
         https://zhuanlan.zhihu.com/p/380580061
     */
 
+   /**
+    * 保存用于python绘图的形状参数
+    * shape[i][0]: mid
+    * shape[i][1]: xCoef
+    * shape[i][2]: yCoef
+    * shape[i][3]: swell
+   */
+   double shape[sensorNum][4];
+
     // 随机产生每个传感器的传输范围
     // 几个辅助变量
     double maxXMult = 0.4 * length;
@@ -104,14 +113,19 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
         // 保存单个传感器range数量，以及各高度下（若有）的范围
         fout << std::to_string(count) << "\n";
         fout << rangeStr;
+        
+        // 记录形状参数
+        shape[i][0] = mid;
+        shape[i][1] = xCoef;
+        shape[i][2] = yCoef;
+        shape[i][3] = swell;
     }
 
     fout.close();
+
+    saveSensorShape(shape, dataIndex);
 }
 
-/// @brief 
-/// @param seed 
-/// @param dataIndex 
 void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
 
     std::ofstream fout;

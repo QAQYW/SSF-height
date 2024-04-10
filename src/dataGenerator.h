@@ -34,9 +34,9 @@ public:
     const double MIN_HEIGHT = 100; // 单位：米
 
     // 路径长度与传感器数量的比例系数
-    const double MAX_LENGTH_SENSOR_PROP = 100; // 10;
+    const double MAX_LENGTH_SENSOR_PROP = 10; // 100;
     // const double MAX_LENGTH_SENSOR_PROP = 3; // for tiny_test only
-    const double MIN_LENGTH_SENSOR_PROP = 10; // 1;
+    const double MIN_LENGTH_SENSOR_PROP = 1; // 10;
 
     // ? 下面是不太清楚缘由的一部分，知道怎么用，不知道从何而来
     // 传感器范围x坐标最小放大倍数（仅用于生成传输范围吗）
@@ -80,6 +80,9 @@ public:
     /// @param seed 随机种子
     /// @param dataIndex 样例数据序号
     void generateAndSave_Online(unsigned int seed, int dataIndex);
+    /// @brief 保存所有传感器的数据传输范围的形状参数，方便用python进行可视化
+    /// @param shape 形状参数
+    /// @param dataIndex 样例序号
     void saveSensorShape(double shape[][4], int dataIndex) const;
 };
 

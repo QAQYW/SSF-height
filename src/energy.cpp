@@ -17,6 +17,7 @@ double energy_calculator::calSpeedCost(const ProblemDisc2D &prob2D, const Trajec
     ssf::SSFSolverDisc ssfSolver(&prob1D);
     ssfSolver.solve();
     ssfSolver.calCost();
+    // 与另一个重载的函数比，只多了这一句，把速度调度的结果传出
     speedSche = ssfSolver.getSolution().getSpeedSche();
     return ssfSolver.getCost();
 }

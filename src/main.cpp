@@ -254,6 +254,8 @@ void solve_Offline_Naive(int expNum, std::string dir) {
     std::cout << "solve_Offline_Naive\n";
 }
 
+/// @brief 将当前时间（精确到秒）转换为字符串，用下划线 "_" 连接
+/// @return 表示时间的字符串
 std::string getTimeString() {
     time_t now;
     // 获取1900年1月1日0点0分0秒到现在经过的秒数
@@ -292,7 +294,7 @@ int main(int argc, char *argv[]) {
     } else {
         std::cout << "\n\tRandom data\n\n";
 
-        exampleNum = 2;
+        exampleNum = 2; // 选择随机生成数据时，这里指定传感器数量
 
         CreateDirectoryW(p, NULL);
     }

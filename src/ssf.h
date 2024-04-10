@@ -57,6 +57,11 @@ public:
     int getSensorIndex() const;
     int getLeftIndex() const;
     int getRightIndex() const;
+    // /// @brief 该传感器是否与当前segment已选择部分是否存在重叠，即能否并入当前segment
+    // /// @param isChosen 
+    // /// @param isActDis 
+    // /// @return 若有重叠，则返回true；否则，返回false
+    // bool isOverlap(const ssf::Sensor &sensor, const bool isChosen[], const std::vector<bool> &isActDis) const;
     /// @brief 重载"<"运算符，先按 leftIndex 升序，再按 rightIndex 升序
     bool operator< (const Sensor& _sensor) const;
 };
@@ -140,12 +145,27 @@ private:
     /// @param sensors 传感器集合
     /// @param count 目前活跃的传感器数量
     void update(const Segment& seg, std::vector<bool>& isActDis, std::vector<ssf::Sensor>& sensors, int& count);
+    
     /// @brief 计算某段区间的active distance（离散）
     /// @param l 区间左端点
     /// @param r 区间右端点
     /// @param isActDis 距离活跃标记
     /// @return 离散的active distance长度
     int getActiveDistance(int l, int r, const std::vector<bool>& isActDis) const;
+
+    /// @brief 计算某段区间的active distance（离散），考虑了不连续的传输范围
+    /// @param sensor 新增进segment中的传感器
+    /// @param isActDis 距离活跃标记
+    /// @param isChosen 距离是否被当前segment选中的标记
+    /// @return 离散的active distance长度
+    int getActiveDistance(const ssf::Sensor &sensor, const std::vector<bool> &isActDis, bool isChosen[]) const;
+
+    /// @brief 该传感器是否与当前segment已选择部分是否存在重叠，即能否并入当前segment
+    /// @param sid 传感器编号
+    /// @param isActDis 距离活跃标记
+    /// @param isChosen 距离是否被当前segment选中的标记
+    /// @return 若有重叠，则返回true；否则，返回false
+    bool isOverlap(int sid, const std::vector<bool> &isActDis, const bool isChosen[]) const;
 
 /**
  * Online

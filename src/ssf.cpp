@@ -2,6 +2,7 @@
 #include <iostream>
 #include "problemDisc1D.h"
 #include "problemDisc2D.h"
+#include <cstring>
 
 /* -------------------------------- Solution -------------------------------- */
 
@@ -166,7 +167,7 @@ void ssf::SSFSolverDisc::solve() {
     std::vector<ssf::Sensor> sensors;
     // true 代表 active，数据未采集
     std::vector<bool> isActDis(problem->getLengthDiscNum(), true);
-    // 对所有传感器初始化，并排序
+    // 对所有传感器初始化，并排序（先按leftIndex升序，再按rightIndex升序）
     this->init(sensors);
 
     // 剩余未传输传感器数量
@@ -217,15 +218,21 @@ void ssf::SSFSolverDisc::init(std::vector<ssf::Sensor> &sensors) {
 }
 
 ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isActDis, const std::vector<ssf::Sensor>& sensors) const {
+    // 所有segment集合
     std::vector<ssf::Segment> segments;
+    // 辅助变量，是否被当前segment选中
+    bool isChosen[isActDis.size()];
     for (int il = 0; il < sensorNum; il++) {
         // 若该传感器数据已传输，则跳过
         if (!sensors[il].isActive()) continue;
 
+        std::memset(isChosen, false, sizeof(isChosen));
+
         // segment 的基本信息
         int lMost = sensors[il].getLeftIndex();  // segment的最左端
         int rMost = sensors[il].getRightIndex(); // segment的最右端
-        int dis = getActiveDistance(lMost, rMost, isActDis); // active distance
+        // int dis = getActiveDistance(lMost, rMost, isActDis); // active distance
+        int dis = getActiveDistance(sensors[il], isActDis, isChosen);
         // ? active distance 假如中间被挖空了呢
         double time = problem->getSensor(sensors[il].getSensorIndex()).time; // active time
 
@@ -240,14 +247,16 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
             if (!sensors[ir].isActive()) continue;
 
             // 若该传感器与当前segment无重叠部分，则无法组成新的segment
-            int l = sensors[ir].getLeftIndex();
-            if (l > rMost) break;
+            // int l = sensors[ir].getLeftIndex();
+            // if (l > rMost) break;
+            if (!isOverlap(sensors[ir].getSensorIndex(), isActDis, isChosen)) break; // 若无重叠则break
 
             // 更新 segment 的基本信息
             if (sensors[ir].getRightIndex() > rMost) {
                 rMost = sensors[ir].getRightIndex();
-                dis += getActiveDistance(rMost + 1, sensors[ir].getRightIndex(), isActDis); // 更新 active distance
+                // dis += getActiveDistance(rMost + 1, sensors[ir].getRightIndex(), isActDis); // 更新 active distance
             }
+            dis += getActiveDistance(sensors[ir], isActDis, isChosen);
             time += problem->getSensor(sensors[ir].getSensorIndex()).time; // 更新 active time
             // rMost = sensors[ir].getRightIndex(); // ! sensors[ir].getRightIndex()也可能比原rMost小（被包含）
             
@@ -279,6 +288,9 @@ void ssf::SSFSolverDisc::update(const ssf::Segment& seg, std::vector<bool>& isAc
     // 确定slowest segment对应的速度，并更新active distance和active time
     double v = seg.getVelocity();
     int l = seg.getLeft(), r = seg.getRight();
+    // // TODO 这里要改，因为segment不连续，所以不能把[l,r]中所有distance都更新，应该加一个coverList
+    // TODO 或者对Segment::sensorList中每个传感器的coverList都更新一遍
+    // TODO 这样在更新时会有重复，但是在构造segment时就不需要花费额外的时间，也不用更改Segment的数据结构
     for (int i = l; i <= r; i++) {
         if (isActDis[i]) {
             solution.changeSpeedSche(i, v);
@@ -291,11 +303,47 @@ void ssf::SSFSolverDisc::update(const ssf::Segment& seg, std::vector<bool>& isAc
     count -= seg.getSensorList().size();
 }
 
+/// @brief 计算某段区间的active distance（离散）
+/// @param l 区间左端点
+/// @param r 区间右端点
+/// @param isActDis 距离活跃标记
+/// @return 离散的active distance长度
 int ssf::SSFSolverDisc::getActiveDistance(int l, int r, const std::vector<bool>& isActDis) const {
     int dis = 0;
     for (int i = l; i <= r; i++)
         dis += isActDis[i] ? 1 : 0;
     return dis;
+}
+
+/// @brief 计算某段区间的active distance（离散），考虑了不连续的传输范围
+/// @param sensor 新增进segment中的传感器
+/// @param isActDis 距离活跃标记
+/// @param isChosen 距离是否被当前segment选中的标记
+/// @return 离散的active distance长度
+int ssf::SSFSolverDisc::getActiveDistance(const ssf::Sensor &sensor, const std::vector<bool> &isActDis, bool isChosen[]) const {
+    int dis = 0;
+    for (int d : this->problem->getSensor(sensor.getSensorIndex()).coverList) {
+        if (isActDis[d] && !isChosen[d]) {
+            ++dis;
+            isChosen[d] = true;
+        }
+    }
+    return dis;
+}
+
+bool ssf::SSFSolverDisc::isOverlap(int sid, const std::vector<bool> &isActDis, const bool isChosen[]) const {
+    for (int d : problem->getSensor(sid).coverList) {
+        if (isActDis[d] && isChosen[d]) {
+            /* 
+                if 里的isActDis[d]应该是多余的
+                因为isChosen[d]==true的地方一定有isActDis[d]==false
+                详见 getActiveDistance() 函数
+                为了保险还是加上去
+            */
+            return true;
+        }
+    }
+    return false;
 }
 
 void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {

@@ -10,7 +10,8 @@ ProblemOnlineDisc2D::ProblemOnlineDisc2D(const ProblemOnline2D &prob) {
     minHeight = prob.getMinHeight();
 
     length = prob.getLength();
-    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+    // lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength); // ! +1 +1 +1 +1 +1 +1 +1 +1 +1 +1 
 
     // std::cout << "\nbasic assignment\n";
 

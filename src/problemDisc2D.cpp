@@ -12,7 +12,8 @@ ProblemDisc2D::ProblemDisc2D(const Problem2D &prob) {
     minHeight = prob.getMinHeight();
 
     length = prob.getLength();
-    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+    // lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
+    lengthDiscNum = resource::lengthToIndex(length, 0, unitLength); // ! +1 +1 +1 +1 +1 +1 +1 +1 +1 +1 
 
     sensorNum = prob.getSensorNum();
     sensorList.resize(sensorNum);
@@ -40,7 +41,8 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
 
     // length = prob.getLength();
     // lengthDiscNum = resource::lengthToIndex(length, 0, unitLength) + 1;
-    lengthDiscNum = end - start + 1;
+    // lengthDiscNum = end - start + 1;
+    lengthDiscNum = end - start; // ! +1 +1 +1 +1 +1 +1 +1 +1 +1 +1 
     length = resource::indexToLength(lengthDiscNum, 0, unitLength);
 
     sensorNum = 0; // 逐个统计active的传感器数量

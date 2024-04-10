@@ -62,10 +62,10 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
 
     // 随机产生每个传感器的传输范围
     // 几个辅助变量
-    double maxXMult = 0.4 * length;
-    double minXMult = MIN_X_MULT;
-    double maxYMult = maxHeight / 1.35;
-    double minYMult = minHeight / 1.35; // heightList[0] / 1.35;
+    double maxXMult = 0.2 * length;
+    double minXMult = std::min(MIN_X_MULT, maxXMult / 10.0);//MIN_X_MULT;
+    double maxYMult = maxHeight / 1.6;
+    double minYMult = minHeight / 1.6; // heightList[0] / 1.35;
     for (int i = 0; i < sensorNum; i++) {
         // 数据传输时间
         double time = tools::approx(tools::randDouble(MIN_TRANSMISSION_TIME, MAX_TRANSMISSION_TIME), resource::TIME_ULP);

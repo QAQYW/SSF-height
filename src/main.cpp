@@ -282,8 +282,8 @@ int main(int argc, char *argv[]) {
     // direction = ".\\tiny_test";
 
     const std::string special_data_timestr = "1900_1_1_0_0_0";
-    // std::string timestr = getTimeString();
-    std::string timestr = special_data_timestr;
+    std::string timestr = getTimeString();          // TODO 用随机生成的样例
+    // std::string timestr = special_data_timestr;     // TODO 用手动构造的特殊样例
     direction = ".\\tiny_test\\" + timestr;
     std::wstring wstr(direction.begin(), direction.end());
     LPCWSTR p = wstr.c_str();
@@ -294,7 +294,7 @@ int main(int argc, char *argv[]) {
     } else {
         std::cout << "\n\tRandom data\n\n";
 
-        exampleNum = 2; // 选择随机生成数据时，这里指定传感器数量
+        exampleNum = 5; // 选择随机生成数据时，这里指定传感器数量
 
         CreateDirectoryW(p, NULL);
     }
@@ -303,7 +303,7 @@ int main(int argc, char *argv[]) {
 
     /* --------------------------------- Offline -------------------------------- */
 
-    // generateData_Offline(exampleNum, direction, 5);
+    generateData_Offline(exampleNum, direction, 5);
     solve_Offline_ACO(exampleNum, direction);
     solve_Offline_Naive(exampleNum, direction);
 

@@ -230,7 +230,7 @@ void solve_Offline_Naive(int expNum, std::string dir) {
         // double vcost = optTraj.calSpeedCost(probDisc2D, speedSche);
         double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj, speedSche);
         // std::string filename = dir + "\\" + "offline_answer_naive_prop10_" + std::to_string(i) + ".txt";
-        std::string filename = dir + "\\offline_answer_aco_prop" + std::to_string((int) resource::HEIGHT_COST_PROPOR) + "_" + std::to_string(i) + ".txt";
+        std::string filename = dir + "\\offline_answer_naive_prop" + std::to_string((int) resource::HEIGHT_COST_PROPOR) + "_" + std::to_string(i) + ".txt";
         std::ofstream fout;
         fout.open(filename);
         fout << "distance\tspeed\theight\n";

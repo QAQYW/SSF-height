@@ -24,7 +24,7 @@ ProblemDisc2D::ProblemDisc2D(const Problem2D &prob) {
         sensorList[i].rangeList.resize(temp);
         // 离散化
         for (int j = 0; j < temp; j++) {
-            sensorList[i].rangeList[j].leftIndex = resource::lengthToIndex(origin[i].rangeList[j].left, 0, unitLength);
+            sensorList[i].rangeList[j].leftIndex = resource::lengthToIndex(origin[i].rangeList[j].left, 0, unitLength) + 1;
             sensorList[i].rangeList[j].rightIndex = resource::lengthToIndex(origin[i].rangeList[j].right, 0, unitLength);
         }
     }

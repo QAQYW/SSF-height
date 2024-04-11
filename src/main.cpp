@@ -149,7 +149,7 @@ void solve_Online_ACO(int expNum, std::string dir) {
 /// @brief 蚁群算法求解离线问题
 /// @param expNum 数据样例数量
 /// @param dir 样例读取目录
-void solve_Offline_ACO(int expNum, std::string dir) {
+void solve_Offline_ACO(int expNum, std::string dir, bool onlineFile) {
     // Read filenames
     if (filenames.empty()) {
         std::ifstream fin;
@@ -170,7 +170,11 @@ void solve_Offline_ACO(int expNum, std::string dir) {
 
     for (int i = 1; i <= expNum; i++) {
         Problem2D prob2D;
-        prob2D.initFromFile(filenames[i - 1]);
+        if (onlineFile) {
+            prob2D.initFromOnlineFile(filenames[i - 1]);
+        } else {
+            prob2D.initFromFile(filenames[i - 1]);
+        }
         ProblemDisc2D probDisc2D(prob2D);
         aco::ACOSolver acoSolver(&probDisc2D);
         acoSolver.solve();
@@ -203,7 +207,7 @@ void solve_Offline_ACO(int expNum, std::string dir) {
 /// @brief dfs枚举所有路径+剪枝
 /// @param expNum 数据样例数量
 /// @param dir 样例读取目录
-void solve_Offline_Naive(int expNum, std::string dir) {
+void solve_Offline_Naive(int expNum, std::string dir, bool onlineFile) {
     // Read filenames
     if (filenames.empty()) {
         std::ifstream fin;
@@ -224,7 +228,11 @@ void solve_Offline_Naive(int expNum, std::string dir) {
 
     for (int i = 1; i <= expNum; i++) {
         Problem2D prob2D;
-        prob2D.initFromFile(filenames[i - 1]);
+        if (onlineFile) {
+            prob2D.initFromOnlineFile(filenames[i - 1]);
+        } else {
+            prob2D.initFromFile(filenames[i - 1]);
+        }
         ProblemDisc2D probDisc2D(prob2D);
         naive::NaiveSolver naiveSolver(&probDisc2D);
         naiveSolver.solve();
@@ -295,74 +303,81 @@ int main(int argc, char *argv[]) {
     const std::string special_data_timestr = "1900_1_1_0_0_0";
     std::string timestr = "";
 
-    int opt;
-    std::cout << "options:\n";
-    std::cout << "\t1: use newly generated data\n";
-    std::cout << "\t2: use existed data\n";
-    std::cout << "\t3: use special data (1900_1_1_0_0_0)\n";
+    int opt1, opt2;
+    std::cout << "\nproblem types:\n";
+    std::cout << "    1: offline\n";
+    std::cout << "    2: online\n";
     std::cout << "\nchoose option: ";
-    std::cin >> opt;
-
-    // //2024_4_10_22_14_3
-    // // 用随机生成的样例
-    // timestr = getTimeString();          
-    // // 用手动构造的特殊样例
-    // // std::string timestr = special_data_timestr;     
-    // direction = ".\\tiny_test\\" + timestr;
-    // std::wstring wstr(direction.begin(), direction.end());
-    // LPCWSTR p = wstr.c_str();
-    
-    // if (timestr == special_data_timestr) {
-    //     std::cout << "\n\tSpecial data\n\n";
-    //     exampleNum = 0;
-    // } else {
-    //     std::cout << "\n\tRandom data\n\n";
-
-    //     exampleNum = 5; // 选择随机生成数据时，这里指定传感器数量
-
-    //     CreateDirectoryW(p, NULL);
-    // }
+    std::cin >> opt1;
+    std::cout << "\noptions:\n";
+    std::cout << "    1: use newly generated data\n";
+    std::cout << "    2: use existed data\n";
+    std::cout << "    3: use special data (1900_1_1_0_0_0)\n";
+    std::cout << "\nchoose option: ";
+    std::cin >> opt2;
 
     filenames.clear();
 
-    /* --------------------------------- Offline -------------------------------- */
-
-    // generateData_Offline(exampleNum, direction, 5);
-    // solve_Offline_ACO(exampleNum, direction);
-    // solve_Offline_Naive(exampleNum, direction);
-
-    switch (opt) {
-        case 1:
-            timestr = getTimeString();
-            direction = ".\\tiny_test\\" + timestr;
-            mk_dir(direction, timestr);
-            exampleNum = 5;
-            generateData_Offline(exampleNum, direction, 5);
-            solve_Offline_ACO(exampleNum, direction);
-            solve_Offline_Naive(exampleNum, direction);
-            break;
-        case 2:
-            std::cout << "\ninput folder name (time string): ";
-            std::cin >> timestr;
-            exampleNum = 0;
-            direction = ".\\tiny_test\\" + timestr;
-            solve_Offline_ACO(exampleNum, direction);
-            solve_Offline_Naive(exampleNum, direction);
-            break;
-        case 3:
-            timestr = special_data_timestr;
-            direction = ".\\tiny_test\\" + timestr;
-            exampleNum = 0;
-            solve_Offline_ACO(exampleNum, direction);
-            solve_Offline_Naive(exampleNum, direction);
-            break;
+    if (opt1 == 1) {
+        // Offline
+        switch (opt2) {
+            case 1:
+                timestr = getTimeString();
+                direction = ".\\tiny_test\\" + timestr;
+                mk_dir(direction, timestr);
+                exampleNum = 5;
+                generateData_Offline(exampleNum, direction, 5);
+                solve_Offline_ACO(exampleNum, direction, false);
+                solve_Offline_Naive(exampleNum, direction, false);
+                break;
+            case 2:
+                std::cout << "\ninput folder name (time string): ";
+                std::cin >> timestr;
+                exampleNum = 0;
+                direction = ".\\tiny_test\\" + timestr;
+                solve_Offline_ACO(exampleNum, direction, false);
+                solve_Offline_Naive(exampleNum, direction, false);
+                break;
+            case 3:
+                timestr = special_data_timestr;
+                direction = ".\\tiny_test\\" + timestr;
+                exampleNum = 0;
+                solve_Offline_ACO(exampleNum, direction, false);
+                solve_Offline_Naive(exampleNum, direction, false);
+                break;
+        }
+    } else if (opt1 == 2) {
+        // Online
+        switch (opt2) {
+            case 1:
+                timestr = getTimeString();
+                direction = ".\\tiny_test\\" + timestr;
+                mk_dir(direction, timestr);
+                exampleNum = 5;
+                generateData_Online(exampleNum, direction, 5);
+                solve_Online_ACO(exampleNum, direction);
+                solve_Offline_ACO(exampleNum, direction, true);
+                solve_Offline_Naive(exampleNum, direction, true);
+                break;
+            case 2:
+                std::cout << "\ninput folder name (time string): ";
+                std::cin >> timestr;
+                exampleNum = 0;
+                direction = ".\\tiny_test\\" + timestr;
+                solve_Online_ACO(exampleNum, direction);
+                solve_Offline_ACO(exampleNum, direction, true);
+                solve_Offline_Naive(exampleNum, direction, true);
+                break;
+            case 3:
+                timestr = special_data_timestr;
+                direction = ".\\tiny_test\\" + timestr;
+                exampleNum = 0;
+                solve_Online_ACO(exampleNum, direction);
+                solve_Offline_ACO(exampleNum, direction, true);
+                solve_Offline_Naive(exampleNum, direction, true);
+                break;
+        }
     }
-
-    /* --------------------------------- Online --------------------------------- */
-
-    // generateData_Online(exampleNum, direction, 5);
-    // solve_Online_ACO(exampleNum, direction);
-    
     
     // system("pause");
     return 0;

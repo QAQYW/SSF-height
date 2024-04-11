@@ -192,9 +192,10 @@ void online::ACOSolver_Online::resolve(int start, int end, std::vector<double> &
     offlineSolver.solveForOnline(start, end, speedSche, linked);
     // 更新 trajectory
     Trajectory subOptTraj = offlineSolver.getTrajectory();
-    for (int i = start; i <= end; i++) {
+    for (int i = start; i < end; i++) {
         trajectory.setHeightIndex(i, subOptTraj.getHeightIndex(i - start));
     }
+    std::cout << "check trajectory\n";
 }
 
 void online::ACOSolver_Online::collectData(const std::vector<int> &linked, double v) {

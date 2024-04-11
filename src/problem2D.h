@@ -35,7 +35,12 @@ public:
     double getMaxHeight() const;
     int getHeightDiscNum() const;
     std::vector<double> getHeightList() const;
+    /// @brief 从离线问题的文件读取信息
+    /// @param filename 文件名
     void initFromFile(const std::string &filename);
+    /// @brief 从在线问题的文件读取信息（忽略control range）
+    /// @param filename 文件名
+    void initFromOnlineFile(const std::string &filename);
 };
 
 #endif

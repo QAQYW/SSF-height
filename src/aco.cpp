@@ -142,7 +142,7 @@ aco::ACOSolver::ACOSolver(ProblemDisc2D *prob): problem(prob), trajectory() {
     // 构造 lBound 和 rBound
     // lBound.resize(lengthIndexNum, 0);
     // rBound.resize(lengthIndexNum, 0);
-    rBound.resize(lengthIndexNum + 10, 0); // ? 加个10看看
+    rBound.resize(lengthIndexNum + 10, 0); // ? 
     for (resource::SensorDisc2D s : problem->getSensorList()) {
         // int lMost = s.rangeList[0].leftIndex;
         int rMost = s.rangeList[0].rightIndex;

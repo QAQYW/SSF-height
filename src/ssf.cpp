@@ -357,7 +357,7 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
     this->init(sensors);
 
     // 把原来的linked清空，否则一直push_back()累积
-    for (int i = start; i <= end; i++) {
+    for (int i = start; i < end; i++) { // i <= end
         linked[i].clear();
     }
 
@@ -415,7 +415,7 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
 
     // 将速度调度结果传出
     std::vector<double> sche = solution.getSpeedSche();
-    for (int i = start; i <= end; i++) {
+    for (int i = start; i < end; i++) { // i <= end
         // if (i - start >= sche.size()) {
         //     std::cout << "ssf::SSFSolverDisc::solveOnline()\n";
         // } else speedSche[i] = sche[i - start];

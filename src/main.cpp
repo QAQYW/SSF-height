@@ -275,6 +275,17 @@ std::string getTimeString() {
     return str;
 }
 
+void mk_dir(std::string dir, std::string timestr) {
+    std::wstring wstr(dir.begin(), dir.end());
+    LPCWSTR p = wstr.c_str();
+    CreateDirectoryW(p, NULL);
+
+    std::ofstream fout;
+    fout.open(".\\tiny_test\\timestr.txt");
+    fout << timestr << "\n";
+    fout.close();
+}
+
 int main(int argc, char *argv[]) {
 
     std::srand((unsigned int) time(NULL));
@@ -282,30 +293,70 @@ int main(int argc, char *argv[]) {
     // direction = ".\\tiny_test";
 
     const std::string special_data_timestr = "1900_1_1_0_0_0";
-    std::string timestr = getTimeString();          // TODO 用随机生成的样例
-    // std::string timestr = special_data_timestr;     // TODO 用手动构造的特殊样例
-    direction = ".\\tiny_test\\" + timestr;
-    std::wstring wstr(direction.begin(), direction.end());
-    LPCWSTR p = wstr.c_str();
+    std::string timestr = "";
+
+    int opt;
+    std::cout << "options:\n";
+    std::cout << "\t1: use newly generated data\n";
+    std::cout << "\t2: use existed data\n";
+    std::cout << "\t3: use special data (1900_1_1_0_0_0)\n";
+    std::cout << "\nchoose option: ";
+    std::cin >> opt;
+
+    // //2024_4_10_22_14_3
+    // // 用随机生成的样例
+    // timestr = getTimeString();          
+    // // 用手动构造的特殊样例
+    // // std::string timestr = special_data_timestr;     
+    // direction = ".\\tiny_test\\" + timestr;
+    // std::wstring wstr(direction.begin(), direction.end());
+    // LPCWSTR p = wstr.c_str();
     
-    if (timestr == special_data_timestr) {
-        std::cout << "\n\tSpecial data\n\n";
-        exampleNum = 0;
-    } else {
-        std::cout << "\n\tRandom data\n\n";
+    // if (timestr == special_data_timestr) {
+    //     std::cout << "\n\tSpecial data\n\n";
+    //     exampleNum = 0;
+    // } else {
+    //     std::cout << "\n\tRandom data\n\n";
 
-        exampleNum = 5; // 选择随机生成数据时，这里指定传感器数量
+    //     exampleNum = 5; // 选择随机生成数据时，这里指定传感器数量
 
-        CreateDirectoryW(p, NULL);
-    }
+    //     CreateDirectoryW(p, NULL);
+    // }
 
     filenames.clear();
 
     /* --------------------------------- Offline -------------------------------- */
 
-    generateData_Offline(exampleNum, direction, 5);
-    solve_Offline_ACO(exampleNum, direction);
-    solve_Offline_Naive(exampleNum, direction);
+    // generateData_Offline(exampleNum, direction, 5);
+    // solve_Offline_ACO(exampleNum, direction);
+    // solve_Offline_Naive(exampleNum, direction);
+
+    switch (opt) {
+        case 1:
+            timestr = getTimeString();
+            direction = ".\\tiny_test\\" + timestr;
+            mk_dir(direction, timestr);
+            exampleNum = 5;
+            generateData_Offline(exampleNum, direction, 5);
+            solve_Offline_ACO(exampleNum, direction);
+            solve_Offline_Naive(exampleNum, direction);
+            break;
+        case 2:
+            std::cout << "\ninput folder name (time string): ";
+            std::cin >> timestr;
+            exampleNum = 0;
+            direction = ".\\tiny_test\\" + timestr;
+            solve_Offline_ACO(exampleNum, direction);
+            solve_Offline_Naive(exampleNum, direction);
+            break;
+        case 3:
+            timestr = special_data_timestr;
+            direction = ".\\tiny_test\\" + timestr;
+            exampleNum = 0;
+            solve_Offline_ACO(exampleNum, direction);
+            solve_Offline_Naive(exampleNum, direction);
+            break;
+    }
 
     /* --------------------------------- Online --------------------------------- */
 

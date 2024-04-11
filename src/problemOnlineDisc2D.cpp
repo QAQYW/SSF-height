@@ -34,14 +34,20 @@ ProblemOnlineDisc2D::ProblemOnlineDisc2D(const ProblemOnline2D &prob) {
         sensorList[i].dataList.resize(temp);
         // sensorList[i].controlList.resize(temp);
         for (int j = 0; j < temp; j++) {
-            sensorList[i].dataList[j].leftIndex     = resource::lengthToIndex(origin[i].dataList[j].left, 0, unitLength) + 1;
-            sensorList[i].dataList[j].rightIndex    = resource::lengthToIndex(origin[i].dataList[j].right, 0, unitLength);
+            sensorList[i].dataList[j].leftIndex = resource::lengthToIndex(origin[i].dataList[j].left, 0, unitLength);
+            if (resource::indexToLength(sensorList[i].dataList[j].leftIndex, 0, unitLength) < origin[i].dataList[j].left) {
+                ++sensorList[i].dataList[j].leftIndex;
+            }
+            sensorList[i].dataList[j].rightIndex = resource::lengthToIndex(origin[i].dataList[j].right, 0, unitLength);
             // sensorList[i].controlList[j].leftIndex  = resource::lengthToIndex(origin[i].controlList[j].left, 0, unitLength);
             // sensorList[i].controlList[j].rightIndex = resource::lengthToIndex(origin[i].controlList[j].right, 0, unitLength);
         }
         sensorList[i].controlList.resize(heightDiscNum);
         for (int j = 0; j < heightDiscNum; j++) {
-            sensorList[i].controlList[j].leftIndex  = resource::lengthToIndex(origin[i].controlList[j].left, 0, unitLength) + 1;
+            sensorList[i].controlList[j].leftIndex = resource::lengthToIndex(origin[i].controlList[j].left, 0, unitLength);
+            if (resource::indexToLength(sensorList[i].controlList[j].leftIndex, 0, unitLength) < origin[i].controlList[j].left) {
+                ++sensorList[i].controlList[j].leftIndex;
+            }
             sensorList[i].controlList[j].rightIndex = resource::lengthToIndex(origin[i].controlList[j].right, 0, unitLength);
         }
     }

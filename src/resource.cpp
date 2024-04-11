@@ -12,7 +12,7 @@ const double resource::ANS_TIME_ULP = resource::TIME_ULP / 100;
 const double resource::REF_UNIT_HEIGHT = 10;
 const double resource::REF_UNIT_LENGTH = 1; //resource::LENGTH_ULP * 10;
 
-const double resource::HEIGHT_COST_PROPOR = 0.1; //39.095; //10;
+const double resource::HEIGHT_COST_PROPOR = 39.095; //0.1; //10;
 
 /* ----------------------------- data structure ----------------------------- */
 

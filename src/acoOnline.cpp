@@ -70,7 +70,7 @@ double online::ACOSolver_Online::getVcost() const {
 }
 
 void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
-    int countActive = 0;
+    // int countActive = 0;
     int countInformed = 0;
     std::vector<bool> informed(sensorNum, false); // 对应的是原传感器编号
     // std::vector<bool> visited(sensorNum, false);  // 对应的是原传感器编号
@@ -108,7 +108,7 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
             if (!newSensors.empty()) {
                 newInfo = true;
                 countInformed += newSensors.size();
-                countActive += newSensors.size();
+                // countActive += newSensors.size();
                 // for (int sid : newSensors) {
                 //     for (resource::RangeDisc rg : sensorList[sid].dataList) {
                 //         currEnd = std::max(currEnd, rg.rightIndex);
@@ -135,10 +135,11 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
 
     for (int d = 0; /*d < trajLen*/; /*d++*/) {
         
-        if (d == trajLen) break;
+        if (d == trajLen) break; // ?????????
 
         // 若获得了新的传感器信息，则需重新规划
-        if (newInfo && countActive > 0) {
+        // if (newInfo && countActive > 0) {
+        if (newInfo) {
             // ? 还需要记录什么信息
             resolve(d, currEnd, speedSche, linked);
             // std::cout << "new info. d=" << std::to_string(d) << " and then resolve\n";
@@ -167,6 +168,7 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
             if (!newSensors.empty()) {
                 newInfo = true;
                 countInformed += newSensors.size();
+                // countActive += newSensors.size();
             }
 
             // 手动释放

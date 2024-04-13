@@ -224,7 +224,7 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
     // 所有segment集合
     std::vector<ssf::Segment> segments;
     // 辅助变量，是否被当前segment选中
-    bool isChosen[isActDis.size()];
+    bool isChosen[isActDis.size()] = {false};
     for (int il = 0; il < sensorNum; il++) {
         // 若该传感器数据已传输，则跳过
         if (!sensors[il].isActive()) continue;
@@ -347,7 +347,8 @@ int ssf::SSFSolverDisc::getActiveDistance(const ssf::Sensor &sensor, const std::
 
 bool ssf::SSFSolverDisc::isOverlap(int sid, const std::vector<bool> &isActDis, const bool isChosen[]) const {
     for (int d : problem->getSensor(sid).coverList) {
-        if (isActDis[d] && isChosen[d]) {
+        // if (isActDis[d] && isChosen[d]) {
+        if (isActDis[d] || isChosen[d]) {
             /* 
                 if 里的isActDis[d]应该是多余的
                 因为isChosen[d]==true的地方一定有isActDis[d]==false
@@ -450,7 +451,7 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegmentForOnline(const std::vector<b
     // 所有segment集合
     std::vector<ssf::Segment> segments;
     // 辅助变量，是否被当前segment选中
-    bool isChosen[isActDis.size()];
+    bool isChosen[isActDis.size()] = {false};
     for (int il = 0; il < sensorNum; il++) {
         // 若该传感器数据已传输，则跳过
         if (!sensors[il].isActive()) continue;

@@ -347,8 +347,8 @@ int ssf::SSFSolverDisc::getActiveDistance(const ssf::Sensor &sensor, const std::
 
 bool ssf::SSFSolverDisc::isOverlap(int sid, const std::vector<bool> &isActDis, const bool isChosen[]) const {
     for (int d : problem->getSensor(sid).coverList) {
-        // if (isActDis[d] && isChosen[d]) {
-        if (isActDis[d] || isChosen[d]) {
+        if (isActDis[d] && isChosen[d]) {
+        // if (isActDis[d] || isChosen[d]) {
             /* 
                 if 里的isActDis[d]应该是多余的
                 因为isChosen[d]==true的地方一定有isActDis[d]==false

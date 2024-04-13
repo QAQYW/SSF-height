@@ -27,12 +27,16 @@ void resource::SensorDisc::updateByCoverList() {
 
 bool resource::SensorDisc2D::isCovered(int lengthIndex, int heightIndex) const {
     if (heightIndex >= rangeList.size()) return false;
-    return lengthIndex >= rangeList[heightIndex].leftIndex && lengthIndex <= rangeList[heightIndex].rightIndex;
+    // return lengthIndex >= rangeList[heightIndex].leftIndex && lengthIndex <= rangeList[heightIndex].rightIndex;
+    // ? 把range改为左闭右开
+    return lengthIndex >= rangeList[heightIndex].leftIndex && lengthIndex < rangeList[heightIndex].rightIndex;
 }
 
 bool resource::SensorOnlineDisc2D::isCovered(int lengthIndex, int heightIndex) const {
     if (heightIndex >= dataList.size()) return false;
-    return lengthIndex >= dataList[heightIndex].leftIndex && lengthIndex <= dataList[heightIndex].rightIndex;
+    // return lengthIndex >= dataList[heightIndex].leftIndex && lengthIndex <= dataList[heightIndex].rightIndex;
+    // ? 把range改为左闭右开
+    return lengthIndex >= dataList[heightIndex].leftIndex && lengthIndex < dataList[heightIndex].rightIndex;
 }
 
 double resource::power(double v) {

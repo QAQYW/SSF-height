@@ -197,7 +197,7 @@ void online::ACOSolver_Online::resolve(int start, int end, std::vector<double> &
     for (int i = start; i < end; i++) {
         trajectory.setHeightIndex(i, subOptTraj.getHeightIndex(i - start));
     }
-    std::cout << "check trajectory\n";
+    // std::cout << "check trajectory\n";
 }
 
 void online::ACOSolver_Online::collectData(const std::vector<int> &linked, double v) {

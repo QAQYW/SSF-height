@@ -208,6 +208,9 @@ void ssf::SSFSolverDisc::init(std::vector<ssf::Sensor> &sensors) {
     for (int i = 0; i < sensorNum; i++) {
         int l = problem->getSensor(i).range.leftIndex;
         int r = problem->getSensor(i).range.rightIndex;
+        if (l < 0 || r < 0) {
+            std::cout << "error in init()\n";
+        }
         ssf::Sensor sensor(i, l, r);
         // i是在problem中的编号，如果是online problem，还需要在获取解时映射一次编号
         sensors.push_back(sensor);
@@ -412,9 +415,15 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
         std::vector<int> list = seg.getSensorList();
         int tempcnt = list.size();
         for (int i = seg.getLeft(); i <= tempr; i++) {
+            if (i < 0) {
+                std::cout << "check segment";
+                std::cout << "\n";
+            }
             if (!isActDis[i]) continue;
             for (int j = 0; j < tempcnt; j++) {
-                if (sensors[list[j]].getLeftIndex() <= i && sensors[list[j]].getRightIndex() >= i) {
+                // if (sensors[list[j]].getLeftIndex() <= i && sensors[list[j]].getRightIndex() >= i) {
+                // ? 把if条件改为下面这个（左闭右开 区间）
+                if (sensors[list[j]].getLeftIndex() <= i && i < sensors[list[j]].getRightIndex()) {
                     // int offlineIndex = sensors[list[j]].getSensorIndex();
                     // int onlineIndex = problemFrom->mapSensor(offlineIndex);
                     // linked[i + start].push_back(onlineIndex);
@@ -488,8 +497,16 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegmentForOnline(const std::vector<b
         }
     }
 
+    if (segments.empty()) {
+        std::cout << "empty segments set";
+        std::cout << "\n";
+    }
+
     int index = 0;
     for (int i = segments.size() - 1; i; i--)
         if (segments[i] < segments[index]) index = i;
+    if (segments[index].getLeft() < 0) {
+        std::cout << "error segment\n";
+    }
     return segments[index];
 }

@@ -85,6 +85,7 @@ void ProblemOnline2D::initFromFile(const std::string &filename) {
         sensorList[i].controlList.resize(this->heightDiscNum);
         for (int j = 0; j < this->heightDiscNum; j++) {
             std::getline(fin, buff);
+            rangeStr.clear();
             tools::splitString(rangeStr, buff, '\t');
             sensorList[i].controlList[j].left = std::stod(rangeStr[0]);
             sensorList[i].controlList[j].right = std::stod(rangeStr[1]);

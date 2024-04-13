@@ -22,7 +22,8 @@ void resource::SensorDisc::updateByCoverList() {
     if (coverList.empty()) return;
     
     range.leftIndex = coverList[0]; // ! 段错误
-    range.rightIndex = coverList.back();
+    // ?? 原来下面这行不用+1
+    range.rightIndex = coverList.back() + 1;
 }
 
 bool resource::SensorDisc2D::isCovered(int lengthIndex, int heightIndex) const {

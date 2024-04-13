@@ -21,7 +21,7 @@ int aco::roulette(std::vector<aco::Candidate>& candList, double sum) {
     // TODO 也可以写成二分，但不一定会更快
     if (candList.empty()) {
         std::cout << "Roulette Error: candList is empty\n";
-        return 0;
+        return 0; // 0 就是hMin
     }
     double accu = 0, r = tools::randDouble(0, sum);
     int num = candList.size();
@@ -102,8 +102,14 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
             }
         }
 
+        // std::cout << "check if candidate list is empty\n";
+        // if (candidateList.empty()) {
+        //     std::cout << "Empty candidate list";
+        //     std::cout << "\n";
+        // }
+
         // 确定高度
-        int next = aco::roulette(candidateList, probSum);
+        int next = (d == 0 ? hMin : aco::roulette(candidateList, probSum));
         // trajectory.addList(next);
         trajectory.setHeightIndex(d, next);
         curr = next; 
@@ -274,13 +280,15 @@ bool aco::ACOSolver::isUrgent(int d, std::vector<aco::Candidate> & candList, con
     // int dMax = d + sensorNum - countVisit;
     int dMax = std::min(d + sensorNum - countVisit, lengthIndexNum);
    // 0 ~ (d-1)的轨迹都已经确定
-    for (int nd = d; nd < dMax; nd++) { // nd: next d
+    for (int nd = d + 1; nd < dMax; nd++) { // nd: next d
         // if (_d - d + 1 <= getRBoundValue(_d) - countVisit) {
         // if (nd >= lengthIndexNum) {
         //     std::cout << "\n\tout of boundary here: 3";
         //     std::cout << "\n";
         // }
-        if (nd - d + 1 <= rBound[nd] - countVisit) {
+        // if (nd - d + 1 <= rBound[nd] - countVisit) {
+        // ? if的条件改成了下面的（去掉了+1）再把上面的for循环的nd初值改成d+1
+        if (nd - d <= rBound[nd] - countVisit) {
             // 是否urgent
             std::vector<bool> hFlag(heightIndexNum, false);
             int hMin = problem->getMinHeightIndex();

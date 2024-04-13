@@ -287,19 +287,29 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
 void ssf::SSFSolverDisc::update(const ssf::Segment& seg, std::vector<bool>& isActDis, std::vector<ssf::Sensor>& sensors, int& count) {
     // 确定slowest segment对应的速度，并更新active distance和active time
     double v = seg.getVelocity();
-    int l = seg.getLeft(), r = seg.getRight();
+    // int l = seg.getLeft(), r = seg.getRight();
     // // TODO 这里要改，因为segment不连续，所以不能把[l,r]中所有distance都更新，应该加一个coverList
     // TODO 或者对Segment::sensorList中每个传感器的coverList都更新一遍
     // TODO 这样在更新时会有重复，但是在构造segment时就不需要花费额外的时间，也不用更改Segment的数据结构
-    for (int i = l; i <= r; i++) {
-        if (isActDis[i]) {
-            solution.changeSpeedSche(i, v);
-            isActDis[i] = false;
+    // for (int i = l; i <= r; i++) {
+    //     if (isActDis[i]) {
+    //         solution.changeSpeedSche(i, v);
+    //         isActDis[i] = false;
+    //     }
+    // }
+    // TODO 改成了这样的，把下面for (int index : seg.getSensorList())这个循环也合并进来了
+    for (int sid : seg.getSensorList()) {
+        for (int d : problem->getSensor(sensors[sid].getSensorIndex()).coverList) {
+            if (isActDis[d]) {
+                solution.changeSpeedSche(d, v);
+                isActDis[d] = true;
+            }
         }
+        sensors[sid].setInactive();
     }
-    for (int index : seg.getSensorList()) {
-        sensors[index].setInactive();
-    }
+    // for (int index : seg.getSensorList()) {
+    //     sensors[index].setInactive();
+    // }
     count -= seg.getSensorList().size();
 }
 
@@ -309,6 +319,7 @@ void ssf::SSFSolverDisc::update(const ssf::Segment& seg, std::vector<bool>& isAc
 /// @param isActDis 距离活跃标记
 /// @return 离散的active distance长度
 int ssf::SSFSolverDisc::getActiveDistance(int l, int r, const std::vector<bool>& isActDis) const {
+    // ! 这个函数已经弃用了
     int dis = 0;
     for (int i = l; i <= r; i++)
         dis += isActDis[i] ? 1 : 0;
@@ -378,8 +389,11 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
             // 这里的sensorList是剩余所有传感器的集合
             int l = 0, r = problem->getLengthDiscNum() - 1;
             int dis = getActiveDistance(l, r, isActDis);
+            // ? 这里的dis是多少已经不重要，随便什么值都不影响结果
+            // ? 因为active distance是为了计算速度，而下面直接setVelocity()了
             ssf::Segment segStar(l, r, dis, 0);
             segStar.setVelocity(resource::V_STAR);
+            // ? 同理，下面这一段求active time也没有必要
             double time = 0;
             for (int i = 0; i < sensorNum; i++) {
                 if (sensors[i].isActive()) {

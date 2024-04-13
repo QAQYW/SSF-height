@@ -37,7 +37,7 @@ bool resource::SensorOnlineDisc2D::isCovered(int lengthIndex, int heightIndex) c
 
 double resource::power(double v) {
     if (v < 0) {
-        std::cout <<"ERROR: Invalid velocity.\n";
+        std::cout << "ERROR: Invalid velocity.  v = " << std::to_string(v) << "\n";
         // throw "Invalid velocity.";
     }
     return 0.07 * v * v * v + 0.0391 * v * v - 13.196 * v + 390.95;

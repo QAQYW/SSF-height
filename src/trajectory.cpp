@@ -38,27 +38,27 @@ double Trajectory::calHeightCost() const {
     return cost;
 }
 
-// // TODO 把这个函数移动到别的类（ProblemDisc2D）下面去
+// // TODO ProblemDisc2D
 
 // double Trajectory::calSpeedCost(const ProblemDisc2D &problem2D) const {
-//     // ProblemDisc1D problem1D;
-//     // problem1D.transformFromProblemDisc2D(problem2D, *this);
-//     // ssf::SSFSolverDisc ssfSolver(&problem1D);
-//     // ssfSolver.solve();
-//     // ssfSolver.calCost();
-//     // return ssfSolver.getCost();
+//     ProblemDisc1D problem1D;
+//     problem1D.transformFromProblemDisc2D(problem2D, *this);
+//     ssf::SSFSolverDisc ssfSolver(&problem1D);
+//     ssfSolver.solve();
+//     ssfSolver.calCost();
+//     return ssfSolver.getCost();
 //     return 0;
 // }
 
-// // TODO 把这个函数移动到别的类（ProblemDisc2D）下面去
+// // TODO ProblemDisc2D
 
 // double Trajectory::calSpeedCost(const ProblemDisc2D &problem2D, std::vector<double> &speedSche) const {
-//     // ProblemDisc1D problem1D;
-//     // problem1D.transformFromProblemDisc2D(problem2D, *this);
-//     // ssf::SSFSolverDisc ssfSolver(&problem1D);
-//     // ssfSolver.solve();
-//     // ssfSolver.calCost();
-//     // speedSche = ssfSolver.getSolution().getSpeedSche();
-//     // return ssfSolver.getCost();
+//     ProblemDisc1D problem1D;
+//     problem1D.transformFromProblemDisc2D(problem2D, *this);
+//     ssf::SSFSolverDisc ssfSolver(&problem1D);
+//     ssfSolver.solve();
+//     ssfSolver.calCost();
+//     speedSche = ssfSolver.getSolution().getSpeedSche();
+//     return ssfSolver.getCost();
 //     return 0;
 // }

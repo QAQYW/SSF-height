@@ -209,7 +209,7 @@ void online::ACOSolver_Online::collectData(const std::vector<int> &linked, doubl
     int num = linked.size();
     double time = problem->getUnitLength() / v;
     for (int i = 0; i < num; i++) {
-        std::cout << "collect data " << std::to_string(linked[i]) << "\n";
+        // std::cout << "collect data " << std::to_string(linked[i]) << "\n";
         if (tools::approx(sensorState[linked[i]].getTime() - time, resource::ANS_TIME_ULP) > 0) {
             sensorState[linked[i]].reduceTime(time);
             break;

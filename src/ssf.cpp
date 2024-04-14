@@ -305,7 +305,7 @@ void ssf::SSFSolverDisc::update(const ssf::Segment& seg, std::vector<bool>& isAc
         for (int d : problem->getSensor(sensors[sid].getSensorIndex()).coverList) {
             if (isActDis[d]) {
                 solution.changeSpeedSche(d, v);
-                isActDis[d] = true;
+                isActDis[d] = false;
             }
         }
         sensors[sid].setInactive();

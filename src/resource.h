@@ -66,7 +66,9 @@ struct Sensor2D {
 struct SensorDisc2D {
     double time;
     std::vector<RangeDisc> rangeList;
+    int rmost;
     bool isCovered(int lengthIndex, int heightIndex) const;
+    void setRmost();
 };
 // 传感器2D online
 struct SensorOnline2D {
@@ -79,7 +81,9 @@ struct SensorOnlineDisc2D {
     double time;
     std::vector<RangeDisc> dataList;
     std::vector<RangeDisc> controlList;
+    int rmost;
     bool isCovered(int lengthIndex, int heightIndex) const;
+    void setRmost();
 };
 
 /* -------------------------------- function -------------------------------- */

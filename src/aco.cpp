@@ -277,11 +277,21 @@ void aco::ACOSolver::enhancePheromone(const aco::Ant &ant, std::vector<std::vect
 }
 
 bool aco::ACOSolver::isUrgent(int d, std::vector<aco::Candidate> & candList, const std::vector<bool> &visit, int countVisit) const {
+    
+    // ! 传递的参数countVisit用不到
+
     candList.clear();
     // int dMax = d + sensorNum - countVisit;
     int dMax = std::min(d + sensorNum - countVisit, lengthIndexNum);
    // 0 ~ (d-1)的轨迹都已经确定
-    for (int nd = d + 1; nd < dMax; nd++) { // nd: next d
+    for (int nd = d + 1; nd <= dMax; nd++) { // nd: next d
+        // 计算真正的countVisit
+        countVisit = 0;
+        for (int i = 0; i < sensorNum; i++) {
+            if (visit[i] && problem->getSensor(i).rmost <= nd) {
+                ++countVisit;
+            }
+        }
         // if (_d - d + 1 <= getRBoundValue(_d) - countVisit) {
         // if (nd >= lengthIndexNum) {
         //     std::cout << "\n\tout of boundary here: 3";

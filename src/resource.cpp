@@ -33,11 +33,25 @@ bool resource::SensorDisc2D::isCovered(int lengthIndex, int heightIndex) const {
     return lengthIndex >= rangeList[heightIndex].leftIndex && lengthIndex < rangeList[heightIndex].rightIndex;
 }
 
+void resource::SensorDisc2D::setRmost() {
+    rmost = rangeList[0].rightIndex;
+    for (resource::RangeDisc rg : rangeList) {
+        rmost = std::max(rmost, rg.rightIndex);
+    }
+}
+
 bool resource::SensorOnlineDisc2D::isCovered(int lengthIndex, int heightIndex) const {
     if (heightIndex >= dataList.size()) return false;
     // return lengthIndex >= dataList[heightIndex].leftIndex && lengthIndex <= dataList[heightIndex].rightIndex;
     // ? 把range改为左闭右开
     return lengthIndex >= dataList[heightIndex].leftIndex && lengthIndex < dataList[heightIndex].rightIndex;
+}
+
+void resource::SensorOnlineDisc2D::setRmost() {
+    rmost = dataList[0].rightIndex;
+    for (resource::RangeDisc rg : dataList) {
+        rmost = std::max(rmost, rg.rightIndex);
+    }
 }
 
 double resource::power(double v) {

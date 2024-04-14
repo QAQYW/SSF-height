@@ -379,9 +379,9 @@ int main(int argc, char *argv[]) {
                 std::cin >> timestr;
                 exampleNum = 0;
                 direction = ".\\tiny_test\\" + timestr;
-                // solve_Online_ACO(exampleNum, direction);
+                solve_Online_ACO(exampleNum, direction);
                 solve_Offline_ACO(exampleNum, direction, true);
-                // solve_Offline_Naive(exampleNum, direction, true);
+                solve_Offline_Naive(exampleNum, direction, true);
                 break;
             case 3:
                 timestr = special_data_timestr;

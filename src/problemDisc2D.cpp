@@ -30,6 +30,7 @@ ProblemDisc2D::ProblemDisc2D(const Problem2D &prob) {
             }
             sensorList[i].rangeList[j].rightIndex = resource::lengthToIndex(origin[i].rangeList[j].right, 0, unitLength);
         }
+        sensorList[i].setRmost();
     }
 }
 
@@ -69,6 +70,7 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
             rg.leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
             sensor.rangeList.push_back(rg);
         }
+        sensor.setRmost();
         // int temp = origin[i].dataList.size();
         // sensor.rangeList.resize(temp);
         // for (int j = 0; j < temp; j++) {

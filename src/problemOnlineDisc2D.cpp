@@ -42,6 +42,7 @@ ProblemOnlineDisc2D::ProblemOnlineDisc2D(const ProblemOnline2D &prob) {
             // sensorList[i].controlList[j].leftIndex  = resource::lengthToIndex(origin[i].controlList[j].left, 0, unitLength);
             // sensorList[i].controlList[j].rightIndex = resource::lengthToIndex(origin[i].controlList[j].right, 0, unitLength);
         }
+        sensorList[i].setRmost();
         sensorList[i].controlList.resize(heightDiscNum);
         for (int j = 0; j < heightDiscNum; j++) {
             sensorList[i].controlList[j].leftIndex = resource::lengthToIndex(origin[i].controlList[j].left, 0, unitLength);

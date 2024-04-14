@@ -59,18 +59,28 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
 
         resource::SensorDisc2D sensor;
         sensor.time = states[i].getTime();
+        // ! online转为offline时，data range覆盖的高度的数量可能会变小
+        sensor.rangeList.clear();
         int temp = origin[i].dataList.size();
-        sensor.rangeList.resize(temp);
         for (int j = 0; j < temp; j++) {
-            // 要减去start
-            sensor.rangeList[j].leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
-            // sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex - start;
-            sensor.rangeList[j].rightIndex = std::max(0, origin[i].dataList[j].rightIndex - start);
-            // !!!!!!!!!! 是否会有rightIndex小于0的情况
-            // if (sensor.rangeList[j].rightIndex < 0) {
-            //     std::cout << "ERROR: negative right index\n";
-            // }
+            resource::RangeDisc rg;
+            rg.rightIndex = origin[i].dataList[j].rightIndex - start;
+            if (rg.rightIndex <= 0) break;
+            rg.leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
+            sensor.rangeList.push_back(rg);
         }
+        // int temp = origin[i].dataList.size();
+        // sensor.rangeList.resize(temp);
+        // for (int j = 0; j < temp; j++) {
+        //     // 要减去start
+        //     sensor.rangeList[j].leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
+        //     // sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex - start;
+        //     sensor.rangeList[j].rightIndex = std::max(0, origin[i].dataList[j].rightIndex - start);
+        //     // !!!!!!!!!! 是否会有rightIndex小于0的情况
+        //     // if (sensor.rangeList[j].rightIndex < 0) {
+        //     //     std::cout << "ERROR: negative right index\n";
+        //     // }
+        // }
         sensorList.push_back(sensor);
         ++sensorNum;
     }

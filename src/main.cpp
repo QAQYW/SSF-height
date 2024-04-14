@@ -153,7 +153,11 @@ void solve_Offline_ACO(int expNum, std::string dir, bool onlineFile) {
     // Read filenames
     if (filenames.empty()) {
         std::ifstream fin;
-        fin.open(dir + "\\filename_set.txt");
+        if (onlineFile) {
+            fin.open(dir + "\\online_filename_set.txt");
+        } else {
+            fin.open(dir + "\\filename_set.txt");
+        }
         int num;
         fin >> num;
         if (expNum <= 0 || expNum > num) {
@@ -211,7 +215,11 @@ void solve_Offline_Naive(int expNum, std::string dir, bool onlineFile) {
     // Read filenames
     if (filenames.empty()) {
         std::ifstream fin;
-        fin.open(dir + "\\filename_set.txt");
+        if (onlineFile) {
+            fin.open(dir + "\\online_filename_set.txt");
+        } else {
+            fin.open(dir + "\\filename_set.txt");
+        }
         int num;
         fin >> num;
         if (expNum <= 0 || expNum > num) {
@@ -296,6 +304,13 @@ void mk_dir(std::string dir, std::string timestr) {
 
 int main(int argc, char *argv[]) {
 
+    // ssf::Segment s1 = ssf::Segment(1, 3, 2, 10);
+    // s1.calVelocity();
+    // ssf::Segment s2 = ssf::Segment(0, 3, 3, 100);
+    // s2.calVelocity();
+    // if (s1 < s2) std::cout << "s1";
+    // else std::cout << "s2";
+
     std::srand((unsigned int) time(NULL));
 
     // direction = ".\\tiny_test";
@@ -364,9 +379,9 @@ int main(int argc, char *argv[]) {
                 std::cin >> timestr;
                 exampleNum = 0;
                 direction = ".\\tiny_test\\" + timestr;
-                solve_Online_ACO(exampleNum, direction);
+                // solve_Online_ACO(exampleNum, direction);
                 solve_Offline_ACO(exampleNum, direction, true);
-                solve_Offline_Naive(exampleNum, direction, true);
+                // solve_Offline_Naive(exampleNum, direction, true);
                 break;
             case 3:
                 timestr = special_data_timestr;

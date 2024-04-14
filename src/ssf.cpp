@@ -408,28 +408,48 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
             segStar.setActiveTime(time);
             // 最后还要再update一下，设置V_STAR的速度
             update(segStar, isActDis, sensors, countActiveSensor);
+            for (int i = 0; i < problem->getLengthDiscNum(); i++) {
+                if (isActDis[i]) {
+                    for (int j = 0; j < problem->getSensorNum(); j++) {
+                        linked[i + start].push_back(problemFrom->mapSensor(sensors[j].getSensorIndex()));
+                    }
+                }
+            }
             break;
         }
 
         // 将所连接的传感器结果传出
         int tempr = seg.getRight();
-        std::vector<int> list = seg.getSensorList();
-        int tempcnt = list.size();
-        for (int i = seg.getLeft(); i <= tempr; i++) {
-            if (i < 0) {
-                std::cout << "check segment";
-                std::cout << "\n";
-            }
-            if (!isActDis[i]) continue;
-            for (int j = 0; j < tempcnt; j++) {
-                // if (sensors[list[j]].getLeftIndex() <= i && sensors[list[j]].getRightIndex() >= i) {
-                // ? 把if条件改为下面这个（左闭右开 区间）
-                if (sensors[list[j]].getLeftIndex() <= i && i < sensors[list[j]].getRightIndex()) {
-                    // int offlineIndex = sensors[list[j]].getSensorIndex();
-                    // int onlineIndex = problemFrom->mapSensor(offlineIndex);
-                    // linked[i + start].push_back(onlineIndex);
-                    linked[i + start].push_back(problemFrom->mapSensor(sensors[list[j]].getSensorIndex()));
+        // std::vector<int> list = seg.getSensorList();
+        // int tempcnt = list.size();
+        // for (int i = seg.getLeft(); i <= tempr; i++) {
+        //     if (i < 0) {
+        //         std::cout << "check segment";
+        //         std::cout << "\n";
+        //     }
+        //     if (!isActDis[i]) continue;
+        //     for (int j = 0; j < tempcnt; j++) {
+        //         // if (sensors[list[j]].getLeftIndex() <= i && sensors[list[j]].getRightIndex() >= i) {
+        //         // ? 把if条件改为下面这个（左闭右开 区间）
+        //         if (sensors[list[j]].getLeftIndex() <= i && i < sensors[list[j]].getRightIndex()) {
+        //             // int offlineIndex = sensors[list[j]].getSensorIndex();
+        //             // int onlineIndex = problemFrom->mapSensor(offlineIndex);
+        //             // linked[i + start].push_back(onlineIndex);
+        //             linked[i + start].push_back(problemFrom->mapSensor(sensors[list[j]].getSensorIndex()));
+        //         }
+        //     }
+        // }
+        for (int sid : seg.getSensorList()) {
+            int originIndex = problemFrom->mapSensor(sensors[sid].getSensorIndex());
+            for (int d : problem->getSensor(sid).coverList) {
+                if (isActDis[d]) {
+                    linked[d + start].push_back(originIndex);
                 }
+            }
+        }
+        for (int sid : seg.getSensorList()) {
+            for (int d : problem->getSensor(sid).coverList) {
+                isActDis[d] = true;
             }
         }
 

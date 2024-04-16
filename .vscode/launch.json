@@ -5,8 +5,9 @@
     
     // 配置时间：2024.2.27，手动配置
     // 配置时间：2024.2.27，修改了"program"字段
-    "version": "0.2.0",//"0.2.0",
+    "version": "0.2.0",
     "configurations": [
+        // C++
         {
             "name": "(gdb) Launch",
             "type": "cppdbg",
@@ -31,8 +32,15 @@
                     "text": "-interpreter-exec console \"skip -rfu std::.*\"",
                     "ignoreFailures": false
                 }
-            ],
-            // "ignoreFailures": true
+            ]
+        },
+        // Python
+        {
+            "name": "Python 调试程序: 当前文件",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
         }
     ]
 }

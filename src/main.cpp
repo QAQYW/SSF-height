@@ -396,8 +396,9 @@ int main(int argc, char *argv[]) {
                 mk_dir(direction, timestr);
                 exampleNum = 5;
                 generateData_Offline(exampleNum, direction, 5);
-                solve_Offline_ACO(exampleNum, direction, false);
-                solve_Offline_Naive(exampleNum, direction, false);
+                // solve_Offline_ACO(exampleNum, direction, false);
+                solve_Offline_PSO(exampleNum, direction, false);
+                // solve_Offline_Naive(exampleNum, direction, false);
                 break;
             case 2:
                 std::cout << "\ninput folder name (time string): ";
@@ -405,6 +406,7 @@ int main(int argc, char *argv[]) {
                 exampleNum = 0;
                 direction = ".\\tiny_test\\" + timestr;
                 solve_Offline_ACO(exampleNum, direction, false);
+                solve_Offline_PSO(exampleNum, direction, false);
                 solve_Offline_Naive(exampleNum, direction, false);
                 break;
             case 3:
@@ -412,6 +414,7 @@ int main(int argc, char *argv[]) {
                 direction = ".\\tiny_test\\" + timestr;
                 exampleNum = 0;
                 solve_Offline_ACO(exampleNum, direction, false);
+                solve_Offline_PSO(exampleNum, direction, false);
                 solve_Offline_Naive(exampleNum, direction, false);
                 break;
         }

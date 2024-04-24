@@ -7,6 +7,16 @@
 #include "problemDisc1D.h"
 #include "energy.h"
 
+/* -------------------------------- Parameter ------------------------------- */
+
+const double INITIAL_INERTIA_VALUE = 0.9;  // ! 未调参
+const double END_INERTIA_VALUE = 0.4;  // ! 未调参
+const double PERSONAL_BEST_COEF = 2.0;  // ! 未调参
+const double GLOBAL_BEST_COEF = 2.0;  // ! 未调参
+const int SWARM_SIZE = 30;  // ! 未调参
+const double MAX_SPEED = 0.1;  // ! 未调参
+const int MAX_ITERATOR = 10; // 50;  // ! 未调参
+
 /* -------------------------------- Partical -------------------------------- */
 
 pso::Partical::Partical(int heightDiscNum, int lengthDiscNum, double gap, const ProblemDisc2D &problem)
@@ -16,7 +26,7 @@ pso::Partical::Partical(int heightDiscNum, int lengthDiscNum, double gap, const 
     position.resize(lengthDiscNum);
     bestPosition.resize(lengthDiscNum);
     for (int i = 0; i < lengthDiscNum; i++) {
-        speed[i] = tools::randDouble(0, 1);
+        speed[i] = tools::randDouble(-pso::MAX_SPEED, pso::MAX_SPEED);
         bestPosition[i] = position[i] = tools::randDouble(0, 1);
     }
     positionToTrajectory();

@@ -21,6 +21,8 @@ const int pso::MAX_ITERATOR = 10; // 50;  // ! 未调参
 
 pso::Partical::Partical(int heightDiscNum, int lengthDiscNum, double gap, const ProblemDisc2D &problem)
 : heightDiscNum(heightDiscNum), lengthDiscNum(lengthDiscNum), gap(gap) {
+    // 初始化trajectory
+    trajectory = Trajectory(lengthDiscNum);
     // 随机初始化速度和位置
     speed.resize(lengthDiscNum);
     position.resize(lengthDiscNum);
@@ -29,11 +31,10 @@ pso::Partical::Partical(int heightDiscNum, int lengthDiscNum, double gap, const 
         speed[i] = tools::randDouble(-pso::MAX_SPEED, pso::MAX_SPEED);
         bestPosition[i] = position[i] = tools::randDouble(0, 1);
     }
+    // 计算cost
     positionToTrajectory();
     calCost(problem);
     bestCost = cost;
-
-    trajectory = Trajectory(lengthDiscNum);
 }
 
 void pso::Partical::positionToTrajectory() {

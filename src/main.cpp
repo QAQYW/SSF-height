@@ -15,11 +15,34 @@
 #include "acoOnline.h"
 #include "trajectory.h"
 #include "energy.h"
+#include "pso.h"
 
 std::string direction = ".\\tiny_test";
 int exampleNum = 1;
 std::vector<unsigned int> seeds;
 std::vector<std::string> filenames;
+
+void readFilename(int &expNum, std::string dir, bool onlineFile) {
+    // Read filenames
+    std::ifstream fin;
+    if (onlineFile) {
+        fin.open(dir + "\\online_filename_set.txt");
+    } else {
+        fin.open(dir + "\\filename_set.txt");
+    }
+    int num;
+    fin >> num;
+    if (expNum <= 0 || expNum > num) {
+        expNum = num;
+        exampleNum = num;
+    }
+    std::string filename = "";
+    for (int i = 1; i <= num; i++) {
+        fin >> filename;
+        filenames.push_back(filename);
+    }
+    fin.close();
+}
 
 /// @brief 批量生成离线问题数据
 /// @param expNum 数据样例数量
@@ -270,6 +293,44 @@ void solve_Offline_Naive(int expNum, std::string dir, bool onlineFile) {
     std::cout << "solve_Offline_Naive\n";
 }
 
+void solve_Offline_PSO(int expNum, std::string dir, bool onlineFile) {
+    // Read filenames
+    if (filenames.empty()) readFilename(expNum, dir, onlineFile);
+    
+    for (int i = 1; i <= expNum; i++) {
+        Problem2D prob2D;
+        if (onlineFile) {
+            prob2D.initFromOnlineFile(filenames[i - 1]);
+        } else {
+            prob2D.initFromFile(filenames[i - 1]);
+        }
+        ProblemDisc2D probDisc2D(prob2D);
+        pso::PSOSolver psoSolver(&probDisc2D);
+        psoSolver.solve();
+        Trajectory optTraj = psoSolver.getTrajectory();
+
+        std::vector<double> speedSche;
+        double hcost = optTraj.calHeightCost();
+        double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj, speedSche);
+        std::string filename = dir + "\\offline_answer_pso_prop" + std::to_string((int) resource::HEIGHT_COST_PROPOR) + "_" + std::to_string(i) + ".txt";
+        std::ofstream fout;
+        fout.open(filename);
+        fout << "distance\tspeed\theight\n";
+        int num = probDisc2D.getLengthDiscNum();
+        for (int i = 0; i < num; i++) {
+            double dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
+            double hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob2D.getMinHeight(), resource::REF_UNIT_HEIGHT);
+            fout << std::to_string(dis) << "\t" << std::to_string(speedSche[i]) << "\t" << std::to_string(hei) << "\n";
+        }
+        fout << " cost = " << std::to_string(hcost + vcost) << "\n";
+        fout << "hcost = " << std::to_string(hcost) << "\n";
+        fout << "vcost = " << std::to_string(vcost) << "\n";
+        fout.close();
+        std::cout << "pso: " << i << "/" << expNum << "\n";
+    }
+    std::cout << "solve_Offline_PSO\n";
+}
+
 /// @brief 将当前时间（精确到秒）转换为字符串，用下划线 "_" 连接
 /// @return 表示时间的字符串
 std::string getTimeString() {
@@ -303,13 +364,6 @@ void mk_dir(std::string dir, std::string timestr) {
 }
 
 int main(int argc, char *argv[]) {
-
-    // ssf::Segment s1 = ssf::Segment(1, 3, 2, 10);
-    // s1.calVelocity();
-    // ssf::Segment s2 = ssf::Segment(0, 3, 3, 100);
-    // s2.calVelocity();
-    // if (s1 < s2) std::cout << "s1";
-    // else std::cout << "s2";
 
     std::srand((unsigned int) time(NULL));
 

@@ -53,6 +53,7 @@ public:
     std::vector<double> getBestPosition() const;
     double getCost() const;
     double getBestCost() const;
+    Trajectory getBestTrajectory();
     /// @brief 更新speed和position
     /// @param gb 全局最优解
     void updatePosition(double inertia, const Partical &gb);
@@ -74,10 +75,9 @@ private:
     double gap;
 
 public:
-    PSOSolver(ProblemDisc2D* prob, int heightDiscNum, int lengthDiscNum);
+    PSOSolver(ProblemDisc2D* prob);
+    Trajectory getTrajectory();
     void solve();
-
-
 };
 
 } // namespace pso

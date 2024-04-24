@@ -60,6 +60,11 @@ double pso::Partical::getBestCost() const {
     return bestCost;
 }
 
+Trajectory pso::Partical::getBestTrajectory() {
+    bestPositionToTrajectory();
+    return trajectory;
+}
+
 void pso::Partical::updatePosition(double inertia, const Partical &gb) {
     std::vector<double> gbp = gb.getBestPosition();
     double rd1 = tools::randDouble(0, 1);
@@ -100,14 +105,19 @@ void pso::Partical::updatePersonalBest() {
 
 /* -------------------------------- PSOSolver ------------------------------- */
 
-pso::PSOSolver::PSOSolver(ProblemDisc2D* prob, int heightDiscNum, int lengthDiscNum)
-: problem(prob), heightDiscNum (heightDiscNum), lengthDiscNum(lengthDiscNum) {
+pso::PSOSolver::PSOSolver(ProblemDisc2D* prob) : problem(prob) {
+    heightDiscNum = prob->getHeightDiscNum();
+    lengthDiscNum = prob->getLengthDiscNum();
     
     swarm.resize(pso::SWARM_SIZE);
 
     bestPartical = pso::Partical();
 
     gap = 1.0 / (double) heightDiscNum;
+}
+
+Trajectory pso::PSOSolver::getTrajectory() {
+    return bestPartical.getBestTrajectory();
 }
 
 void pso::PSOSolver::solve() {

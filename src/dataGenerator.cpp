@@ -62,10 +62,10 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
 
     // 随机产生每个传感器的传输范围
     // 几个辅助变量
-    double maxXMult = 0.2 * length;
-    double minXMult = std::min(MIN_X_MULT, maxXMult / 2);//MIN_X_MULT;
-    double maxYMult = maxHeight * 1.3;// / 1.3;
-    double minYMult = minHeight / 1.3; // / 1.6; // heightList[0] / 1.35;
+    double maxXMult = 0.4 * length; //0.2
+    double minXMult = MIN_X_MULT; //std::min(MIN_X_MULT, maxXMult / 2);//MIN_X_MULT;
+    double maxYMult = maxHeight * 1.5; //1.3;// / 1.3;
+    double minYMult = minHeight / 1.5; //1.3; // / 1.6; // heightList[0] / 1.35;
     for (int i = 0; i < sensorNum; i++) {
         // 数据传输时间
         double time = tools::approx(tools::randDouble(MIN_TRANSMISSION_TIME, MAX_TRANSMISSION_TIME), resource::TIME_ULP);
@@ -83,9 +83,7 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
             continue;
         }
 
-        // 保存传输时间
-        fout << std::to_string(time) << "\n";
-
+        bool flag = false;
         int count = 0;
         std::string rangeStr = "";
         for (int j = 0; j < heightDiscNum; j++) {
@@ -103,13 +101,24 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
             if (temp2 <= 0) break;
 
             double xDiff = std::sqrt(temp2) / xCoef;
+            if (xDiff <= 1.0) {
+                flag = true;
+                break;
+            }
             double xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
             double xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
             
             ++count;
             rangeStr = rangeStr + std::to_string(xLeft) + "\t" + std::to_string(xRight) + "\t\n";
         }
+
+        if (flag) {
+            i--;
+            continue;
+        }
         
+        // 保存传输时间
+        fout << std::to_string(time) << "\n";
         // 保存单个传感器range数量，以及各高度下（若有）的范围
         fout << std::to_string(count) << "\n";
         fout << rangeStr;
@@ -209,10 +218,8 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
             continue;
         }
 
-        // 保存传输时间
-        fout << std::to_string(time) << "\n";
-
         // 传输范围
+        bool flag = false;
         int count = 0;
         std::vector<double> dataLeft, dataRight;
         std::vector<double> controlLeft, controlRight;
@@ -233,6 +240,10 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
 
             // 数据传输范围
             double xDiff = std::sqrt(temp2) / xCoef;
+            if (xDiff <= 1.0) {
+                flag = true;
+                break;
+            }
             double xLeft = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
             double xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
             dataLeft.push_back(xLeft);
@@ -244,6 +255,10 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
             xRight = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
             controlLeft.push_back(xLeft);
             controlRight.push_back(xRight);
+        }
+        if (flag) {
+            i--;
+            continue;
         }
         double lmost = dataLeft[0];
         double rmost = dataRight[0];
@@ -260,6 +275,9 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
                 controlRight.push_back(rmost);
             }
         }
+
+        // 保存传输时间
+        fout << std::to_string(time) << "\n";
         // 保存单个传感器data range数量
         fout << std::to_string(count) << "\n";
         // 保存各高度下（若有）的数据传输范围

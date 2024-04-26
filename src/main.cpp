@@ -426,13 +426,15 @@ int main(int argc, char *argv[]) {
     std::cout << "    1: offline\n";
     std::cout << "    2: online\n";
     std::cout << "\nchoose option: ";
-    std::cin >> opt1;
+    // std::cin >> opt1;
+    opt1 = 1;
     std::cout << "\noptions:\n";
     std::cout << "    1: use newly generated data\n";
     std::cout << "    2: use existed data\n";
     std::cout << "    3: use special data (1900_1_1_0_0_0)\n";
     std::cout << "\nchoose option: ";
-    std::cin >> opt2;
+    // std::cin >> opt2;
+    opt2 = 1;
 
     filenames.clear();
 

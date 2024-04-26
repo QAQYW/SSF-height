@@ -21,8 +21,8 @@ public:
     const int MIN_SENSOR_NUM = 2;
 
     // 传感器传输数据所需时间的上下界
-    const double MAX_TRANSMISSION_TIME = 50; //10;    // ! 单位是秒还是分钟
-    const double MIN_TRANSMISSION_TIME = 0.5; //0.1;   // ! 单位是秒还是分钟
+    const double MAX_TRANSMISSION_TIME = 500; //10;    // ! 单位是秒还是分钟
+    const double MIN_TRANSMISSION_TIME = 10; //0.1;   // ! 单位是秒还是分钟
 
     // 传感器传输范围的上下界
     const double MAX_RANGE = 10; // ! 没想好取值
@@ -50,7 +50,7 @@ public:
     /// @brief 范围膨胀系数最小值
     const double MIN_SWELL = 0;
     /// @brief 范围膨胀系数最大值
-    const double MAX_SWELL = 2;
+    const double MAX_SWELL = 1; //2;
 
     // control range与data transmission range的半径比
     const double CONTROL_RANGE_PROP = 1.5;

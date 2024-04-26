@@ -296,7 +296,7 @@ void solve_Offline_Naive(int expNum, std::string dir, bool onlineFile) {
     std::cout << "solve_Offline_Naive\n";
 }
 
-/// @brief 离散粒子群BPSO算法求解离线问题
+/// @brief 离散粒子群DPSO算法求解离线问题
 /// @param expNum 数据样例数量
 /// @param dir 样例读取目录
 /// @param onlineFile true则读在线样例，false则读离线样例

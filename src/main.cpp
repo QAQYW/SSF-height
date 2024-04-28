@@ -426,15 +426,15 @@ int main(int argc, char *argv[]) {
     std::cout << "    1: offline\n";
     std::cout << "    2: online\n";
     std::cout << "\nchoose option: ";
-    // std::cin >> opt1;
-    opt1 = 1;
+    std::cin >> opt1;
+    // opt1 = 1;
     std::cout << "\noptions:\n";
     std::cout << "    1: use newly generated data\n";
     std::cout << "    2: use existed data\n";
     std::cout << "    3: use special data (1900_1_1_0_0_0)\n";
     std::cout << "\nchoose option: ";
-    // std::cin >> opt2;
-    opt2 = 1;
+    std::cin >> opt2;
+    // opt2 = 1;
 
     filenames.clear();
 
@@ -445,7 +445,7 @@ int main(int argc, char *argv[]) {
                 timestr = getTimeString();
                 direction = ".\\tiny_test\\" + timestr;
                 mk_dir(direction, timestr);
-                exampleNum = 5;
+                exampleNum = 1;
                 generateData_Offline(exampleNum, direction, 5);
                 solve_Offline_ACO(exampleNum, direction, false);
                 solve_Offline_PSO(exampleNum, direction, false);

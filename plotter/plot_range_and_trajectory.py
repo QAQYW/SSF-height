@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # sensor_filename = "online_shape_1.txt"
     # solution_filename = "online_answer_aco_prop10_1.txt"
 
-    dataIndex = "5"
+    dataIndex = "1"
     
     length = 859  #50
     minHeight = 0

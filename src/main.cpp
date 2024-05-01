@@ -438,6 +438,8 @@ int main(int argc, char *argv[]) {
 
     filenames.clear();
 
+    int sensorNum = 30;
+
     if (opt1 == 1) {
         // Offline
         switch (opt2) {
@@ -446,10 +448,12 @@ int main(int argc, char *argv[]) {
                 direction = ".\\tiny_test\\" + timestr;
                 mk_dir(direction, timestr);
                 exampleNum = 1;
-                generateData_Offline(exampleNum, direction, 5);
+                // generateData_Offline(exampleNum, direction, 5);
+                generateData_Offline(exampleNum, direction, sensorNum);
                 solve_Offline_ACO(exampleNum, direction, false);
                 solve_Offline_PSO(exampleNum, direction, false);
                 solve_Offline_GA(exampleNum, direction, false);
+                if (sensorNum > 5) break;
                 solve_Offline_Naive(exampleNum, direction, false);
                 break;
             case 2:

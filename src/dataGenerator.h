@@ -29,8 +29,8 @@ public:
     const double MIN_RANGE = 1;//0.5; // ! 0.5米会不会太小
 
     // 飞行高度范围
-    // const double MAX_HEIGHT = 200; // 单位：米
-    const double MAX_HEIGHT = 140; // for tiny_test only
+    const double MAX_HEIGHT = 200; // 单位：米
+    // const double MAX_HEIGHT = 140; // for tiny_test only
     const double MIN_HEIGHT = 100; // 单位：米
 
     // 路径长度与传感器数量的比例系数

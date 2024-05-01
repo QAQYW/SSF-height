@@ -133,6 +133,7 @@ void solve_Online_ACO(int expNum, std::string dir) {
     // std::cout << "\ntest break point\n";
 
     for (int i = 1; i <= expNum; i++) {
+        std::clock_t sc = std::clock();
         ProblemOnline2D prob2D;
         prob2D.initFromFile(filenames[i - 1]);
         // std::cout << "\nprob2D.initFromFile\n";
@@ -165,6 +166,9 @@ void solve_Online_ACO(int expNum, std::string dir) {
         fout << "hcost = " << std::to_string(hcost) << "\n";
         fout << "vcost = " << std::to_string(vcost) << "\n";
         fout.close();
+        std::clock_t ec = std::clock();
+        double runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
+        std::cout << "runtime: " << std::to_string(runtime) << "\n";
         std::cout << "online aco: " << i << "/" << expNum << "\n";
     }
     std::cout << "solve_online_aco\n";
@@ -198,6 +202,7 @@ void solve_Offline_ACO(int expNum, std::string dir, bool onlineFile) {
     }
 
     for (int i = 1; i <= expNum; i++) {
+        std::clock_t sc = std::clock();
         Problem2D prob2D;
         if (onlineFile) {
             prob2D.initFromOnlineFile(filenames[i - 1]);
@@ -228,6 +233,9 @@ void solve_Offline_ACO(int expNum, std::string dir, bool onlineFile) {
         fout << "hcost = " << std::to_string(hcost) << "\n";
         fout << "vcost = " << std::to_string(vcost) << "\n";
         fout.close();
+        std::clock_t ec = std::clock();
+        double runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
+        std::cout << "runtime: " << std::to_string(runtime) << "\n";
         std::cout << "aco: " << i << "/" << expNum << "\n";
     }
     std::cout << "solve_Offline_ACO\n";
@@ -261,6 +269,7 @@ void solve_Offline_Naive(int expNum, std::string dir, bool onlineFile) {
     }
 
     for (int i = 1; i <= expNum; i++) {
+        std::clock_t sc = std::clock();
         Problem2D prob2D;
         if (onlineFile) {
             prob2D.initFromOnlineFile(filenames[i - 1]);
@@ -291,6 +300,9 @@ void solve_Offline_Naive(int expNum, std::string dir, bool onlineFile) {
         fout << "hcost = " << std::to_string(hcost) << "\n";
         fout << "vcost = " << std::to_string(vcost) << "\n";
         fout.close();
+        std::clock_t ec = std::clock();
+        double runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
+        std::cout << "runtime: " << std::to_string(runtime) << "\n";
         std::cout << "naive: " << i << "/" << expNum << "\n";
     }
     std::cout << "solve_Offline_Naive\n";
@@ -305,6 +317,7 @@ void solve_Offline_PSO(int expNum, std::string dir, bool onlineFile) {
     if (filenames.empty()) readFilename(expNum, dir, onlineFile);
     
     for (int i = 1; i <= expNum; i++) {
+        std::clock_t sc = std::clock();
         Problem2D prob2D;
         if (onlineFile) {
             prob2D.initFromOnlineFile(filenames[i - 1]);
@@ -333,6 +346,9 @@ void solve_Offline_PSO(int expNum, std::string dir, bool onlineFile) {
         fout << "hcost = " << std::to_string(hcost) << "\n";
         fout << "vcost = " << std::to_string(vcost) << "\n";
         fout.close();
+        std::clock_t ec = std::clock();
+        double runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
+        std::cout << "runtime: " << std::to_string(runtime) << "\n";
         std::cout << "pso: " << i << "/" << expNum << "\n";
     }
     std::cout << "solve_Offline_PSO\n";
@@ -347,6 +363,7 @@ void solve_Offline_GA(int expNum, std::string dir, bool onlineFile) {
     if (filenames.empty()) readFilename(expNum, dir, onlineFile);
 
     for (int i = 1; i <= expNum; i++) {
+        std::clock_t sc = std::clock();
         Problem2D prob2D;
         if (onlineFile) {
             prob2D.initFromOnlineFile(filenames[i - 1]);
@@ -375,6 +392,9 @@ void solve_Offline_GA(int expNum, std::string dir, bool onlineFile) {
         fout << "hcost = " << std::to_string(hcost) << "\n";
         fout << "vcost = " << std::to_string(vcost) << "\n";
         fout.close();
+        std::clock_t ec = std::clock();
+        double runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
+        std::cout << "runtime: " << std::to_string(runtime) << "\n";
         std::cout << "ga: " << i << "/" << expNum << "\n";
     }
     std::cout << "solve_Offline_GA\n";

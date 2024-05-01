@@ -13,9 +13,9 @@ const double pso::INITIAL_INERTIA_VALUE = 0.9;  // ! 未调参
 const double pso::END_INERTIA_VALUE = 0.4;  // ! 未调参
 const double pso::PERSONAL_BEST_COEF = 2.0;  // ! 未调参
 const double pso::GLOBAL_BEST_COEF = 2.0;  // ! 未调参
-const int pso::SWARM_SIZE = 30;  // ! 未调参
+const int pso::SWARM_SIZE = 20; //30;  // ! 未调参
 const double pso::MAX_SPEED = 0.1;  // ! 未调参
-const int pso::MAX_ITERATOR = 50; // 50;  // ! 未调参
+const int pso::MAX_ITERATOR = 30; //50; // 50;  // ! 未调参
 
 /* -------------------------------- Partical -------------------------------- */
 

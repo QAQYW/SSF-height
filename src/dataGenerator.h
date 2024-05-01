@@ -34,7 +34,7 @@ public:
     const double MIN_HEIGHT = 100; // 单位：米
 
     // 路径长度与传感器数量的比例系数
-    const double MAX_LENGTH_SENSOR_PROP = 15; //20; // 100;
+    const double MAX_LENGTH_SENSOR_PROP = 10; //15; //20; // 100;
     // const double MAX_LENGTH_SENSOR_PROP = 3; // for tiny_test only
     const double MIN_LENGTH_SENSOR_PROP = 5; // 10;
 

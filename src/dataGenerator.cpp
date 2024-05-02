@@ -68,7 +68,7 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
     double minYMult = minHeight / 1.5; //1.3; // / 1.6; // heightList[0] / 1.35;
     for (int i = 0; i < sensorNum; i++) {
         // 数据传输时间
-        double time = tools::approx(tools::randDouble(MIN_TRANSMISSION_TIME, MAX_TRANSMISSION_TIME), resource::TIME_ULP);
+        // double time = tools::approx(tools::randDouble(MIN_TRANSMISSION_TIME, MAX_TRANSMISSION_TIME), resource::TIME_ULP);
         // 范围中心点横坐标
         double mid = tools::randDouble(0, length);
         // 范围膨胀系数
@@ -117,6 +117,14 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
             i--;
             continue;
         }
+
+        double temp3 = swell * swell + swell + 1;
+        double temp4 = swell + 2 + 2 * std::sqrt(temp3);
+        double temp5 = temp3 + swell + 1 + (swell + 2) * std::sqrt(temp3);
+        double width = std::sqrt(temp4 * temp4 * temp4) / temp5;
+        // 数据传输时间
+        double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width;
+        time = tools::approx(time, resource::TIME_ULP);
         
         // 保存传输时间
         fout << std::to_string(time) << "\n";
@@ -204,7 +212,7 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
     double minYMult = minHeight / 1.5;//1.35; // heightList[0] / 1.35;
     for (int i = 0; i < sensorNum; i++) {
         // 数据传输时间
-        double time = tools::approx(tools::randDouble(MIN_TRANSMISSION_TIME, MAX_TRANSMISSION_TIME), resource::TIME_ULP);
+        // double time = tools::approx(tools::randDouble(MIN_TRANSMISSION_TIME, MAX_TRANSMISSION_TIME), resource::TIME_ULP);
         // 范围中心点横坐标
         double mid = tools::randDouble(0, length);
         // 范围膨胀系数
@@ -276,6 +284,14 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
                 controlRight.push_back(rmost);
             }
         }
+
+        double temp3 = swell * swell + swell + 1;
+        double temp4 = swell + 2 + 2 * std::sqrt(temp3);
+        double temp5 = temp3 + swell + 1 + (swell + 2) * std::sqrt(temp3);
+        double width = std::sqrt(temp4 * temp4 * temp4) / temp5;
+        // 数据传输时间
+        double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width;
+        time = tools::approx(time, resource::TIME_ULP);
 
         // 保存传输时间
         fout << std::to_string(time) << "\n";

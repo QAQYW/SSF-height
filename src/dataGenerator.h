@@ -25,15 +25,15 @@ public:
     const double MIN_TRANSMISSION_TIME = 10; //0.1;   // ! 单位是秒还是分钟
 
     // 假设传输时间与传输范围的最大宽度（线性）相关
-    const double MAX_TIME_RANGE_PROP = 1 / 2.0;
-    const double MIN_TIME_RANGE_PROP = 1 / 10.0;
+    const double MAX_TIME_RANGE_PROP = 1 / 5.0;
+    const double MIN_TIME_RANGE_PROP = 1 / 50.0;
 
     // 传感器传输范围的上下界
     const double MAX_RANGE = 10; // ! 没想好取值
     const double MIN_RANGE = 1;//0.5; // ! 0.5米会不会太小
 
     // 飞行高度范围
-    const double MAX_HEIGHT = 190; //200; // 单位：米
+    const double MAX_HEIGHT = 140; //200; // 单位：米
     // const double MAX_HEIGHT = 140; // for tiny_test only
     const double MIN_HEIGHT = 100; // 单位：米
 

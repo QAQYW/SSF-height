@@ -520,6 +520,7 @@ int main(int argc, char *argv[]) {
                 solve_Offline_ACO(exampleNum, direction, false);
                 solve_Offline_PSO(exampleNum, direction, false);
                 solve_Offline_GA(exampleNum, direction, false);
+                solve_Offline_Greedy(exampleNum, direction, false);
                 if (sensorNum > 5) break;
                 solve_Offline_Naive(exampleNum, direction, false);
                 break;
@@ -529,9 +530,10 @@ int main(int argc, char *argv[]) {
                 exampleNum = 0;
                 direction = ".\\tiny_test\\" + timestr;
                 solve_Offline_ACO(exampleNum, direction, false);
-                // solve_Offline_PSO(exampleNum, direction, false);
-                // solve_Offline_GA(exampleNum, direction, false);
-                // solve_Offline_Naive(exampleNum, direction, false);
+                solve_Offline_PSO(exampleNum, direction, false);
+                solve_Offline_GA(exampleNum, direction, false);
+                solve_Offline_Greedy(exampleNum, direction, false);
+                solve_Offline_Naive(exampleNum, direction, false);
                 break;
             case 3:
                 timestr = special_data_timestr;
@@ -540,6 +542,7 @@ int main(int argc, char *argv[]) {
                 solve_Offline_ACO(exampleNum, direction, false);
                 solve_Offline_PSO(exampleNum, direction, false);
                 solve_Offline_GA(exampleNum, direction, false);
+                solve_Offline_Greedy(exampleNum, direction, false);
                 solve_Offline_Naive(exampleNum, direction, false);
                 break;
         }

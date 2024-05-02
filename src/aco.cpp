@@ -117,15 +117,15 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
         trajectory.setHeightIndex(d, next);
         curr = next; 
         
-        if (d == 0) {
-            for (aco::Candidate cd : candidateList) {
-                std::cout << cd.h << ", ";
-            }
-            std::cout << std::endl << next << std::endl;
-            if (next > 0) {
-                char tempch = std::getchar();
-            }
-        }
+        // if (d == 0) {
+        //     for (aco::Candidate cd : candidateList) {
+        //         std::cout << cd.h << ", ";
+        //     }
+        //     std::cout << std::endl << next << std::endl;
+        //     if (next > 0) {
+        //         char tempch = std::getchar();
+        //     }
+        // }
 
         // 更新visit
         // vector<resource::SensorDisc2D> sensorList = solver->getProblem()->getSensorList();

@@ -501,11 +501,11 @@ int main(int argc, char *argv[]) {
     std::cout << "    3: use special data (1900_1_1_0_0_0)\n";
     std::cout << "\nchoose option: ";
     // std::cin >> opt2;
-    opt2 = 2;
+    opt2 = 1;
 
     filenames.clear();
 
-    int sensorNum = 10; //5;
+    int sensorNum = 20; //5;
 
     if (opt1 == 1) {
         // Offline

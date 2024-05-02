@@ -116,7 +116,7 @@ if __name__ == "__main__":
     try:
         # 绘制飞行轨迹，用颜色深浅表示速度
         # 离线-暴力
-        filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\offline_answer_naive_prop39_" + dataIndex + ".txt"
+        # filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\offline_answer_naive_prop39_" + dataIndex + ".txt"
         # 离线-蚁群
         filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\offline_answer_aco_prop39_" + dataIndex + ".txt"
         # 在线-蚁群

@@ -458,7 +458,7 @@ int main(int argc, char *argv[]) {
 
     filenames.clear();
 
-    int sensorNum = 50;
+    int sensorNum = 5; //5;
 
     if (opt1 == 1) {
         // Offline

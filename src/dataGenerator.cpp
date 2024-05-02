@@ -101,6 +101,7 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
             if (temp2 <= 0) break;
 
             double xDiff = std::sqrt(temp2) / xCoef;
+            // xDiff *= 3;
             if (xDiff <= 1.0) {
                 flag = true;
                 break;

@@ -143,8 +143,8 @@ if __name__ == "__main__":
 
     # 图例（传感器）
     plt.legend()
-    plt.xticks(range(0, int(length)))
-    plt.grid()
+    # plt.xticks(range(0, int(length)))
+    # plt.grid()
 
     # axvline()是垂直直线，axhline()是水平直线
     plt.axvline(x=0, linestyle="--")

@@ -199,7 +199,7 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
     // 几个辅助变量
     double maxXMult = 0.4 * length;
     double minXMult = MIN_X_MULT;
-    double maxYMult = maxHeight / 1.5;//1.35;
+    double maxYMult = maxHeight * 1.5;//1.35;
     double minYMult = minHeight / 1.5;//1.35; // heightList[0] / 1.35;
     for (int i = 0; i < sensorNum; i++) {
         // 数据传输时间

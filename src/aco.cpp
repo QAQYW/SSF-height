@@ -94,7 +94,7 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
         } else {
             // cout << "\t NOT in urgent case\n";
             for (int h = hMin; h <= hMax; h++) {
-                Candidate cand;
+                aco::Candidate cand;
                 cand.h = h;
                 cand.p = solver.calProbability(ph, d, curr, h);
                 candidateList.push_back(cand);
@@ -108,12 +108,24 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
         //     std::cout << "\n";
         // }
 
+        
+
         // 确定高度
         // int next = (d == 0 ? hMin : aco::roulette(candidateList, probSum));
         int next = aco::roulette(candidateList, probSum);
         // trajectory.addList(next);
         trajectory.setHeightIndex(d, next);
         curr = next; 
+        
+        if (d == 0) {
+            for (aco::Candidate cd : candidateList) {
+                std::cout << cd.h << ", ";
+            }
+            std::cout << std::endl << next << std::endl;
+            if (next > 0) {
+                char tempch = std::getchar();
+            }
+        }
 
         // 更新visit
         // vector<resource::SensorDisc2D> sensorList = solver->getProblem()->getSensorList();

@@ -454,7 +454,7 @@ int main(int argc, char *argv[]) {
     std::cout << "    3: use special data (1900_1_1_0_0_0)\n";
     std::cout << "\nchoose option: ";
     // std::cin >> opt2;
-    opt2 = 1;
+    opt2 = 2;
 
     filenames.clear();
 
@@ -482,9 +482,9 @@ int main(int argc, char *argv[]) {
                 exampleNum = 0;
                 direction = ".\\tiny_test\\" + timestr;
                 solve_Offline_ACO(exampleNum, direction, false);
-                solve_Offline_PSO(exampleNum, direction, false);
-                solve_Offline_GA(exampleNum, direction, false);
-                solve_Offline_Naive(exampleNum, direction, false);
+                // solve_Offline_PSO(exampleNum, direction, false);
+                // solve_Offline_GA(exampleNum, direction, false);
+                // solve_Offline_Naive(exampleNum, direction, false);
                 break;
             case 3:
                 timestr = special_data_timestr;

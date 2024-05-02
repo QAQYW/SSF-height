@@ -6,7 +6,7 @@
 /* -------------------------------- parameter ------------------------------- */
 
 const int aco::ANT_NUM = 20; //30;    // ! 未调参
-const double aco::ALPHA = 5; //1;    // ! 未调参
+const double aco::ALPHA = 5; //5; //1;    // ! 未调参
 const double aco::BETA = 1; //6;     // ! 未调参
 const double aco::EVAPORATE_COEF = 0.2;         // ! 未调参
 const double aco::ENHANCE_VALUE = 1; //0.5;          // ! 未调参
@@ -85,7 +85,7 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
         double probSum = 0;
         // TODO 每确定了一个height，就要更新visit vector
         // cout << "going to isUrgent()\n";
-        if (solver.isUrgent(d, candidateList, visit, countVisit)) {
+        if (d > 0 && solver.isUrgent(d, candidateList, visit, countVisit)) {
             // cout << "\t In urgent case: " << std::to_string(candidateList.size()) << "\n";
             for (aco::Candidate cand : candidateList) {
                 cand.p = solver.calProbability(ph, d, curr, cand.h);

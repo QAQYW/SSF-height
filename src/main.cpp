@@ -17,6 +17,7 @@
 #include "energy.h"
 #include "pso.h"
 #include "ga.h"
+#include "greedy.h"
 
 std::string direction = ".\\tiny_test";
 int exampleNum = 1;
@@ -400,6 +401,52 @@ void solve_Offline_GA(int expNum, std::string dir, bool onlineFile) {
     std::cout << "solve_Offline_GA\n";
 }
 
+/// @brief 贪心方法求解离线问题
+/// @param expNum 数据样例数量
+/// @param dir 样例读取目录
+/// @param onlineFile true则读在线样例，false则读离线样例
+void solve_Offline_Greedy(int expNum, std::string dir, bool onlineFile) {
+    // Read filenames
+    if (filenames.empty()) readFilename(expNum, dir, onlineFile);
+
+    for (int i = 1; i <= expNum; i++) {
+        std::clock_t sc = std::clock();
+        Problem2D prob2D;
+        if (onlineFile) {
+            prob2D.initFromOnlineFile(filenames[i - 1]);
+        } else {
+            prob2D.initFromFile(filenames[i - 1]);
+        }
+        ProblemDisc2D probDisc2D(prob2D);
+        greedy::GreedySolver greedySolver(&probDisc2D);
+        greedySolver.solve();
+        Trajectory optTraj = greedySolver.getTrajectory();
+
+        std::vector<double> speedSche;
+        double hcost = optTraj.calHeightCost();
+        double vcost = energy_calculator::calSpeedCost(probDisc2D, optTraj, speedSche);
+        std::string filename = dir + "\\offline_answer_greedy_prop" + std::to_string((int) resource::HEIGHT_COST_PROPOR) + "_" + std::to_string(i) + ".txt";
+        std::ofstream fout;
+        fout.open(filename);
+        fout << "distance\tspeed\theight\n";
+        int num = probDisc2D.getLengthDiscNum();
+        for (int i = 0; i < num; i++) {
+            double dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
+            double hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob2D.getMinHeight(), resource::REF_UNIT_HEIGHT);
+            fout << std::to_string(dis) << "\t" << std::to_string(speedSche[i]) << "\t" << std::to_string(hei) << "\n";
+        }
+        fout << " cost = " << std::to_string(hcost + vcost) << "\n";
+        fout << "hcost = " << std::to_string(hcost) << "\n";
+        fout << "vcost = " << std::to_string(vcost) << "\n";
+        fout.close();
+        std::clock_t ec = std::clock();
+        double runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
+        std::cout << "runtime: " << std::to_string(runtime) << "\n";
+        std::cout << "greedy: " << i << "/" << expNum << "\n";
+    }
+    std::cout << "solve_Offline_Greedy\n";
+}
+
 /// @brief 将当前时间（精确到秒）转换为字符串，用下划线 "_" 连接
 /// @return 表示时间的字符串
 std::string getTimeString() {
@@ -458,7 +505,7 @@ int main(int argc, char *argv[]) {
 
     filenames.clear();
 
-    int sensorNum = 5; //5;
+    int sensorNum = 10; //5;
 
     if (opt1 == 1) {
         // Offline

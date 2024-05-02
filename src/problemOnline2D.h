@@ -29,7 +29,7 @@ public:
     double getMaxHeight() const;
     int getHeightDiscNum() const;
     // 读取文件，初始化
-    void initFromFile(const std::string &filename);
+    void initFromOnlineFile(const std::string &filename);
 };
 
 #endif

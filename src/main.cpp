@@ -136,8 +136,8 @@
 //     for (int i = 1; i <= expNum; i++) {
 //         std::clock_t sc = std::clock();
 //         ProblemOnline2D prob2D;
-//         prob2D.initFromFile(filenames[i - 1]);
-//         // std::cout << "\nprob2D.initFromFile\n";
+//         prob2D.initFromOnlineFile(filenames[i - 1]);
+//         // std::cout << "\nprob2D.initFromOnlineFile\n";
 
 //         ProblemOnlineDisc2D probDisc2D = ProblemOnlineDisc2D(prob2D);
 //         // std::cout << "\ncreate object of 'ProblemOnlineDisc2D'\n";
@@ -208,7 +208,7 @@
 //         if (onlineFile) {
 //             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         } else {
-//             prob2D.initFromFile(filenames[i - 1]);
+//             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         }
 //         ProblemDisc2D probDisc2D(prob2D);
 //         aco::ACOSolver acoSolver(&probDisc2D);
@@ -275,7 +275,7 @@
 //         if (onlineFile) {
 //             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         } else {
-//             prob2D.initFromFile(filenames[i - 1]);
+//             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         }
 //         ProblemDisc2D probDisc2D(prob2D);
 //         naive::NaiveSolver naiveSolver(&probDisc2D);
@@ -323,7 +323,7 @@
 //         if (onlineFile) {
 //             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         } else {
-//             prob2D.initFromFile(filenames[i - 1]);
+//             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         }
 //         ProblemDisc2D probDisc2D(prob2D);
 //         pso::PSOSolver psoSolver(&probDisc2D);
@@ -369,7 +369,7 @@
 //         if (onlineFile) {
 //             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         } else {
-//             prob2D.initFromFile(filenames[i - 1]);
+//             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         }
 //         ProblemDisc2D probDisc2D(prob2D);
 //         ga::GASolver gaSolver(&probDisc2D);
@@ -415,7 +415,7 @@
 //         if (onlineFile) {
 //             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         } else {
-//             prob2D.initFromFile(filenames[i - 1]);
+//             prob2D.initFromOnlineFile(filenames[i - 1]);
 //         }
 //         ProblemDisc2D probDisc2D(prob2D);
 //         greedy::GreedySolver greedySolver(&probDisc2D);

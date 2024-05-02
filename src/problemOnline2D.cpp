@@ -29,7 +29,7 @@ int ProblemOnline2D::getHeightDiscNum() const {
 }
 
 // range的每一行，先data transmission range，再control communication range
-void ProblemOnline2D::initFromFile(const std::string &filename) {
+void ProblemOnline2D::initFromOnlineFile(const std::string &filename) {
     std::ifstream fin;
     fin.open(filename);
     std::string buff;

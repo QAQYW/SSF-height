@@ -210,6 +210,10 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
     double minXMult = MIN_X_MULT;
     double maxYMult = maxHeight * 1.5;//1.35;
     double minYMult = minHeight / 1.5;//1.35; // heightList[0] / 1.35;
+    maxXMult = MAX_X_MULT_COEF * length;
+    minXMult = MIN_X_MULT;
+    maxYMult = MAX_Y_MULT;
+    minYMult = MIN_Y_MULT;
     for (int i = 0; i < sensorNum; i++) {
         // 数据传输时间
         // double time = tools::approx(tools::randDouble(MIN_TRANSMISSION_TIME, MAX_TRANSMISSION_TIME), resource::TIME_ULP);
@@ -321,32 +325,39 @@ void DataGenerator::saveSensorShape(double shape[][4], int dataIndex) const {
     std::string filename = this->savePath + "\\online_shape_" + std::to_string(dataIndex) + ".txt";
     fout.open(filename);
 
-    std::cout << "\nsave shape param to file:" << filename << "\n";
+    // std::cout << "\nsave shape param to file:" << filename << "\n";
 
     // 路径长度
     fout << std::to_string(this->length) << "\n";
-    std::cout << std::to_string(this->length) << "\n";
+    // std::cout << std::to_string(this->length) << "\n";
     // 最小高度
     fout << std::to_string(this->MIN_HEIGHT) << "\n";
-    std::cout << std::to_string(this->MIN_HEIGHT) << "\n";
+    // std::cout << std::to_string(this->MIN_HEIGHT) << "\n";
     // 最大高度
     fout << std::to_string(this->MAX_HEIGHT) << "\n";
-    std::cout << std::to_string(this->MAX_HEIGHT) << "\n";
+    // std::cout << std::to_string(this->MAX_HEIGHT) << "\n";
     // 传感器数量
     fout << std::to_string(this->sensorNum) << "\n";
-    std::cout << std::to_string(this->sensorNum) << "\n";
+    // std::cout << std::to_string(this->sensorNum) << "\n";
 
     // 输出每个传感器的形状参数
     for (int sid = 0; sid < this->sensorNum; sid++) {
         for (int i = 0; i < 4; i++) {
             fout << std::to_string(shape[sid][i]) << "\t";
-            std::cout << std::to_string(shape[sid][i]) << "\t";
+            // std::cout << std::to_string(shape[sid][i]) << "\t";
         }
         fout << "\n";
-        std::cout << "\n";
+        // std::cout << "\n";
     }
-    std::cout << "\n";
+    // std::cout << "\n";
 
     fout.close();
 
 }
+
+DataGenerator::DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double maxTimeRangeProp, double maxSwell)
+ : savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MAX_X_MULT_COEF(maxXMultCoef), MAX_TIME_RANGE_PROP(maxTimeRangeProp), MAX_SWELL(maxSwell) {
+    unit_height = resource::REF_UNIT_HEIGHT;
+    unit_length = resource::REF_UNIT_LENGTH;
+    // std::cout << "max_y_mult = " << std::to_string(maxYMult) << "\n";
+};

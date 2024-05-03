@@ -1,53 +1,266 @@
-// #include <iostream>
-// #include <ctime>
-// #include <cstdlib>
-// #include <string>
-// #include <vector>
-// #include <windows.h>
-// #include <unistd.h>
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include <windows.h>
+#include <unistd.h>
 
-// #include "resource.h"
-// #include "tools.h"
-// #include "dataGenerator.h"
-// #include "trajectory.h"
-// #include "energy.h"
-// #include "aco.h"
-// #include "acoOnline.h"
-// #include "naive.h"
-// #include "pso.h"
-// #include "ga.h"
-// #include "greedy.h"
+#include "resource.h"
+#include "tools.h"
+#include "dataGenerator.h"
+#include "trajectory.h"
+#include "energy.h"
+#include "aco.h"
+#include "acoOnline.h"
+#include "naive.h"
+#include "pso.h"
+#include "ga.h"
+#include "greedy.h"
 
-// /* ---------------------------- global variables ---------------------------- */
+/* ---------------------------- global variables ---------------------------- */
 
-// std::vector<std::string> filenames;
+struct Result {
+    double cost;
+    double hcost;
+    double vcost;
+    double runtime;
+    std::string str;
+};
 
-// /* -------------------------------- functions ------------------------------- */
+std::vector<std::string> features; // 每个测试数据的特征值
+std::vector<std::string> filenames;
+std::vector<Result> results;
 
-// /// @brief 读存储文件名的文本文件
-// /// @param expNum 测试实例数量
-// /// @param dir 目录
-// /// @param onlineFileFormat 是否是online格式
-// void readFilename(int &expNum, std::string dir, bool onlineFileFormat) {
-//     std::ifstream fin;
-//     if (onlineFileFormat) {
-//         fin.open(dir + "\\online_filename_set.txt");
-//     } else {
-//         fin.open(dir + "filename_set.txt");
-//     }
-//     fin >> expNum;
-//     std::string filename = "";
-//     for (int i = 1; i <= expNum; i++) {
-//         fin >> filename;
-//         filenames.push_back(filename);
-//     }
-//     fin.close();
-// }
+/// @brief 参数集合
+namespace para {
+    // const int sensor_nums[6] = {5, 10, 20, 30, 40, 50};
+    const int sensor_nums[1] = {5};
+    const double max_y_mults[5] = {115, 135, 155, 175, 195};
+    const double max_x_mult_coefs[5] = {0.2, 0.3, 0.4, 0.5, 0.6};
+    const double max_time_range_props[4] = {0.05, 0.1, 0.2, 0.3};
+    const double max_swells[5] = {1, 1.5, 2, 2.5, 3};
+    const std::string algorithm_names[6] = {
+        "DFS",
+        "ACO",
+        "PSO",
+        "GA",
+        "Greedy",
+        "ACO-Online"
+    };
+    enum Algorithm {
+        DFS = 0,
+        ACO = 1,
+        PSO = 2,
+        GA = 3,
+        Greedy = 4,
+        ACO_Online = 5
+    };
+    
+} // namespace para
 
-// int main() {
+/* -------------------------------- functions ------------------------------- */
 
-//     std::srand((unsigned int) std::time(NULL));
+/// @brief 读存储文件名的文本文件
+/// @param expNum 测试实例数量
+/// @param dir 目录
+/// @param onlineFileFormat 是否是online格式
+void readFilename(int &expNum, std::string dir, bool onlineFileFormat) {
+    std::ifstream fin;
+    if (onlineFileFormat) {
+        fin.open(dir + "\\online_filename_set.txt");
+    } else {
+        fin.open(dir + "\\filename_set.txt");
+    }
+    fin >> expNum;
+    std::string filename = "";
+    for (int i = 1; i <= expNum; i++) {
+        fin >> filename;
+        filenames.push_back(filename);
+    }
+    fin.close();
+}
 
+/// @brief 批量生成online格式的测试数据
+/// @param dir 目录
+/// @param online_file_format 是否online格式
+/// @param num 每个参数组和生成num个数据
+void generate_online_data(std::string dir, bool online_file_format, int num) {
+    filenames.clear();
+    features.clear();
+    // 测试数据数量
+    int count_data = 0;
+    std::vector<unsigned int> seeds;
 
-//     return 0;
-// }
+    for (int sensor_num : para::sensor_nums) {
+        for (double max_y_mult : para::max_y_mults) {
+            for (double max_x_mult_coef : para::max_x_mult_coefs) {
+                for (double max_time_range_prop : para::max_time_range_props) {
+                    for (double max_swell : para::max_swells) {
+                        for (int i = 1; i <= num; i++) {
+                            ++count_data;
+                            DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult_coef, max_time_range_prop, max_swell);
+                            // 随机种子
+                            unsigned int seed = std::rand();
+                            seeds.push_back(seed);
+                            dg.generateAndSave_Online(seed, count_data);
+                            // 测试数据特征值
+                            std::string feature = std::to_string(count_data) + "\t"
+                                + std::to_string(sensor_num) + "\t"
+                                + std::to_string(max_y_mult) + "\t"
+                                + std::to_string(max_x_mult_coef) + "\t"
+                                + std::to_string(max_time_range_prop) + "\t"
+                                + std::to_string(max_swell) + "\t";
+                            features.push_back(feature);
+                            // std::cout << feature << "\n";
+                            // 记录文件名
+                            std::string filename = dir + "\\online_" + dg.filenameBase + std::to_string(count_data) + ".txt";
+                            filenames.push_back(filename);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    std::ofstream fout;
+
+    // 保存测试数据特征值
+    fout.open(dir + "\\features.txt");
+    for (int i = 0; i < count_data; i++) {
+        fout << features[i] << "\n";
+        // std::cout << features[i] << "\n";
+    }
+    fout.close();
+
+    // 保存所有文件名
+    fout.open(dir + "\\online_filename_set.txt");
+    fout << std::to_string(count_data) << "\n";
+    for (int i = 0; i < count_data; i++) {
+        fout << filenames[i] << "\n";
+    }
+    fout.close();
+}
+
+/// @brief 读入filenames.txt和features.txt
+/// @param instance_num 
+/// @param dir 
+/// @param online_file_format 
+void readInit(int &instance_num, std::string dir, bool online_file_format) {
+    std::ifstream fin;
+    std::string buff = "";
+
+    // 读filenames.txt
+    filenames.clear();
+    fin.open(dir + "\\online_filename_set.txt");
+    fin >> instance_num;
+    for (int i = 0; i < instance_num; i++) {
+        fin >> buff;
+        filenames.push_back(buff);
+    }
+    fin.close();
+
+    // 读features.txt
+    fin.open(dir + "\\features.txt");
+    for (int i = 0; i < instance_num; i++) {
+        fin >> buff;
+        features.push_back(buff);
+    }
+    fin.close();
+}
+
+/// @brief 用指定算法求解，然后保存结果
+/// @param prob2d 
+/// @param algorithm 
+void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir) {
+    std::cout << "enter func solve()\n";
+    std::clock_t sc = std::clock();
+    Trajectory optTraj;
+    if (alg == para::Algorithm::DFS) {
+        // 0
+        naive::NaiveSolver naiveSolver = naive::NaiveSolver(&prob);
+        naiveSolver.solve();
+        optTraj = naiveSolver.getTrajectory();
+    } else if (alg == para::Algorithm::ACO) {
+        // 1
+        aco::ACOSolver acoSolver = aco::ACOSolver(&prob);
+        acoSolver.solve();
+        optTraj = acoSolver.getTrajectory();
+    } else if (alg == para::Algorithm::PSO) {
+        // 2
+        pso::PSOSolver psoSolver = pso::PSOSolver(&prob);
+        psoSolver.solve();
+        optTraj = psoSolver.getTrajectory();
+    } else if (alg == para::Algorithm::GA) {
+        // 3
+        ga::GASolver gaSolver = ga::GASolver(&prob);
+        gaSolver.solve();
+        optTraj = gaSolver.getTrajectory();
+    } else if (alg == para::Algorithm::Greedy) {
+        // 4
+        greedy::GreedySolver greedySolver = greedy::GreedySolver(&prob);
+        greedySolver.solve();
+        optTraj = greedySolver.getTrajectory();
+    }
+    std::clock_t ec = std::clock();
+    // 记录结果
+    int index = results.size();
+    Result result;
+    std::vector<double> speedSche;
+    result.hcost = optTraj.calHeightCost();
+    result.vcost = energy_calculator::calSpeedCost(prob, optTraj, speedSche);
+    result.cost = result.hcost + result.vcost;
+    result.runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
+    result.str = std::to_string(result.cost) + "\t" + std::to_string(result.hcost) + "\t" + std::to_string(result.vcost) + "\t" + std::to_string(result.runtime);
+    results.push_back(result);
+    // 保存结果（追加写入）
+    std::ofstream fout;
+    fout.open(dir + "\\results.txt", std::ios::out | std::ios::app);
+    fout << features[index] << "\t";
+    fout << result.str << "\n";
+    fout.close();
+    std::cout << features[index] << "\t" << result.str << "\n";
+}
+
+/// @brief 用所有方法，求解所有测试数据
+/// @param instance_num 
+/// @param dir 
+void solve_all_instance(int instance_num, std::string dir) {
+
+    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy};
+    std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
+
+    std::string filename = "", feature = "";
+    for (int i = 1; i <= instance_num; i++) {
+        filename = filenames[i - 1];
+        feature = features[i - 1];
+
+        Problem2D prob2D;
+        prob2D.initFromOnlineFile(filename);
+        ProblemDisc2D probDisc2D = ProblemDisc2D(prob2D);
+        for (para::Algorithm alg : alg_set) {
+            solve(probDisc2D, alg, dir);
+            std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
+        }
+    }
+}
+
+int main() {
+
+    std::srand((unsigned int) std::time(NULL));
+
+    // 测试数据存储路径
+    std::string direction = ".\\experiment\\5";
+
+    // 生成数据
+    // generate_online_data(direction, true, 1);
+
+    // 仿真实验
+    int instance_num = 0;
+    readInit(instance_num, direction, true);
+    std::cout << instance_num << std::endl;
+    results.clear();
+    solve_all_instance(instance_num, direction);
+
+    return 0;
+}

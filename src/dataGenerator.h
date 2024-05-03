@@ -24,9 +24,9 @@ public:
     const double MAX_TRANSMISSION_TIME = 500; //10;    // ! 单位是秒还是分钟
     const double MIN_TRANSMISSION_TIME = 10; //0.1;   // ! 单位是秒还是分钟
 
-    // 假设传输时间与传输范围的最大宽度（线性）相关
+    // 假设传输时间与传输范围的最大宽度相关（二次）
     const double MAX_TIME_RANGE_PROP = 1 / 5.0;
-    const double MIN_TIME_RANGE_PROP = 1 / 50.0;
+    const double MIN_TIME_RANGE_PROP = 1 / 50.0; // 0.02
 
     // 传感器传输范围的上下界
     const double MAX_RANGE = 10; // ! 没想好取值
@@ -45,6 +45,10 @@ public:
     // ? 下面是不太清楚缘由的一部分，知道怎么用，不知道从何而来
     // 传感器范围x坐标最小放大倍数（仅用于生成传输范围吗）
     const double MIN_X_MULT = 5; //10;
+    const double MAX_X_MULT_COEF = 0.2;
+
+    const double MIN_Y_MULT = 105;
+    const double MAX_Y_MULT = 115;
 
     /**
      *  范围膨胀系数
@@ -71,9 +75,19 @@ public:
     DataGenerator(std::string path, double uh, double ul): savePath(path), sensorNum(0), unit_height(resource::REF_UNIT_HEIGHT), unit_length(resource::REF_UNIT_LENGTH) {};
     
     /// @brief 构造函数，指定传感器数量，非随机生成
-    /// @param path 随机种子
+    /// @param path 输出路径
     /// @param num 传感器数量
     DataGenerator(std::string path, int num): savePath(path), sensorNum(num), unit_height(resource::REF_UNIT_HEIGHT), unit_length(resource::REF_UNIT_LENGTH) {};
+
+    /// @brief 构造函数
+    /// @param path 
+    /// @param num 
+    /// @param maxYMult 
+    /// @param maxXMultCoef 
+    /// @param maxTimeRangeProp 
+    /// @param maxSwell 
+    DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double maxTimeRangeProp, double maxSwell);
+    //: savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MIN_Y_MULT(105), MAX_X_MULT_COEF(maxXMultCoef), MAX_TIME_RANGE_PROP(maxTimeRangeProp), MAX_SWELL(maxSwell) {};
     
     /// @brief 生成离线问题数据，并保存到文件
     /// @param seed 随机种子

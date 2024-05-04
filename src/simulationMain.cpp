@@ -35,7 +35,7 @@ std::vector<Result> results;
 /// @brief 参数集合
 namespace para {
     // const int sensor_nums[6] = {5, 10, 20, 30, 40, 50};
-    const int sensor_nums[1] = {5};
+    const int sensor_nums[1] = {30};
     const double max_y_mults[5] = {115, 135, 155, 175, 195};
     const double max_x_mult_coefs[5] = {0.2, 0.3, 0.4, 0.5, 0.6};
     const double max_time_range_props[4] = {0.05, 0.1, 0.2, 0.3};
@@ -60,26 +60,6 @@ namespace para {
 } // namespace para
 
 /* -------------------------------- functions ------------------------------- */
-
-/// @brief 读存储文件名的文本文件
-/// @param expNum 测试实例数量
-/// @param dir 目录
-/// @param onlineFileFormat 是否是online格式
-void readFilename(int &expNum, std::string dir, bool onlineFileFormat) {
-    std::ifstream fin;
-    if (onlineFileFormat) {
-        fin.open(dir + "\\online_filename_set.txt");
-    } else {
-        fin.open(dir + "\\filename_set.txt");
-    }
-    fin >> expNum;
-    std::string filename = "";
-    for (int i = 1; i <= expNum; i++) {
-        fin >> filename;
-        filenames.push_back(filename);
-    }
-    fin.close();
-}
 
 /// @brief 批量生成online格式的测试数据
 /// @param dir 目录
@@ -163,7 +143,8 @@ void readInit(int &instance_num, std::string dir, bool online_file_format) {
     // 读features.txt
     fin.open(dir + "\\features.txt");
     for (int i = 0; i < instance_num; i++) {
-        fin >> buff;
+        // fin >> buff;
+        std::getline(fin, buff);
         features.push_back(buff);
     }
     fin.close();
@@ -172,8 +153,8 @@ void readInit(int &instance_num, std::string dir, bool online_file_format) {
 /// @brief 用指定算法求解，然后保存结果
 /// @param prob2d 
 /// @param algorithm 
-void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir) {
-    std::cout << "enter func solve()\n";
+void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_index) {
+    // std::cout << "enter func solve()\n";
     std::clock_t sc = std::clock();
     Trajectory optTraj;
     if (alg == para::Algorithm::DFS) {
@@ -204,7 +185,6 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir) {
     }
     std::clock_t ec = std::clock();
     // 记录结果
-    int index = results.size();
     Result result;
     std::vector<double> speedSche;
     result.hcost = optTraj.calHeightCost();
@@ -216,10 +196,11 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir) {
     // 保存结果（追加写入）
     std::ofstream fout;
     fout.open(dir + "\\results.txt", std::ios::out | std::ios::app);
-    fout << features[index] << "\t";
+    fout << para::algorithm_names[alg] << "\t";
+    fout << features[data_index] << "\t";
     fout << result.str << "\n";
     fout.close();
-    std::cout << features[index] << "\t" << result.str << "\n";
+    // std::cout << para::algorithm_names[alg] << "\t" << features[index] << "\t" << result.str << "\n";
 }
 
 /// @brief 用所有方法，求解所有测试数据
@@ -227,8 +208,8 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir) {
 /// @param dir 
 void solve_all_instance(int instance_num, std::string dir) {
 
-    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy};
-    std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy};
+    // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -239,18 +220,25 @@ void solve_all_instance(int instance_num, std::string dir) {
         prob2D.initFromOnlineFile(filename);
         ProblemDisc2D probDisc2D = ProblemDisc2D(prob2D);
         for (para::Algorithm alg : alg_set) {
-            solve(probDisc2D, alg, dir);
+            solve(probDisc2D, alg, dir, i - 1);
             std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
         }
     }
 }
+
+/*
+每次要改的地方：
+1. para::sensor_nums
+2. main里的direction
+3. solve_all_instance()里的alg_set需不需要包含DFS
+*/
 
 int main() {
 
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\5";
+    std::string direction = ".\\experiment\\30";
 
     // 生成数据
     // generate_online_data(direction, true, 1);
@@ -258,7 +246,7 @@ int main() {
     // 仿真实验
     int instance_num = 0;
     readInit(instance_num, direction, true);
-    std::cout << instance_num << std::endl;
+    std::cout << "instance_number = " << instance_num << std::endl;
     results.clear();
     solve_all_instance(instance_num, direction);
 

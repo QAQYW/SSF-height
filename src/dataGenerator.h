@@ -25,8 +25,9 @@ public:
     const double MIN_TRANSMISSION_TIME = 10; //0.1;   // ! 单位是秒还是分钟
 
     // 假设传输时间与传输范围的最大宽度相关（二次）
-    const double MAX_TIME_RANGE_PROP = 1 / 5.0;
-    const double MIN_TIME_RANGE_PROP = 1 / 50.0; // 0.02
+    const double MAX_TIME_RANGE_PROP = 0.5; //1 / 5.0;
+    const double MIN_TIME_RANGE_PROP = 2.0; //1 / 50.0; // 0.02
+    const double TIME_PROP = 1;
 
     // 传感器传输范围的上下界
     const double MAX_RANGE = 10; // ! 没想好取值
@@ -79,15 +80,24 @@ public:
     /// @param num 传感器数量
     DataGenerator(std::string path, int num): savePath(path), sensorNum(num), unit_height(resource::REF_UNIT_HEIGHT), unit_length(resource::REF_UNIT_LENGTH) {};
 
+    // /// @brief 构造函数
+    // /// @param path 
+    // /// @param num 
+    // /// @param maxYMult 
+    // /// @param maxXMultCoef 
+    // /// @param maxTimeRangeProp 
+    // /// @param maxSwell 
+    // DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double maxTimeRangeProp, double maxSwell);
+    // //: savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MIN_Y_MULT(105), MAX_X_MULT_COEF(maxXMultCoef), MAX_TIME_RANGE_PROP(maxTimeRangeProp), MAX_SWELL(maxSwell) {};
+    
     /// @brief 构造函数
     /// @param path 
     /// @param num 
     /// @param maxYMult 
     /// @param maxXMultCoef 
-    /// @param maxTimeRangeProp 
+    /// @param timeProp 
     /// @param maxSwell 
-    DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double maxTimeRangeProp, double maxSwell);
-    //: savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MIN_Y_MULT(105), MAX_X_MULT_COEF(maxXMultCoef), MAX_TIME_RANGE_PROP(maxTimeRangeProp), MAX_SWELL(maxSwell) {};
+    DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double timeProp, double maxSwell);
     
     /// @brief 生成离线问题数据，并保存到文件
     /// @param seed 随机种子

@@ -122,8 +122,10 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
         double temp4 = swell + 2 + 2 * std::sqrt(temp3);
         double temp5 = temp3 + swell + 1 + (swell + 2) * std::sqrt(temp3);
         double width = std::sqrt(temp4 * temp4 * temp4) / temp5 / xCoef;
-        // 数据传输时间
-        double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * width;
+        // // 数据传输时间 - 与width平方成正比
+        // double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * width;
+        // 数据传输时间 - 与width成正比
+        double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * TIME_PROP;
         time = tools::approx(time, resource::TIME_ULP);
         
         // 保存传输时间
@@ -293,8 +295,10 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
         double temp4 = swell + 2 + 2 * std::sqrt(temp3);
         double temp5 = temp3 + swell + 1 + (swell + 2) * std::sqrt(temp3);
         double width = std::sqrt(temp4 * temp4 * temp4) / temp5 / xCoef;
-        // 数据传输时间
-        double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * width;
+        // // 数据传输时间 - 与width平方成正比
+        // double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * width;
+        // 数据传输时间 - 与width成正比
+        double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * TIME_PROP;
         time = tools::approx(time, resource::TIME_ULP);
 
         // 保存传输时间
@@ -355,9 +359,15 @@ void DataGenerator::saveSensorShape(double shape[][4], int dataIndex) const {
 
 }
 
-DataGenerator::DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double maxTimeRangeProp, double maxSwell)
- : savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MAX_X_MULT_COEF(maxXMultCoef), MAX_TIME_RANGE_PROP(maxTimeRangeProp), MAX_SWELL(maxSwell) {
+// DataGenerator::DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double maxTimeRangeProp, double maxSwell)
+//  : savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MAX_X_MULT_COEF(maxXMultCoef), MAX_TIME_RANGE_PROP(maxTimeRangeProp), MAX_SWELL(maxSwell) {
+//     unit_height = resource::REF_UNIT_HEIGHT;
+//     unit_length = resource::REF_UNIT_LENGTH;
+//     // std::cout << "max_y_mult = " << std::to_string(maxYMult) << "\n";
+// };
+
+DataGenerator::DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double timeProp, double maxSwell)
+ : savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MAX_X_MULT_COEF(maxXMultCoef), TIME_PROP(timeProp), MAX_SWELL(maxSwell) {
     unit_height = resource::REF_UNIT_HEIGHT;
     unit_length = resource::REF_UNIT_LENGTH;
-    // std::cout << "max_y_mult = " << std::to_string(maxYMult) << "\n";
-};
+}

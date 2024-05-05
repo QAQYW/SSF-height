@@ -35,10 +35,11 @@ std::vector<Result> results;
 /// @brief 参数集合
 namespace para {
     // const int sensor_nums[6] = {5, 10, 20, 30, 40, 50};
-    const int sensor_nums[1] = {30};
+    const int sensor_nums[1] = {10};
     const double max_y_mults[5] = {115, 135, 155, 175, 195};
     const double max_x_mult_coefs[5] = {0.2, 0.3, 0.4, 0.5, 0.6};
-    const double max_time_range_props[4] = {0.05, 0.1, 0.2, 0.3};
+    // const double max_time_range_props[4] = {0.05, 0.1, 0.2, 0.3};
+    const double time_props[6] = {0.5, 1, 1.5, 2, 2.5, 3};
     const double max_swells[5] = {1, 1.5, 2, 2.5, 3};
     const std::string algorithm_names[6] = {
         "DFS",
@@ -75,11 +76,13 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
     for (int sensor_num : para::sensor_nums) {
         for (double max_y_mult : para::max_y_mults) {
             for (double max_x_mult_coef : para::max_x_mult_coefs) {
-                for (double max_time_range_prop : para::max_time_range_props) {
+                // for (double max_time_range_prop : para::max_time_range_props) {
+                for (double time_prop : para::time_props) {
                     for (double max_swell : para::max_swells) {
                         for (int i = 1; i <= num; i++) {
                             ++count_data;
-                            DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult_coef, max_time_range_prop, max_swell);
+                            // DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult_coef, max_time_range_prop, max_swell);
+                            DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult_coef, time_prop, max_swell);
                             // 随机种子
                             unsigned int seed = std::rand();
                             seeds.push_back(seed);
@@ -89,8 +92,8 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
                                 + std::to_string(sensor_num) + "\t"
                                 + std::to_string(max_y_mult) + "\t"
                                 + std::to_string(max_x_mult_coef) + "\t"
-                                + std::to_string(max_time_range_prop) + "\t"
-                                + std::to_string(max_swell) + "\t";
+                                + std::to_string(time_prop) + "\t"// + std::to_string(max_time_range_prop) + "\t"
+                                + std::to_string(max_swell);
                             features.push_back(feature);
                             // std::cout << feature << "\n";
                             // 记录文件名
@@ -207,8 +210,9 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
 /// @param instance_num 
 /// @param dir 
 void solve_all_instance(int instance_num, std::string dir) {
-
+    // 没有dfs
     std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy};
+    // 有dfs
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
 
     std::string filename = "", feature = "";
@@ -238,7 +242,7 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\30";
+    std::string direction = ".\\experiment\\10";
 
     // 生成数据
     // generate_online_data(direction, true, 1);

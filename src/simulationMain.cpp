@@ -17,6 +17,10 @@
 #include "pso.h"
 #include "ga.h"
 #include "greedy.h"
+#include "problem2D.h"
+#include "problemDisc2D.h"
+#include "problemOnline2D.h"
+#include "problemOnlineDisc2D.h"
 
 /* ---------------------------- global variables ---------------------------- */
 
@@ -230,6 +234,50 @@ void solve_all_instance(int instance_num, std::string dir) {
     }
 }
 
+void solve_online(ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string dir, int data_index) {
+    std::clock_t sc = std::clock();
+    Trajectory optTraj;
+    // 求解
+    online::ACOSolver_Online onlineSolver = online::ACOSolver_Online(&prob);
+    std::vector<double> speedSche;
+    onlineSolver.solve(speedSche);
+    optTraj = onlineSolver.getTrajectory();
+    std::clock_t ec = std::clock();
+    // 记录结果
+    Result result;
+    result.hcost = onlineSolver.getHcost();
+    result.vcost = onlineSolver.getVcost();
+    result.cost = result.hcost + result.vcost;
+    result.runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
+    result.str = std::to_string(result.cost) + "\t" + std::to_string(result.hcost) + "\t" + std::to_string(result.vcost) + "\t" + std::to_string(result.runtime);
+    results.push_back(result);
+    // 保存结果（追加写入）
+    std::ofstream fout;
+    fout.open(dir + "\\results-online.txt", std::ios::out | std::ios::app);
+    fout << para::algorithm_names[alg] << "\t";
+    fout << features[data_index] << "\t";
+    fout << result.str << "\n";
+    fout.close();
+}
+
+void solve_all_instance_online(int instance_num, std::string dir) {
+    para::Algorithm alg = para::Algorithm::ACO_Online;
+    std::string filename = "", feature = "";
+    // sensorNum=10 的 i 从 104 开始
+    for (int i = 104; i <= instance_num; i++) {
+        filename = filenames[i - 1];
+        feature = features[i - 1];
+
+        ProblemOnline2D prob2D;
+        prob2D.initFromOnlineFile(filename);
+        ProblemOnlineDisc2D probDisc2D = ProblemOnlineDisc2D(prob2D);
+        
+        solve_online(probDisc2D, alg, dir, i - 1);
+
+        std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
+    }
+}
+
 /*
 每次要改的地方：
 1. para::sensor_nums
@@ -252,7 +300,8 @@ int main() {
     readInit(instance_num, direction, true);
     std::cout << "instance_number = " << instance_num << std::endl;
     results.clear();
-    solve_all_instance(instance_num, direction);
+    // solve_all_instance(instance_num, direction);
+    solve_all_instance_online(instance_num, direction);
 
     return 0;
 }

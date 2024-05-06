@@ -36,9 +36,9 @@ ProblemDisc1D::ProblemDisc1D(int num, double len, int lenNum, const std::vector<
     for (int sid = 0; sid < sensorNum; sid++) {
         sensorList[sid].time = list[sid].time;
         sensorList[sid].updateByCoverList();
-        if (sensorList[sid].range.leftIndex < 0 || sensorList[sid].range.rightIndex < 0) {
-            std::cout << "error in construct func of ProblemDisc1D\n";
-        }
+        // if (sensorList[sid].range.leftIndex < 0 || sensorList[sid].range.rightIndex < 0) {
+        //     std::cout << "error in construct func of ProblemDisc1D\n";
+        // }
     }
 }
 

@@ -57,6 +57,10 @@ int ssf::Sensor::getRightIndex() const {
 }
 
 bool ssf::Sensor::operator< (const ssf::Sensor &_sensor) const {
+    // if (rightIndex != _sensor.getRightIndex()) {
+    //     return rightIndex < _sensor.getRightIndex();
+    // }
+    // return leftIndex > _sensor.getLeftIndex();
     if (leftIndex != _sensor.getLeftIndex()) {
         return leftIndex < _sensor.getLeftIndex();
     }
@@ -208,9 +212,9 @@ void ssf::SSFSolverDisc::init(std::vector<ssf::Sensor> &sensors) {
     for (int i = 0; i < sensorNum; i++) {
         int l = problem->getSensor(i).range.leftIndex;
         int r = problem->getSensor(i).range.rightIndex;
-        if (l < 0 || r < 0) {
-            std::cout << "error in init()\n";
-        }
+        // if (l < 0 || r < 0) {
+        //     std::cout << "error in init()\n";
+        // }
         ssf::Sensor sensor(i, l, r);
         // i是在problem中的编号，如果是online problem，还需要在获取解时映射一次编号
         sensors.push_back(sensor);
@@ -253,6 +257,7 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
             // int l = sensors[ir].getLeftIndex();
             // if (l > rMost) break;
             if (!isOverlap(sensors[ir].getSensorIndex(), isActDis, isChosen)) break; // 若无重叠则break
+            // if (sensors[ir])
 
             // 更新 segment 的基本信息
             if (sensors[ir].getRightIndex() > rMost) {
@@ -262,13 +267,30 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
             dis += getActiveDistance(sensors[ir], isActDis, isChosen);
             time += problem->getSensor(sensors[ir].getSensorIndex()).time; // 更新 active time
             // rMost = sensors[ir].getRightIndex(); // ! sensors[ir].getRightIndex()也可能比原rMost小（被包含）
+            seg.addSensor(ir);
+
+            while (ir + 1 < sensorNum) {
+                bool cFlag = false;
+                if (sensors[ir + 1].getRightIndex() <= rMost) {
+                    ++ir;
+                    if (!sensors[ir].isActive()) {
+                        cFlag = true;
+                    } else {
+                        rMost = std::max(rMost, sensors[ir].getRightIndex());
+                        dis += getActiveDistance(sensors[ir], isActDis, isChosen);
+                        time += problem->getSensor(sensors[ir].getSensorIndex()).time;
+                        seg.addSensor(ir);
+                    }
+                } else break;
+                if (cFlag) continue;
+            }
             
             // 生成新的 segment 加入集合 segments 中
             // ssf::Segment seg(lMost, rMost, dis, time);
             seg.setActiveDistance(dis);
             seg.setActiveTime(time);
             seg.setRight(rMost);
-            seg.addSensor(ir);
+            // seg.addSensor(ir);
             seg.calVelocity();
             segments.push_back(seg);
         }
@@ -418,7 +440,8 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
             // }
             for (int j = 0; j < problem->getSensorNum(); j++) {
                 if (!sensors[j].isActive()) continue;
-                for (int i : problem->getSensor(j).coverList) {
+                // for (int i : problem->getSensor(j).coverList) {
+                for (int i : problem->getSensor(sensors[j].getSensorIndex()).coverList) {
                     if (isActDis[i]) {
                         linked[i + start].push_back(problemFrom->mapSensor(sensors[j].getSensorIndex()));
                     }
@@ -532,8 +555,8 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegmentForOnline(const std::vector<b
     int index = 0;
     for (int i = segments.size() - 1; i; i--)
         if (segments[i] < segments[index]) index = i;
-    if (segments[index].getLeft() < 0) {
-        std::cout << "error segment\n";
-    }
+    // if (segments[index].getLeft() < 0) {
+    //     std::cout << "error segment\n";
+    // }
     return segments[index];
 }

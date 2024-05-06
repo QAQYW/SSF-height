@@ -20,7 +20,7 @@ const double aco::INITIAL_PHEROMONE_VALUE = 1;  // ! 未调参
 int aco::roulette(std::vector<aco::Candidate>& candList, double sum) {
     // TODO 也可以写成二分，但不一定会更快
     if (candList.empty()) {
-        std::cout << "Roulette Error: candList is empty\n";
+        // std::cout << "Roulette Error: candList is empty\n";
         return 0; // 0 就是hMin
     }
     double accu = 0, r = tools::randDouble(0, sum);

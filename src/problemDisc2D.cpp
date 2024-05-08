@@ -70,7 +70,9 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
             rg.leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
             sensor.rangeList.push_back(rg);
         }
-        if (sensor.rangeList.empty()) continue; 
+        // if (sensor.rangeList.empty()) {
+        //     continue;
+        // }
         sensor.setRmost();
         // int temp = origin[i].dataList.size();
         // sensor.rangeList.resize(temp);

@@ -229,11 +229,14 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
     std::vector<ssf::Segment> segments;
     // 辅助变量，是否被当前segment选中
     bool isChosen[isActDis.size()] = {false};
+    // 是否在当前的segment中
+    bool inSegment[sensorNum];
     for (int il = 0; il < sensorNum; il++) {
         // 若该传感器数据已传输，则跳过
         if (!sensors[il].isActive()) continue;
 
         std::memset(isChosen, false, sizeof(isChosen));
+        std::memset(inSegment, false, sizeof(inSegment));
 
         // segment 的基本信息
         int lMost = sensors[il].getLeftIndex();  // segment的最左端
@@ -248,6 +251,7 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
         seg.addSensor(il);
         seg.calVelocity();
         segments.push_back(seg);
+        inSegment[il] = true;
 
         for (int ir = il + 1; ir < sensorNum; ir++) {
             // 若该传感器数据已传输，则跳过
@@ -268,22 +272,40 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
             time += problem->getSensor(sensors[ir].getSensorIndex()).time; // 更新 active time
             // rMost = sensors[ir].getRightIndex(); // ! sensors[ir].getRightIndex()也可能比原rMost小（被包含）
             seg.addSensor(ir);
+            inSegment[ir] = true;
 
-            while (ir + 1 < sensorNum) {
-                bool cFlag = false;
-                if (sensors[ir + 1].getRightIndex() <= rMost) {
-                    ++ir;
-                    if (!sensors[ir].isActive()) {
-                        cFlag = true;
-                    } else {
-                        rMost = std::max(rMost, sensors[ir].getRightIndex());
-                        dis += getActiveDistance(sensors[ir], isActDis, isChosen);
-                        time += problem->getSensor(sensors[ir].getSensorIndex()).time;
-                        seg.addSensor(ir);
+            // extend segment
+            for (int ie = 0; ie < sensorNum; ie++) {
+                if (!sensors[ie].isActive() || inSegment[ie]) continue;
+                // TODO 如果ie的coverList完全包含于当前segment，则add进来
+                bool check = true;
+                for (int ied : problem->getSensor(sensors[ie].getSensorIndex()).coverList) {
+                    if (!isActDis[ied] && !isChosen[ied]) {
+                        check = false;
+                        break;
                     }
-                } else break;
-                if (cFlag) continue;
+                }
+                if (check) {
+                    seg.addSensor(ie);
+                    inSegment[ie] = true;
+                }
             }
+
+            // while (ir + 1 < sensorNum) {
+            //     bool cFlag = false;
+            //     if (sensors[ir + 1].getRightIndex() <= rMost) {
+            //         ++ir;
+            //         if (!sensors[ir].isActive()) {
+            //             cFlag = true;
+            //         } else {
+            //             rMost = std::max(rMost, sensors[ir].getRightIndex());
+            //             dis += getActiveDistance(sensors[ir], isActDis, isChosen);
+            //             time += problem->getSensor(sensors[ir].getSensorIndex()).time;
+            //             seg.addSensor(ir);
+            //         }
+            //     } else break;
+            //     if (cFlag) continue;
+            // }
             
             // 生成新的 segment 加入集合 segments 中
             // ssf::Segment seg(lMost, rMost, dis, time);

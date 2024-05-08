@@ -290,22 +290,6 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
                     inSegment[ie] = true;
                 }
             }
-
-            // while (ir + 1 < sensorNum) {
-            //     bool cFlag = false;
-            //     if (sensors[ir + 1].getRightIndex() <= rMost) {
-            //         ++ir;
-            //         if (!sensors[ir].isActive()) {
-            //             cFlag = true;
-            //         } else {
-            //             rMost = std::max(rMost, sensors[ir].getRightIndex());
-            //             dis += getActiveDistance(sensors[ir], isActDis, isChosen);
-            //             time += problem->getSensor(sensors[ir].getSensorIndex()).time;
-            //             seg.addSensor(ir);
-            //         }
-            //     } else break;
-            //     if (cFlag) continue;
-            // }
             
             // 生成新的 segment 加入集合 segments 中
             // ssf::Segment seg(lMost, rMost, dis, time);

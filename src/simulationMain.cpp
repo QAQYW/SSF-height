@@ -254,6 +254,7 @@ void solve_online(ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string di
     // 保存结果（追加写入）
     std::ofstream fout;
     fout.open(dir + "\\results-online.txt", std::ios::out | std::ios::app);
+    // fout.open(dir + "\\A-temp-results-online.txt", std::ios::out | std::ios::app);
     fout << para::algorithm_names[alg] << "\t";
     fout << features[data_index] << "\t";
     fout << result.str << "\n";
@@ -263,8 +264,10 @@ void solve_online(ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string di
 void solve_all_instance_online(int instance_num, std::string dir) {
     para::Algorithm alg = para::Algorithm::ACO_Online;
     std::string filename = "", feature = "";
-    // sensorNum=10 的 i 从 104 开始
-    for (int i = 104; i <= instance_num; i++) {
+    // sensorNum=10 的 i 从 ___ 开始
+    // int instance_set[] = {104, 12};
+    // for (int i : instance_set) {
+    for (int i = 1; i <= instance_num; i++) {
         filename = filenames[i - 1];
         feature = features[i - 1];
 
@@ -290,7 +293,7 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\10";
+    std::string direction = ".\\experiment\\5";
 
     // 生成数据
     // generate_online_data(direction, true, 1);

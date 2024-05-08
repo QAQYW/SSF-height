@@ -38,13 +38,28 @@ std::vector<Result> results;
 
 /// @brief 参数集合
 namespace para {
-    // const int sensor_nums[6] = {5, 10, 20, 30, 40, 50};
-    const int sensor_nums[1] = {1};
-    const double max_y_mults[5] = {115, 135, 155, 175, 195};
-    const double max_x_mult_coefs[5] = {0.2, 0.3, 0.4, 0.5, 0.6};
-    // const double max_time_range_props[4] = {0.05, 0.1, 0.2, 0.3};
-    const double time_props[6] = {0.5, 1, 1.5, 2, 2.5, 3};
-    const double max_swells[5] = {1, 1.5, 2, 2.5, 3};
+    // 传感器数量，参考值 {5, 10, 20, 30, 40, 50}
+    const int sensor_nums[] = {1};
+
+    // 水滴曲线最大高度（米），参考值 {115, 135, 155, 175, 195}
+    const double max_y_mults[] = {115, 135, 155, 175, 195};
+
+    // 水滴曲线最大宽度（米），参考值 {20, 30, 40, 50}
+    const double max_x_milts[] = {20, 30, 40, 50};
+
+    // // 水滴最宽处宽度与路径总长度线性相关的系数，参考值 {0.2, 0.3, 0.4, 0.5, 0.6}
+    // const double max_x_mult_coefs[] = {0.2, 0.3, 0.4, 0.5, 0.6};
+
+    // // 传输时间与传输范围大小的平方相关的系数，参考值 {0.05, 0.1, 0.2, 0.3}
+    // const double max_time_range_props[] = {0.05, 0.1, 0.2, 0.3};
+
+    // 传输时间与传输范围大小线性相关的系数，参考值 {0.5, 1, 1.5, 2, 2.5, 3}
+    const double time_props[] = {0.5, 1, 1.5, 2, 2.5, 3};
+
+    // 最大膨胀系数，参考值 {1, 1.5, 2, 2.5, 3}
+    const double max_swells[] = {1, 1.5, 2, 2.5, 3};
+
+    // 算法名字
     const std::string algorithm_names[6] = {
         "DFS",
         "ACO",
@@ -53,6 +68,7 @@ namespace para {
         "Greedy",
         "ACO-Online"
     };
+    // 算法枚举类型
     enum Algorithm {
         DFS = 0,
         ACO = 1,
@@ -79,14 +95,16 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
 
     for (int sensor_num : para::sensor_nums) {
         for (double max_y_mult : para::max_y_mults) {
-            for (double max_x_mult_coef : para::max_x_mult_coefs) {
+            // for (double max_x_mult_coef : para::max_x_mult_coefs) {
+            for (double max_x_mult : para::max_x_milts) {
                 // for (double max_time_range_prop : para::max_time_range_props) {
                 for (double time_prop : para::time_props) {
                     for (double max_swell : para::max_swells) {
                         for (int i = 1; i <= num; i++) {
                             ++count_data;
                             // DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult_coef, max_time_range_prop, max_swell);
-                            DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult_coef, time_prop, max_swell);
+                            // DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult_coef, time_prop, max_swell);
+                            DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell);
                             // 随机种子
                             unsigned int seed = std::rand();
                             seeds.push_back(seed);
@@ -95,8 +113,8 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
                             std::string feature = std::to_string(count_data) + "\t"
                                 + std::to_string(sensor_num) + "\t"
                                 + std::to_string(max_y_mult) + "\t"
-                                + std::to_string(max_x_mult_coef) + "\t"
-                                + std::to_string(time_prop) + "\t"// + std::to_string(max_time_range_prop) + "\t"
+                                + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+                                + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
                                 + std::to_string(max_swell);
                             features.push_back(feature);
                             // std::cout << feature << "\n";

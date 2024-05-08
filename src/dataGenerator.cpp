@@ -208,11 +208,13 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
 
     // 随机产生每个传感器的传输范围
     // 几个辅助变量
-    double maxXMult = 0.4 * length;
-    double minXMult = MIN_X_MULT;
-    double maxYMult = maxHeight * 1.5;//1.35;
-    double minYMult = minHeight / 1.5;//1.35; // heightList[0] / 1.35;
-    maxXMult = MAX_X_MULT_COEF * length;
+    double maxXMult, minXMult, maxYMult, minYMult;
+    // maxXMult = 0.4 * length;
+    // minXMult = MIN_X_MULT;
+    // maxYMult = maxHeight * 1.5;//1.35;
+    // minYMult = minHeight / 1.5;//1.35; // heightList[0] / 1.35;
+    // maxXMult = MAX_X_MULT_COEF * length;
+    maxXMult = MAX_X_MULT;
     minXMult = MIN_X_MULT;
     maxYMult = MAX_Y_MULT;
     minYMult = MIN_Y_MULT;
@@ -366,8 +368,14 @@ void DataGenerator::saveSensorShape(double shape[][4], int dataIndex) const {
 //     // std::cout << "max_y_mult = " << std::to_string(maxYMult) << "\n";
 // };
 
-DataGenerator::DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double timeProp, double maxSwell)
- : savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MAX_X_MULT_COEF(maxXMultCoef), TIME_PROP(timeProp), MAX_SWELL(maxSwell) {
+// DataGenerator::DataGenerator(std::string path, int num, double maxYMult, double maxXMultCoef, double timeProp, double maxSwell)
+//  : savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MAX_X_MULT_COEF(maxXMultCoef), TIME_PROP(timeProp), MAX_SWELL(maxSwell) {
+//     unit_height = resource::REF_UNIT_HEIGHT;
+//     unit_length = resource::REF_UNIT_LENGTH;
+// }
+
+DataGenerator::DataGenerator(std::string path, int num, double maxYMult, double maxXMult, double timeProp, double maxSwell)
+ : savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MAX_X_MULT(maxXMult), TIME_PROP(timeProp), MAX_SWELL(maxSwell) {
     unit_height = resource::REF_UNIT_HEIGHT;
     unit_length = resource::REF_UNIT_LENGTH;
 }

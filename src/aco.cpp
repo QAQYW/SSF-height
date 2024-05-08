@@ -85,7 +85,8 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
         double probSum = 0;
         // TODO 每确定了一个height，就要更新visit vector
         // cout << "going to isUrgent()\n";
-        if (d > 0 && solver.isUrgent(d, candidateList, visit, countVisit)) {
+        // if (d > 0 && solver.isUrgent(d, candidateList, visit, countVisit)) {
+        if (solver.isUrgent(d, candidateList, visit, countVisit)) {
             // cout << "\t In urgent case: " << std::to_string(candidateList.size()) << "\n";
             for (aco::Candidate cand : candidateList) {
                 cand.p = solver.calProbability(ph, d, curr, cand.h);
@@ -303,6 +304,9 @@ bool aco::ACOSolver::isUrgent(int d, std::vector<aco::Candidate> & candList, con
             if (visit[i] && problem->getSensor(i).rmost <= nd) {
                 ++countVisit;
             }
+            // if (visit[i] && problem->getSensor(i).rmost <= d) {
+            //     ++countVisit;
+            // }
         }
         // if (_d - d + 1 <= getRBoundValue(_d) - countVisit) {
         // if (nd >= lengthIndexNum) {

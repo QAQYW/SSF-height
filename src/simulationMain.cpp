@@ -39,7 +39,7 @@ std::vector<Result> results;
 /// @brief 参数集合
 namespace para {
     // const int sensor_nums[6] = {5, 10, 20, 30, 40, 50};
-    const int sensor_nums[1] = {10};
+    const int sensor_nums[1] = {1};
     const double max_y_mults[5] = {115, 135, 155, 175, 195};
     const double max_x_mult_coefs[5] = {0.2, 0.3, 0.4, 0.5, 0.6};
     // const double max_time_range_props[4] = {0.05, 0.1, 0.2, 0.3};
@@ -215,9 +215,9 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
 /// @param dir 
 void solve_all_instance(int instance_num, std::string dir) {
     // 没有dfs
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy};
+    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy};
     // 有dfs
-    // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
+    std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -253,8 +253,8 @@ void solve_online(ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string di
     results.push_back(result);
     // 保存结果（追加写入）
     std::ofstream fout;
-    fout.open(dir + "\\results-online.txt", std::ios::out | std::ios::app);
-    // fout.open(dir + "\\A-temp-results-online.txt", std::ios::out | std::ios::app);
+    // fout.open(dir + "\\results-online.txt", std::ios::out | std::ios::app);
+    fout.open(dir + "\\A-temp-results-online.txt", std::ios::out | std::ios::app);
     fout << para::algorithm_names[alg] << "\t";
     fout << features[data_index] << "\t";
     fout << result.str << "\n";
@@ -265,9 +265,9 @@ void solve_all_instance_online(int instance_num, std::string dir) {
     para::Algorithm alg = para::Algorithm::ACO_Online;
     std::string filename = "", feature = "";
     // sensorNum=10 的 i 从 ___ 开始
-    // int instance_set[] = {104, 12};
+    // int instance_set[] = {104, 12, 56};
     // for (int i : instance_set) {
-    for (int i = 1; i <= instance_num; i++) {
+    for (int i = 56; i <= instance_num; i++) {
         filename = filenames[i - 1];
         feature = features[i - 1];
 

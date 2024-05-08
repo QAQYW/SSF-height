@@ -152,6 +152,7 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
         // if (linked[d].empty()) {
         //     std::cout << "empty linked["<< std::to_string(d) << "] before calling function 'collectData'\n";
         // }
+        // std::cout << "d=" << d << ", h=" << trajectory.getHeightIndex(d) << "\n";
         collectData(linked[d], v);
         // 统计无人机能耗（hcost & vcost）
         updateEnergy(v, curr, next);

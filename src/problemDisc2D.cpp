@@ -65,8 +65,9 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
         int temp = origin[i].dataList.size();
         for (int j = 0; j < temp; j++) {
             resource::RangeDisc rg;
-            rg.rightIndex = origin[i].dataList[j].rightIndex - start;
-            if (rg.rightIndex <= 0) break;
+            // rg.rightIndex = origin[i].dataList[j].rightIndex - start;
+            // if (rg.rightIndex <= 0) break;
+            rg.rightIndex = std::max(0, origin[i].dataList[j].rightIndex - start);
             rg.leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
             sensor.rangeList.push_back(rg);
         }
@@ -74,6 +75,10 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
         //     continue;
         // }
         sensor.setRmost();
+        if (sensor.rmost == 0) {
+            std::cout << "rmost = 0";
+            std::cout << "\n";
+        }
         // int temp = origin[i].dataList.size();
         // sensor.rangeList.resize(temp);
         // for (int j = 0; j < temp; j++) {

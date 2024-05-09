@@ -301,6 +301,7 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
         // double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * width;
         // 数据传输时间 - 与width成正比
         double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * TIME_PROP;
+        time = time * (maxYMult - minYMult) / (MAX_Y_MULT - MIN_Y_MULT);
         time = tools::approx(time, resource::TIME_ULP);
 
         // 保存传输时间

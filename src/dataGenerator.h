@@ -26,7 +26,7 @@ public:
     const double MIN_TRANSMISSION_TIME = 10; //0.1;
 
     // 假设传输时间与传输范围的最大宽度的平方相关（二次）
-    const double MAX_TIME_RANGE_PROP = 0.5; //1 / 5.0;
+    const double MAX_TIME_RANGE_PROP = 0.1; //1 / 5.0;
     const double MIN_TIME_RANGE_PROP = 2.0; //1 / 50.0; // 0.02
     // 假设传输时间与传输范围的最大宽度线性相关
     const double TIME_PROP = 1;
@@ -36,14 +36,14 @@ public:
     // const double MIN_RANGE = 1;//0.5; // ! 0.5米会不会太小
 
     // 飞行高度范围
-    const double MAX_HEIGHT = 140; //200; // 单位：米
+    const double MAX_HEIGHT = 120; //200; // 单位：米
     // const double MAX_HEIGHT = 140; // for tiny_test only
-    const double MIN_HEIGHT = 100; // 单位：米
+    const double MIN_HEIGHT = 80; // 单位：米
 
     // 路径长度与传感器数量的比例系数
-    const double MAX_LENGTH_SENSOR_PROP = 50; //15; //20; // 100;
+    const double MAX_LENGTH_SENSOR_PROP = 20; //15; //20; // 100;
     // const double MAX_LENGTH_SENSOR_PROP = 3; // for tiny_test only
-    const double MIN_LENGTH_SENSOR_PROP = 10; // 10;
+    const double MIN_LENGTH_SENSOR_PROP = 5; // 10;
 
     // ? 下面是不太清楚缘由的一部分，知道怎么用，不知道从何而来
     // 传感器范围x坐标最小放大倍数（仅用于生成传输范围吗）
@@ -51,7 +51,7 @@ public:
     const double MAX_X_MULT = 50;
     const double MAX_X_MULT_COEF = 0.2; // ! 弃用，让传输范围与路径总长度完全独立
 
-    const double MIN_Y_MULT = 105;
+    const double MIN_Y_MULT = 60; //105;
     const double MAX_Y_MULT = 115;
 
     /**

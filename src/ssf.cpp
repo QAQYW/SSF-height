@@ -242,10 +242,27 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
         seg.calVelocity();
         segments.push_back(seg);
         inSegment[il] = true;
+        // extend segment
+        for (int ie = 0; ie < sensorNum; ie++) {
+            if (!sensors[ie].isActive() || inSegment[ie]) continue;
+            // TODO 如果ie的coverList完全包含于当前segment，则add进来
+            bool check = true;
+            for (int ied : problem->getSensor(sensors[ie].getSensorIndex()).coverList) {
+                if (isActDis[ied] && !isChosen[ied]) {
+                    check = false;
+                    break;
+                }
+            }
+            if (check) {
+                seg.addSensor(ie);
+                inSegment[ie] = true;
+            }
+        }
 
         for (int ir = il + 1; ir < sensorNum; ir++) {
             // 若该传感器数据已传输，则跳过
             if (!sensors[ir].isActive()) continue;
+            if (inSegment[ir]) continue;
 
             // 若该传感器与当前segment无重叠部分，则无法组成新的segment
             // int l = sensors[ir].getLeftIndex();
@@ -270,7 +287,7 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
                 // TODO 如果ie的coverList完全包含于当前segment，则add进来
                 bool check = true;
                 for (int ied : problem->getSensor(sensors[ie].getSensorIndex()).coverList) {
-                    if (!isActDis[ied] && !isChosen[ied]) {
+                    if (isActDis[ied] && !isChosen[ied]) {
                         check = false;
                         break;
                     }
@@ -377,7 +394,6 @@ bool ssf::SSFSolverDisc::isOverlap(int sid, const std::vector<bool> &isActDis, c
 }
 
 void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {
-    // std::cout << "in func: ssf::SSFSolverDisc::solveForOnline(...)\n";
     
     // 所有传感器集合
     std::vector<ssf::Sensor> sensors;

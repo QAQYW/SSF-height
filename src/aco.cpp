@@ -3,6 +3,8 @@
 #include "problemDisc1D.h"
 #include "problemDisc2D.h"
 
+#include "greedy.h"
+
 /* -------------------------------- parameter ------------------------------- */
 
 const int aco::ANT_NUM = 20; //30;    // ! 未调参
@@ -12,7 +14,7 @@ const double aco::EVAPORATE_COEF = 0.2;         // ! 未调参
 const double aco::ENHANCE_VALUE = 0.4; //0.5;          // ! 未调参
 const int aco::MAX_ITERATOR = 30; //50;              // ! 未调参
 const double aco::HEURISTIC_BASE = 1;           // ? 这个值具体是多少好像不重要
-const double aco::HEURISTIC_REDUCE_FACTOR = 0.01; //0.1; //1;  // ! 慎重取值。和无人机升降的能耗有直接关系
+const double aco::HEURISTIC_REDUCE_FACTOR = 0.1; //0.1; //1;  // ! 慎重取值。和无人机升降的能耗有直接关系
 const double aco::INITIAL_PHEROMONE_VALUE = 1;  // ! 未调参
 
 /* -------------------------------- roulette -------------------------------- */
@@ -206,8 +208,13 @@ void aco::ACOSolver::solve() {
     // 所有蚂蚁集合
     std::vector<aco::Ant> ants(aco::ANT_NUM, aco::Ant());
 
+    greedy::GreedySolver greedySolver = greedy::GreedySolver(problem);
+    greedySolver.solve();
+    int initHeight = greedySolver.getTrajectory().getHeightIndex(0);
+
     // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
-    Ant bestAnt(problem->getLengthDiscNum(), problem->getMinHeightIndex());
+    // Ant bestAnt(problem->getLengthDiscNum(), problem->getMinHeightIndex());
+    Ant bestAnt(problem->getLengthDiscNum(), initHeight);
     bestAnt.calCost(*problem);
     double optimalCost = bestAnt.getCost();
     // this->trajectory = bestAnt.getTrajectory();

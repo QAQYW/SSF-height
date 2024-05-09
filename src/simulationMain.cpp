@@ -39,13 +39,13 @@ std::vector<Result> results;
 /// @brief 参数集合
 namespace para {
     // 传感器数量，参考值 {5, 10, 20, 30, 40, 50}
-    const int sensor_nums[] = {10};
+    const int sensor_nums[] = {5};
 
     // 水滴曲线最大高度（米），参考值 {115, 135, 155, 175, 195}
-    const double max_y_mults[] = {175};
+    const double max_y_mults[] = {150};  // {50, 60, 70, 80}
 
-    // 水滴曲线最大宽度（米），参考值 {20, 30, 40, 50}
-    const double max_x_milts[] = {30, 40, 50, 60};
+    // 水滴曲线最大宽度（米），参考值 {30, 40, 50, 60}
+    const double max_x_milts[] = {30, 50, 70, 90};
 
     // // 水滴最宽处宽度与路径总长度线性相关的系数，参考值 {0.2, 0.3, 0.4, 0.5, 0.6}
     // const double max_x_mult_coefs[] = {0.2, 0.3, 0.4, 0.5, 0.6};
@@ -232,8 +232,25 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     // for (double v : speedSche) {
     //     std::cout << v << "\n";
     // }
-}
 
+    // 输出完整解
+    std::string name = dir + "\\answer_" + para::algorithm_names[alg] + "_" + std::to_string(data_index + 1) + ".txt";
+    fout.open(name);
+    fout << "distance\tspeed\theight\n";
+    int len = prob.getLengthDiscNum();
+    double dis, hei;
+    for (int i = 0; i < len; i++) {
+        dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
+        hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob.getMinHeight(), resource::REF_UNIT_HEIGHT);
+        fout << std::to_string(dis) << "\t";
+        fout << std::to_string(speedSche[i]) << "\t";
+        fout << std::to_string(hei) << "\n";
+    }
+    fout << " cost = " << std::to_string(result.cost) << "\n";
+    fout << "hcost = " << std::to_string(result.hcost) << "\n";
+    fout << "vcost = " << std::to_string(result.vcost) << "\n";
+    fout.close();
+}
 
 void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string dir, int data_index) {
     std::clock_t sc = std::clock();
@@ -248,12 +265,13 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
     Result result;
     result.hcost = onlineSolver.getHcost();
     result.vcost = onlineSolver.getVcost();
-    result.hcost = optTraj.calHeightCost();
-    result.vcost = energy_calculator::calSpeedCost(offprob, optTraj, speedSche);
+    // result.hcost = optTraj.calHeightCost();
+    // result.vcost = energy_calculator::calSpeedCost(offprob, optTraj, speedSche);
     result.cost = result.hcost + result.vcost;
     result.runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
     result.str = std::to_string(result.cost) + "\t" + std::to_string(result.hcost) + "\t" + std::to_string(result.vcost) + "\t" + std::to_string(result.runtime);
     results.push_back(result);
+    
     // 保存结果（追加写入）
     std::ofstream fout;
     fout.open(dir + "\\results.txt", std::ios::out | std::ios::app);
@@ -262,6 +280,15 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
     fout << para::algorithm_names[alg] << "\t";
     fout << features[data_index] << "\t";
     fout << result.str << "\n";
+
+    result.hcost = optTraj.calHeightCost();
+    result.vcost = energy_calculator::calSpeedCost(offprob, optTraj, speedSche);
+    result.cost = result.hcost + result.vcost;
+    result.str = std::to_string(result.cost) + "\t" + std::to_string(result.hcost) + "\t" + std::to_string(result.vcost) + "\t" + std::to_string(result.runtime);
+    fout << "Re-ACO-Online" << "\t";
+    fout << features[data_index] << "\t";
+    fout << result.str << "\n";
+
     fout.close();
 
     // for (double v : speedSche) {
@@ -274,12 +301,12 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
 /// @param instance_num 
 /// @param dir 
 void solve_all_instance(int instance_num, std::string dir) {
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
+    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
-    // std::vector<para::Algorithm> alg_set = {para::ACO, para::ACO_Online};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::DFS};
 
     std::string filename = "", feature = "";
-    for (int i = 1; i <= instance_num; i++) {
+    for (int i = 2; i <= instance_num; i++) {
         filename = filenames[i - 1];
         feature = features[i - 1];
 
@@ -340,7 +367,7 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\10";
+    std::string direction = ".\\experiment\\5";
 
     // 生成数据
     // generate_online_data(direction, true, 1);

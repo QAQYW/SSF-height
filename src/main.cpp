@@ -496,7 +496,7 @@
 //     std::cout << "    2: online\n";
 //     std::cout << "\nchoose option: ";
 //     // std::cin >> opt1;
-//     opt1 = 1;
+//     opt1 = 2;
 //     std::cout << "\noptions:\n";
 //     std::cout << "    1: use newly generated data\n";
 //     std::cout << "    2: use existed data\n";
@@ -507,7 +507,7 @@
 
 //     filenames.clear();
 
-//     int sensorNum = 10; //5;
+//     int sensorNum = 5; //5;
 
 //     if (opt1 == 1) {
 //         // Offline
@@ -523,8 +523,8 @@
 //                 solve_Offline_PSO(exampleNum, direction, false);
 //                 solve_Offline_GA(exampleNum, direction, false);
 //                 solve_Offline_Greedy(exampleNum, direction, false);
-//                 if (sensorNum > 5) break;
-//                 solve_Offline_Naive(exampleNum, direction, false);
+//                 // if (sensorNum > 5) break;
+//                 // solve_Offline_Naive(exampleNum, direction, false);
 //                 break;
 //             case 2:
 //                 std::cout << "\ninput folder name (time string): ";

@@ -113,7 +113,8 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
 
         // 确定高度
         // int next = (d == 0 ? hMin : aco::roulette(candidateList, probSum));
-        int next = aco::roulette(candidateList, probSum);
+        // int next = aco::roulette(candidateList, probSum);
+        int next = (candidateList.empty() ? curr : aco::roulette(candidateList, probSum));
         // trajectory.addList(next);
         trajectory.setHeightIndex(d, next);
         curr = next; 
@@ -159,33 +160,18 @@ aco::ACOSolver::ACOSolver(ProblemDisc2D *prob): problem(prob), trajectory() {
     sensorNum = prob->getSensorNum();
     lengthIndexNum = prob->getLengthDiscNum();
     heightIndexNum = prob->getHeightDiscNum();
-    // 构造 lBound 和 rBound
-    // lBound.resize(lengthIndexNum, 0);
-    // rBound.resize(lengthIndexNum, 0);
+    // 构造 rBound
     rBound.resize(lengthIndexNum + 10, 0); // ? 
     for (resource::SensorDisc2D s : problem->getSensorList()) {
-        // int lMost = s.rangeList[0].leftIndex;
         int rMost = s.rangeList[0].rightIndex;
         for (resource::RangeDisc rg : s.rangeList) {
-            // lMost = min(lMost, rg.leftIndex);
             rMost = std::max(rMost, rg.rightIndex);
         }
-        // lBound[lMost]++;
-        // if (rMost >= lengthIndexNum) {
-        //     std::cout << "\n\tout of boundary here: 1";
-        //     std::cout << "\n";
-        // }
         rBound[rMost]++;
     }
     for (int i = 1; i < lengthIndexNum; i++) {
-        // lBound[i] += lBound[i - 1];
-        // if (i >= lengthIndexNum) {
-        //     std::cout << "\n\tout of boundary here: 2";
-        //     std::cout << "\n";
-        // }
         rBound[i] += rBound[i - 1];
     }
-    // this->trajectory = nullptr;
 }
 
 ProblemDisc2D* aco::ACOSolver::getProblem() const {
@@ -304,17 +290,7 @@ bool aco::ACOSolver::isUrgent(int d, std::vector<aco::Candidate> & candList, con
             if (visit[i] && problem->getSensor(i).rmost <= nd) {
                 ++countVisit;
             }
-            // if (visit[i] && problem->getSensor(i).rmost <= d) {
-            //     ++countVisit;
-            // }
         }
-        // if (_d - d + 1 <= getRBoundValue(_d) - countVisit) {
-        // if (nd >= lengthIndexNum) {
-        //     std::cout << "\n\tout of boundary here: 3";
-        //     std::cout << "\n";
-        // }
-        // if (nd - d + 1 <= rBound[nd] - countVisit) {
-        // ? if的条件改成了下面的（去掉了+1）再把上面的for循环的nd初值改成d+1
         if (nd - d <= rBound[nd] - countVisit) {
             // 是否urgent
             std::vector<bool> hFlag(heightIndexNum, false);
@@ -329,13 +305,8 @@ bool aco::ACOSolver::isUrgent(int d, std::vector<aco::Candidate> & candList, con
                 for (int h = hMin; h <= hMost; h++) {
                     rMostIndex = std::max(rMostIndex, sensor.rangeList[h].rightIndex);
                 }
-                // ? 未访问过，且在nd之前结束？忘了之前写的是什么意思了，反正下面这句if里的条件有问题
-                // if (!visit[i] && rBound[i] <= nd) {
                 if (!visit[i] && rMostIndex <= nd) {
-                    // resource::SensorDisc2D sensor = problem->getSensor(i);
                     for (int h = hMin; h <= hMost; h++) {
-                        // ? 下面这个if条件好像也有问题，仅仅d<=rightIndex可能还不够
-                        //if (d <= sensor.rangeList[h].rightIndex) {
                         if (sensor.isCovered(d,h)) {
                             hFlag[h] = true;
                         }
@@ -379,8 +350,6 @@ void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &spe
      * 把传感器连接方案、速度调度方案的结果传出
     */
 
-    // std::cout << "in func: aco::ACOSolver::solveForOnline(...)\n";
-
     // 信息素矩阵的维度
     std::vector<int> dim(3);
     dim[0] = problem->getLengthDiscNum();
@@ -402,7 +371,8 @@ void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &spe
     trajectory = bestAnt.getTrajectory();
 
     int iter = 0;
-    while (iter < aco::MAX_ITERATOR) {
+    // while (iter < aco::MAX_ITERATOR) {
+    while (iter < 30) {
         int bestIndex = 0;
         for (int i = 0; i < aco::ANT_NUM; i++) {
             ants[i].init(problem->getLengthDiscNum());
@@ -426,14 +396,8 @@ void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &spe
     ants.clear();
 
     // 最后统一把结果传出
-    // ProblemDisc1D probDisc1D;
-    // probDisc1D.transformFromProblemDisc2D(*problem, trajectory);
     ProblemDisc1D probDisc1D = ProblemDisc1D(problem->getSensorNum(), problem->getLength(), problem->getLengthDiscNum(), problem->getSensorList(), trajectory);
     ssf::SSFSolverDisc ssfSolver = ssf::SSFSolverDisc(&probDisc1D, problem);
     // 结果保存在speedSche和linked当中
     ssfSolver.solveForOnline(start, end, speedSche, linked);
-
-    // 手动释放
-    // pheromone.~vector();
-    // ants.~vector();
 }

@@ -1,6 +1,7 @@
 #include "problemDisc2D.h"
 
 #include "acoOnline.h"
+#include "onlineACO.h"
 
 ProblemDisc2D::ProblemDisc2D(const Problem2D &prob) {
     unitHeight = resource::REF_UNIT_HEIGHT;
@@ -50,13 +51,12 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
     length = resource::indexToLength(lengthDiscNum, 0, unitLength);
 
     sensorNum = 0; // 逐个统计active的传感器数量
+    sensorIndexMap.clear();
     std::vector<resource::SensorOnlineDisc2D> origin = prob.getSensorList();
     std::vector<online::Sensor> states = onlineSolver.getSensorState();
     for (int i = 0; i < prob.getSensorNum(); i++) {
         // 只采集活跃（已发现，且未传输完成）的传感器
         if (!states[i].isActive()) continue;
-
-        sensorIndexMap.push_back(i);
 
         resource::SensorDisc2D sensor;
         sensor.time = states[i].getTime();
@@ -79,18 +79,8 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
             std::cout << "rmost = 0";
             std::cout << "\n";
         }
-        // int temp = origin[i].dataList.size();
-        // sensor.rangeList.resize(temp);
-        // for (int j = 0; j < temp; j++) {
-        //     // 要减去start
-        //     sensor.rangeList[j].leftIndex = std::max(0, origin[i].dataList[j].leftIndex - start);
-        //     // sensor.rangeList[j].rightIndex = origin[i].dataList[j].rightIndex - start;
-        //     sensor.rangeList[j].rightIndex = std::max(0, origin[i].dataList[j].rightIndex - start);
-        //     // !!!!!!!!!! 是否会有rightIndex小于0的情况
-        //     // if (sensor.rangeList[j].rightIndex < 0) {
-        //     //     std::cout << "ERROR: negative right index\n";
-        //     // }
-        // }
+
+        sensorIndexMap.push_back(i);
         sensorList.push_back(sensor);
         ++sensorNum;
     }
@@ -136,6 +126,37 @@ int ProblemDisc2D::mapSensor(int offlineIndex) const {
     return sensorIndexMap[offlineIndex];
 }
 
-// ProblemDisc1D ProblemDisc2D::transformToProblemDisc1D(const Trajectory &traj) const {
-//     ProblemDisc1D prob1D = ProblemDisc1D(sensorNum, length, lengthDiscNum);
-// }
+ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob, const online_aco::OnlineACOSolver &onlineSovler) {
+    unitLength = prob.getUnitLength();
+    unitHeight = prob.getUnitHeight();
+    minHeight = prob.getMinHeight();
+    heightDiscNum = prob.getHeightDiscNum();
+    minHeightIndex = 0;
+    maxHeightIndex = heightDiscNum - 1;
+    lengthDiscNum = end - start; // +1
+    length = resource::indexToLength(lengthDiscNum, 0, unitLength);
+
+    // sensorNum = 0;
+    sensorIndexMap.clear();
+    std::vector<resource::SensorOnlineDisc2D> origin = prob.getSensorList();
+    std::vector<online_aco::SensorState> states = onlineSovler.getSensorStates();
+    int originNum = prob.getSensorNum();
+    for (int oid = 0; oid < originNum; oid++) {
+        if (!states[oid].isActive()) continue;
+        resource::SensorDisc2D sensor;
+        sensor.time = states[oid].getTime();
+        sensor.rangeList.clear();
+        int temp = origin[oid].dataList.size();
+        for (int h = 0; h < temp; h++) {
+            resource::RangeDisc rg;
+            rg.leftIndex = origin[oid].dataList[h].leftIndex;
+            rg.rightIndex = origin[oid].dataList[h].rightIndex;
+            if (rg.leftIndex < 0) rg.leftIndex = 0;
+            if (rg.rightIndex < 0) rg.rightIndex = 0;
+            sensor.rangeList.push_back(rg);
+        }
+        sensor.setRmost();
+        sensorIndexMap.push_back(oid);
+    }
+    sensorNum = sensorIndexMap.size();
+}

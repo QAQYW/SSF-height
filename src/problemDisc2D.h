@@ -10,6 +10,9 @@
 namespace online {
     class ACOSolver_Online;
 }
+namespace online_aco {
+    class OnlineACOSolver;
+}
 
 class ProblemDisc2D {
 private:
@@ -39,6 +42,7 @@ private:
 public:
     ProblemDisc2D(const Problem2D &prob);
     ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob, const online::ACOSolver_Online &onlineSolver);
+    ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob, const online_aco::OnlineACOSolver &onlineSovler);
     int getSensorNum() const;
     double getLength() const;
     std::vector<resource::SensorDisc2D> getSensorList() const;

@@ -39,13 +39,13 @@ std::vector<Result> results;
 /// @brief 参数集合
 namespace para {
     // 传感器数量，参考值 {5, 10, 20, 30, 40, 50}
-    const int sensor_nums[] = {1};
+    const int sensor_nums[] = {10};
 
     // 水滴曲线最大高度（米），参考值 {115, 135, 155, 175, 195}
-    const double max_y_mults[] = {115, 135, 155, 175, 195};
+    const double max_y_mults[] = {175};
 
     // 水滴曲线最大宽度（米），参考值 {20, 30, 40, 50}
-    const double max_x_milts[] = {20, 30, 40, 50};
+    const double max_x_milts[] = {30, 40, 50, 60};
 
     // // 水滴最宽处宽度与路径总长度线性相关的系数，参考值 {0.2, 0.3, 0.4, 0.5, 0.6}
     // const double max_x_mult_coefs[] = {0.2, 0.3, 0.4, 0.5, 0.6};
@@ -54,10 +54,10 @@ namespace para {
     // const double max_time_range_props[] = {0.05, 0.1, 0.2, 0.3};
 
     // 传输时间与传输范围大小线性相关的系数，参考值 {0.5, 1, 1.5, 2, 2.5, 3}
-    const double time_props[] = {0.5, 1, 1.5, 2, 2.5, 3};
+    const double time_props[] = {1.5};
 
     // 最大膨胀系数，参考值 {1, 1.5, 2, 2.5, 3}
-    const double max_swells[] = {1, 1.5, 2, 2.5, 3};
+    const double max_swells[] = {2};
 
     // 算法名字
     const std::string algorithm_names[6] = {
@@ -145,6 +145,8 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
         fout << filenames[i] << "\n";
     }
     fout.close();
+
+    std::cout << "Generate " << count_data << " instances\n\n";
 }
 
 /// @brief 读入filenames.txt和features.txt
@@ -226,33 +228,14 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     fout << result.str << "\n";
     fout.close();
     // std::cout << para::algorithm_names[alg] << "\t" << features[index] << "\t" << result.str << "\n";
+
+    // for (double v : speedSche) {
+    //     std::cout << v << "\n";
+    // }
 }
 
-/// @brief 用所有方法，求解所有测试数据
-/// @param instance_num 
-/// @param dir 
-void solve_all_instance(int instance_num, std::string dir) {
-    // 没有dfs
-    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy};
-    // 有dfs
-    std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
 
-    std::string filename = "", feature = "";
-    for (int i = 1; i <= instance_num; i++) {
-        filename = filenames[i - 1];
-        feature = features[i - 1];
-
-        Problem2D prob2D;
-        prob2D.initFromOnlineFile(filename);
-        ProblemDisc2D probDisc2D = ProblemDisc2D(prob2D);
-        for (para::Algorithm alg : alg_set) {
-            solve(probDisc2D, alg, dir, i - 1);
-            std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
-        }
-    }
-}
-
-void solve_online(ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string dir, int data_index) {
+void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string dir, int data_index) {
     std::clock_t sc = std::clock();
     Trajectory optTraj;
     // 求解
@@ -265,35 +248,81 @@ void solve_online(ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string di
     Result result;
     result.hcost = onlineSolver.getHcost();
     result.vcost = onlineSolver.getVcost();
+    result.hcost = optTraj.calHeightCost();
+    result.vcost = energy_calculator::calSpeedCost(offprob, optTraj, speedSche);
     result.cost = result.hcost + result.vcost;
     result.runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
     result.str = std::to_string(result.cost) + "\t" + std::to_string(result.hcost) + "\t" + std::to_string(result.vcost) + "\t" + std::to_string(result.runtime);
     results.push_back(result);
     // 保存结果（追加写入）
     std::ofstream fout;
+    fout.open(dir + "\\results.txt", std::ios::out | std::ios::app);
     // fout.open(dir + "\\results-online.txt", std::ios::out | std::ios::app);
-    fout.open(dir + "\\A-temp-results-online.txt", std::ios::out | std::ios::app);
+    // fout.open(dir + "\\A-temp-results-online.txt", std::ios::out | std::ios::app);
     fout << para::algorithm_names[alg] << "\t";
     fout << features[data_index] << "\t";
     fout << result.str << "\n";
     fout.close();
+
+    // for (double v : speedSche) {
+    //     std::cout << v << "\n";
+    // }
+}
+
+
+/// @brief 用所有方法，求解所有测试数据
+/// @param instance_num 
+/// @param dir 
+void solve_all_instance(int instance_num, std::string dir) {
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
+    // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
+    // std::vector<para::Algorithm> alg_set = {para::ACO, para::ACO_Online};
+
+    std::string filename = "", feature = "";
+    for (int i = 1; i <= instance_num; i++) {
+        filename = filenames[i - 1];
+        feature = features[i - 1];
+
+        // 读入offline问题
+        Problem2D probOff2D;
+        probOff2D.initFromOnlineFile(filename);
+        ProblemDisc2D probOffDisc2D = ProblemDisc2D(probOff2D);
+        // 读入online问题
+        ProblemOnline2D probOn2D;
+        probOn2D.initFromOnlineFile(filename);
+        ProblemOnlineDisc2D probOnDisc2D = ProblemOnlineDisc2D(probOn2D);
+        
+        for (para::Algorithm alg : alg_set) {
+
+            if (alg == para::Algorithm::ACO_Online) {
+                solve_online(probOffDisc2D, probOnDisc2D, alg, dir, i - 1);
+            } else {
+                solve(probOffDisc2D, alg, dir, i - 1);
+            }
+            
+            std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
+        }
+    }
 }
 
 void solve_all_instance_online(int instance_num, std::string dir) {
     para::Algorithm alg = para::Algorithm::ACO_Online;
     std::string filename = "", feature = "";
-    // sensorNum=10 的 i 从 ___ 开始
     // int instance_set[] = {104, 12, 56};
     // for (int i : instance_set) {
-    for (int i = 56; i <= instance_num; i++) {
+    for (int i = 1; i <= instance_num; i++) {
         filename = filenames[i - 1];
         feature = features[i - 1];
+
+        Problem2D probOff2D;
+        probOff2D.initFromOnlineFile(filename);
+        ProblemDisc2D probOffDisc2D = ProblemDisc2D(probOff2D);
 
         ProblemOnline2D prob2D;
         prob2D.initFromOnlineFile(filename);
         ProblemOnlineDisc2D probDisc2D = ProblemOnlineDisc2D(prob2D);
         
-        solve_online(probDisc2D, alg, dir, i - 1);
+        solve_online(probOffDisc2D, probDisc2D, alg, dir, i - 1);
 
         std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
     }
@@ -311,7 +340,7 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\5";
+    std::string direction = ".\\experiment\\10";
 
     // 生成数据
     // generate_online_data(direction, true, 1);
@@ -319,10 +348,10 @@ int main() {
     // 仿真实验
     int instance_num = 0;
     readInit(instance_num, direction, true);
-    std::cout << "instance_number = " << instance_num << std::endl;
+    std::cout << "instance_number = " << instance_num << "\n\n";
     results.clear();
-    // solve_all_instance(instance_num, direction);
-    solve_all_instance_online(instance_num, direction);
+    solve_all_instance(instance_num, direction);
+    // solve_all_instance_online(instance_num, direction);
 
     return 0;
 }

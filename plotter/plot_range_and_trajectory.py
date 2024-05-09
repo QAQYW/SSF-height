@@ -92,11 +92,13 @@ if __name__ == "__main__":
     
     # timestr = "2024_4_11_22_31_31"
     # timestr = "1900_1_1_0_0_1"
+    timestr = "nothing"
     print("\ntimestr = " + timestr + "\n")
 
     try:
         # 绘制传感器传输范围
-        filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\online_shape_" + dataIndex + ".txt"
+        # filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\online_shape_" + dataIndex + ".txt"
+        filepath = "D:\\VSCodeWorkspace\\SSF-height\\experiment\\10\\online_shape_" + dataIndex + ".txt"
         with open(file=filepath, mode="r") as file:
             length    = float(file.readline().strip())  # 路径长度
             minHeight = float(file.readline().strip())  # 最小高度

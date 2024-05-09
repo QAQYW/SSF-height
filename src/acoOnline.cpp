@@ -70,10 +70,8 @@ double online::ACOSolver_Online::getVcost() const {
 }
 
 void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
-    // int countActive = 0;
     int countInformed = 0;
     std::vector<bool> informed(sensorNum, false); // 对应的是原传感器编号
-    // std::vector<bool> visited(sensorNum, false);  // 对应的是原传感器编号
 
     int hMin = problem->getMinHeightIndex();
     int hMax = problem->getMaxHeightIndex();
@@ -85,36 +83,11 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
     int currEnd = 0;
     // 刚开始可以获得所有control range覆盖了d=0的传感器信息
     // 满足 min{sensorList[i].controlList[j] == 0} 即可
-    for (int s = 0; s < sensorNum; s++) {
-        // for (int h = hMin; h <= hMax; h++) {
-        //     if (sensorList[s].controlList[h].leftIndex == 0) {
-        //         informed[s] = true;
-        //         ++countInformed;
-        //         break;
-        //     }
-        // }
-        // if (informed[s]) {
-        //     sensorState[s].setActive();
-        //     for (resource::RangeDisc rg : sensorList[s].dataList) {
-        //         currEnd = std::max(currEnd, rg.rightIndex);
-        //     }
-        //     // ! data range 并不能覆盖所有高度
-        //     // for (int h = hMin; h <= hMax; h++) {
-        //     //     currEnd = std::max(currEnd, sensorList[s].dataList[h].rightIndex);
-        //     // }
-        // }
-        for (int h = hMin; h <= hMax; h++) {
-            std::vector<int> newSensors = exploreNewSensor(0, h, sensorList, informed, currEnd);
-            if (!newSensors.empty()) {
-                newInfo = true;
-                countInformed += newSensors.size();
-                // countActive += newSensors.size();
-                // for (int sid : newSensors) {
-                //     for (resource::RangeDisc rg : sensorList[sid].dataList) {
-                //         currEnd = std::max(currEnd, rg.rightIndex);
-                //     }
-                // }
-            }
+    for (int h = hMin; h <= hMax; h++) {
+        std::vector<int> newSensors = exploreNewSensor(0, h, sensorList, informed, currEnd);
+        if (!newSensors.empty()) {
+            newInfo = true;
+            countInformed += newSensors.size();
         }
     }
 
@@ -126,33 +99,24 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
 
     // 速度调度
     speedSche.clear();
-    // speedSche.resize(trajLen, -1); // -1 表示尚未规划  方便调试
     speedSche.resize(trajLen, resource::V_STAR);
     
     // 每个离散位置所连接的传感器
     std::vector<std::vector<int>> linked(trajLen);
-    // std::vector<std::vector<int>> linked(trajLen + 1); // ? 加个 1 试试
 
     for (int d = 0; /*d < trajLen*/; /*d++*/) {
         
         if (d == trajLen) break; // ?????????
 
         // 若获得了新的传感器信息，则需重新规划
-        // if (newInfo && countActive > 0) {
         if (newInfo) {
-            // ? 还需要记录什么信息
             resolve(d, currEnd, speedSche, linked);
-            // std::cout << "new info. d=" << std::to_string(d) << " and then resolve\n";
         }
         
         next = trajectory.getHeightIndex(d);
         double v = speedSche[d];
 
         // 采集数据
-        // if (linked[d].empty()) {
-        //     std::cout << "empty linked["<< std::to_string(d) << "] before calling function 'collectData'\n";
-        // }
-        // std::cout << "d=" << d << ", h=" << trajectory.getHeightIndex(d) << "\n";
         collectData(linked[d], v);
         // 统计无人机能耗（hcost & vcost）
         updateEnergy(v, curr, next);
@@ -164,25 +128,15 @@ void online::ACOSolver_Online::solve(std::vector<double> &speedSche) {
         // 尝试获得新的传感器信息（若有）
         newInfo = false;
         if (countInformed < sensorNum) {
-            // std::vector<int> newSensors = exploreNewSensor(d, next, sensorList, informed);
             std::vector<int> newSensors = exploreNewSensor(d, next, sensorList, informed, currEnd);
             if (!newSensors.empty()) {
                 newInfo = true;
                 countInformed += newSensors.size();
-                // countActive += newSensors.size();
             }
-
-            // 手动释放
-            // delete &newSensors;
         }
     }
     // 统计 cost
     cost = hcost + vcost;
-
-    // 手动释放
-    // delete &sensorList;
-    // delete &informed;
-    // delete &linked;
 }
 
 void online::ACOSolver_Online::resolve(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {
@@ -211,6 +165,7 @@ void online::ACOSolver_Online::collectData(const std::vector<int> &linked, doubl
     double time = problem->getUnitLength() / v;
     for (int i = 0; i < num; i++) {
         // std::cout << "collect data " << std::to_string(linked[i]) << "\n";
+        if (!sensorState[linked[i]].isActive()) continue;
         if (tools::approx(sensorState[linked[i]].getTime() - time, resource::ANS_TIME_ULP) > 0) {
             sensorState[linked[i]].reduceTime(time);
             break;
@@ -226,6 +181,7 @@ void online::ACOSolver_Online::collectData(const std::vector<int> &linked, doubl
     }
 }
 
+// ! 弃用
 void online::ACOSolver_Online::collectData(const std::vector<int> &linked, double v, int &countActive) {
     if (linked.empty()) {
         // std::cout << "empty linked in function 'collectData'\n";

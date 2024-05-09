@@ -33,7 +33,8 @@ double Trajectory::calHeightCost() const {
     int size = heightSche.size();
     double cost = 0;
     for (int i = 1; i < size; i++) {
-        cost += resource::costByHeight(heightSche[i - 1], heightSche[i]);
+        double dh = std::abs(heightSche[i - 1] - heightSche[i]) * resource::REF_UNIT_HEIGHT;
+        cost += resource::costByHeight(dh);
     }
     return cost;
 }

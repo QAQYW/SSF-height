@@ -178,14 +178,6 @@ void ssf::SSFSolverDisc::solve() {
     int countActiveSensor = sensorNum;
     while (countActiveSensor > 0) {
         ssf::Segment seg = findSlowestSegment(isActDis, sensors);
-        // std::cout << "check the slowest segment\n";
-        // // TODO 加个断点看看seg.velocity
-        // std::cout << "velocity = " << std::to_string(seg.getVelocity()) << "\n";
-        // std::cout << "{ ";
-        // for (int s : seg.getSensorList()) {
-        //     std::cout << std::to_string(s) << " ";
-        // }
-        // std::cout << "}\n";
         if (seg.getVelocity() >= resource::V_STAR) {
             // 剩余速度都设为 V_STAR
             int num = problem->getLengthDiscNum();
@@ -241,9 +233,7 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
         // segment 的基本信息
         int lMost = sensors[il].getLeftIndex();  // segment的最左端
         int rMost = sensors[il].getRightIndex(); // segment的最右端
-        // int dis = getActiveDistance(lMost, rMost, isActDis); // active distance
         int dis = getActiveDistance(sensors[il], isActDis, isChosen);
-        // ? active distance 假如中间被挖空了呢
         double time = problem->getSensor(sensors[il].getSensorIndex()).time; // active time
 
         // 单独一个传感器的 segment 也要记录
@@ -306,8 +296,8 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
     
     int index = 0; // the index of the slowest segment
     for (int i = segments.size() - 1; i; i--) {
-        if (segments[i] < segments[index]) {
-        // if (segments[i].getVelocity() < segments[index].getVelocity()) {
+        // if (segments[i] < segments[index]) {
+        if (segments[i].getVelocity() < segments[index].getVelocity()) {
             index = i;
         }
     }
@@ -328,7 +318,7 @@ void ssf::SSFSolverDisc::update(const ssf::Segment& seg, std::vector<bool>& isAc
     //         isActDis[i] = false;
     //     }
     // }
-    // TODO 改成了这样的，把下面for (int index : seg.getSensorList())这个循环也合并进来了
+    // TODO 改成了这样的
     for (int sid : seg.getSensorList()) {
         for (int d : problem->getSensor(sensors[sid].getSensorIndex()).coverList) {
             if (isActDis[d]) {
@@ -338,9 +328,6 @@ void ssf::SSFSolverDisc::update(const ssf::Segment& seg, std::vector<bool>& isAc
         }
         sensors[sid].setInactive();
     }
-    // for (int index : seg.getSensorList()) {
-    //     sensors[index].setInactive();
-    // }
     count -= seg.getSensorList().size();
 }
 
@@ -400,29 +387,20 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
     this->init(sensors);
 
     // 把原来的linked清空，否则一直push_back()累积
-    for (int i = start; i < end; i++) { // i <= end
+    for (int i = start; i < end; i++) {
         linked[i].clear();
     }
 
     // 剩余未传输传感器数量
     int countActiveSensor = sensorNum;
-    // std::cout << "number of sensors is " << std::to_string(sensorNum) << "\n";
     while (countActiveSensor > 0) {
-        ssf::Segment seg = findSlowestSegmentForOnline(isActDis, sensors);
-        // std::cout << "check the slowest segment (for online)\n";
-        // // TODO 加个断点看看seg.velocity
-        // std::cout << "velocity = " << std::to_string(seg.getVelocity()) << "\n";
-        // std::cout << "{ ";
-        // for (int s : seg.getSensorList()) {
-        //     std::cout << std::to_string(s) << " ";
-        // }
-        // std::cout << "}\n";
+        // ssf::Segment seg = findSlowestSegmentForOnline(isActDis, sensors);
+        ssf::Segment seg = findSlowestSegment(isActDis, sensors);
         if (seg.getVelocity() >= resource::V_STAR) {
             // 这里的sensorList是剩余所有传感器的集合
             int l = 0, r = problem->getLengthDiscNum() - 1;
-            int dis = getActiveDistance(l, r, isActDis);
-            // ? 这里的dis是多少已经不重要，随便什么值都不影响结果
-            // ? 因为active distance是为了计算速度，而下面直接setVelocity()了
+            int dis = getActiveDistance(l, r, isActDis); // 这里的这个getActiveDistance()函数已经弃用
+            // ? 这里的dis是多少已经不重要，随便什么值都不影响结果，因为active distance是为了计算速度，而下面直接setVelocity(V_STAR)了
             ssf::Segment segStar(l, r, dis, 0);
             segStar.setVelocity(resource::V_STAR);
             // ? 同理，下面这一段求active time也没有必要
@@ -436,17 +414,17 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
             segStar.setActiveTime(time);
             // 最后还要再update一下，设置V_STAR的速度
             update(segStar, isActDis, sensors, countActiveSensor);
-            // for (int i = 0; i < problem->getLengthDiscNum(); i++) {
-            //     if (isActDis[i]) {
-            //         for (int j = 0; j < problem->getSensorNum(); j++) {
-            //             if (sensors[j].isActive() && problem->getSensor(j).)
+            
+            // for (int j = 0; j < problem->getSensorNum(); j++) {
+            //     if (!sensors[j].isActive()) continue;
+            //     // for (int i : problem->getSensor(j).coverList) {
+            //     for (int i : problem->getSensor(sensors[j].getSensorIndex()).coverList) {
+            //         if (isActDis[i]) {
             //             linked[i + start].push_back(problemFrom->mapSensor(sensors[j].getSensorIndex()));
             //         }
             //     }
             // }
-            for (int j = 0; j < problem->getSensorNum(); j++) {
-                if (!sensors[j].isActive()) continue;
-                // for (int i : problem->getSensor(j).coverList) {
+            for (int j : segStar.getSensorList()) {
                 for (int i : problem->getSensor(sensors[j].getSensorIndex()).coverList) {
                     if (isActDis[i]) {
                         linked[i + start].push_back(problemFrom->mapSensor(sensors[j].getSensorIndex()));
@@ -460,24 +438,7 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
         int tempr = seg.getRight();
         std::vector<int> list = seg.getSensorList();
         int tempcnt = list.size();
-        // for (int i = seg.getLeft(); i <= tempr; i++) {
-        //     if (i < 0) {
-        //         std::cout << "check segment";
-        //         std::cout << "\n";
-        //     }
-        //     if (!isActDis[i]) continue;
-        //     for (int j = 0; j < tempcnt; j++) {
-        //         // std::cout << std::to_string(problem->getSensor())
-        //         // if (sensors[list[j]].getLeftIndex() <= i && sensors[list[j]].getRightIndex() >= i) {
-        //         // ? 把if条件改为下面这个（左闭右开 区间）
-        //         if (sensors[list[j]].getLeftIndex() <= i && i < sensors[list[j]].getRightIndex()) {
-        //             // int offlineIndex = sensors[list[j]].getSensorIndex();
-        //             // int onlineIndex = problemFrom->mapSensor(offlineIndex);
-        //             // linked[i + start].push_back(onlineIndex);
-        //             linked[i + start].push_back(problemFrom->mapSensor(sensors[list[j]].getSensorIndex()));
-        //         }
-        //     }
-        // }
+
         for (int i = 0; i < tempcnt; i++) {
             int sid = sensors[list[i]].getSensorIndex();
             int originIndex = problemFrom->mapSensor(sid);
@@ -494,15 +455,13 @@ void ssf::SSFSolverDisc::solveForOnline(int start, int end, std::vector<double> 
 
     // 将速度调度结果传出
     std::vector<double> sche = solution.getSpeedSche();
-    for (int i = start; i < end; i++) { // i <= end
-        // if (i - start >= sche.size()) {
-        //     std::cout << "ssf::SSFSolverDisc::solveOnline()\n";
-        // } else speedSche[i] = sche[i - start];
+    for (int i = start; i < end; i++) {
         speedSche[i] = sche[i - start];
     }
 }
 
 ssf::Segment ssf::SSFSolverDisc::findSlowestSegmentForOnline(const std::vector<bool> &isActDis, const std::vector<ssf::Sensor> &sensors) const {
+    // ! 不太对的样子，要和findSlowestSegment()保持一致
     // 所有segment集合
     std::vector<ssf::Segment> segments;
     // 辅助变量，是否被当前segment选中
@@ -516,7 +475,6 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegmentForOnline(const std::vector<b
         // segment 的基本信息
         int lMost = sensors[il].getLeftIndex();  // segment的最左端
         int rMost = sensors[il].getRightIndex(); // segment的最右端
-        // int dis = getActiveDistance(lMost, rMost, isActDis); // active distance
         int dis = getActiveDistance(sensors[il], isActDis, isChosen);
         double time = problem->getSensor(sensors[il].getSensorIndex()).time; // active time
 

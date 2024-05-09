@@ -47,8 +47,8 @@ public:
 
     // ? 下面是不太清楚缘由的一部分，知道怎么用，不知道从何而来
     // 传感器范围x坐标最小放大倍数（仅用于生成传输范围吗）
-    const double MIN_X_MULT = 5; //10;
-    const double MAX_X_MULT = 10;
+    const double MIN_X_MULT = 20; //10;
+    const double MAX_X_MULT = 50;
     const double MAX_X_MULT_COEF = 0.2; // ! 弃用，让传输范围与路径总长度完全独立
 
     const double MIN_Y_MULT = 105;

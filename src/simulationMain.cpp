@@ -42,10 +42,10 @@ namespace para {
     const int sensor_nums[] = {5};
 
     // 水滴曲线最大高度（米），参考值 {115, 135, 155, 175, 195}
-    const double max_y_mults[] = {150};  // {50, 60, 70, 80}
+    const double max_y_mults[] = {70, 100, 130, 180, 210, 240};  // {50, 60, 70, 80}
 
-    // 水滴曲线最大宽度（米），参考值 {30, 40, 50, 60}
-    const double max_x_milts[] = {30, 50, 70, 90};
+    // 水滴曲线最大宽度（米），参考值 {30, 40, 50, 60} {30, 50, 70, 90}
+    const double max_x_milts[] = {40};
 
     // // 水滴最宽处宽度与路径总长度线性相关的系数，参考值 {0.2, 0.3, 0.4, 0.5, 0.6}
     // const double max_x_mult_coefs[] = {0.2, 0.3, 0.4, 0.5, 0.6};
@@ -104,11 +104,13 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
                             ++count_data;
                             // DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult_coef, max_time_range_prop, max_swell);
                             // DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult_coef, time_prop, max_swell);
-                            DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell);
+                            // DataGenerator dg = DataGenerator(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell);
+                            DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell);
                             // 随机种子
                             unsigned int seed = std::rand();
                             seeds.push_back(seed);
-                            dg.generateAndSave_Online(seed, count_data);
+                            // dg.generateAndSave_Online(seed, count_data);
+                            dg2.generate_save_online(seed, count_data);
                             // 测试数据特征值
                             std::string feature = std::to_string(count_data) + "\t"
                                 + std::to_string(sensor_num) + "\t"
@@ -119,7 +121,8 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
                             features.push_back(feature);
                             // std::cout << feature << "\n";
                             // 记录文件名
-                            std::string filename = dir + "\\online_" + dg.filenameBase + std::to_string(count_data) + ".txt";
+                            // std::string filename = dir + "\\online_" + dg.filenameBase + std::to_string(count_data) + ".txt";
+                            std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
                             filenames.push_back(filename);
                         }
                     }
@@ -303,10 +306,10 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
 void solve_all_instance(int instance_num, std::string dir) {
     // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::DFS};
+    std::vector<para::Algorithm> alg_set = {para::ACO};
 
     std::string filename = "", feature = "";
-    for (int i = 2; i <= instance_num; i++) {
+    for (int i = 1; i <= 6/*instance_num*/; i++) {
         filename = filenames[i - 1];
         feature = features[i - 1];
 
@@ -329,29 +332,6 @@ void solve_all_instance(int instance_num, std::string dir) {
             
             std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
         }
-    }
-}
-
-void solve_all_instance_online(int instance_num, std::string dir) {
-    para::Algorithm alg = para::Algorithm::ACO_Online;
-    std::string filename = "", feature = "";
-    // int instance_set[] = {104, 12, 56};
-    // for (int i : instance_set) {
-    for (int i = 1; i <= instance_num; i++) {
-        filename = filenames[i - 1];
-        feature = features[i - 1];
-
-        Problem2D probOff2D;
-        probOff2D.initFromOnlineFile(filename);
-        ProblemDisc2D probOffDisc2D = ProblemDisc2D(probOff2D);
-
-        ProblemOnline2D prob2D;
-        prob2D.initFromOnlineFile(filename);
-        ProblemOnlineDisc2D probDisc2D = ProblemOnlineDisc2D(prob2D);
-        
-        solve_online(probOffDisc2D, probDisc2D, alg, dir, i - 1);
-
-        std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
     }
 }
 
@@ -378,7 +358,6 @@ int main() {
     std::cout << "instance_number = " << instance_num << "\n\n";
     results.clear();
     solve_all_instance(instance_num, direction);
-    // solve_all_instance_online(instance_num, direction);
 
     return 0;
 }

@@ -103,8 +103,10 @@ public:
     bool isUrgent(int d, std::vector<aco::Candidate> &candList, const std::vector<bool> &visit, int countVisit) const;
     // 计算被选中概率
     double calProbability(const std::vector<std::vector<std::vector<double>>> &ph, int d, int curr, int next) const;
+    double calProbability(const std::vector<std::vector<std::vector<double>>> &ph, int d, int curr, int next, bool f[], int cf) const;
     // 动态计算启发值
     double calHeuristic(int d, int curr, int next) const;
+    double calHeuristic(int d, int curr, int next, bool f[], int cf) const;
 
     /**
      * Online

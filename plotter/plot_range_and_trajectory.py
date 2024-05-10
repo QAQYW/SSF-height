@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # sensor_filename = "online_shape_1.txt"
     # solution_filename = "online_answer_aco_prop10_1.txt"
 
-    dataIndex = "2"
+    dataIndex = "3"
     
     length = 859  #50
     minHeight = 0
@@ -82,13 +82,13 @@ if __name__ == "__main__":
 
     timestr = ""
 
-    try:
-        # 读取最新样例的timestr（文件夹名）
-        filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\timestr.txt"
-        with open(file=filepath, mode="r") as file:
-            timestr = file.readline().strip()
-    except FileNotFoundError:
-        print("File not found: " + filepath)
+    # try:
+    #     # 读取最新样例的timestr（文件夹名）
+    #     filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\timestr.txt"
+    #     with open(file=filepath, mode="r") as file:
+    #         timestr = file.readline().strip()
+    # except FileNotFoundError:
+    #     print("File not found: " + filepath)
     
     # timestr = "2024_4_11_22_31_31"
     # timestr = "1900_1_1_0_0_1"
@@ -120,7 +120,7 @@ if __name__ == "__main__":
         # 离线-暴力
         # filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\offline_answer_naive_prop39_" + dataIndex + ".txt"
         # 离线-蚁群
-        filepath = "D:\\VSCodeWorkspace\\SSF-height\\experiment\\5\\answer_DFS_" + dataIndex + ".txt"
+        filepath = "D:\\VSCodeWorkspace\\SSF-height\\experiment\\5\\answer_ACO_" + dataIndex + ".txt"
         # 在线-蚁群
         # filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\online_answer_aco_prop39_" + dataIndex + ".txt"
         with open(file=filepath, mode="r") as file:

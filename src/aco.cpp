@@ -8,10 +8,10 @@
 /* -------------------------------- parameter ------------------------------- */
 
 const int aco::ANT_NUM = 20; //30;    // ! 未调参
-const double aco::ALPHA = 5; //5; //1;    // ! 未调参
+const double aco::ALPHA = 2; //5; //1;    // ! 未调参
 const double aco::BETA = 1; //6;     // ! 未调参
 const double aco::EVAPORATE_COEF = 0.2;         // ! 未调参
-const double aco::ENHANCE_VALUE = 0.4; //0.5;          // ! 未调参
+const double aco::ENHANCE_VALUE = 0.3; //0.5;          // ! 未调参
 const int aco::MAX_ITERATOR = 30; //50;              // ! 未调参
 const double aco::HEURISTIC_BASE = 1;           // ? 这个值具体是多少好像不重要
 const double aco::HEURISTIC_REDUCE_FACTOR = 0.1; //0.1; //1;  // ! 慎重取值。和无人机升降的能耗有直接关系
@@ -96,10 +96,17 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
             }
         } else {
             // cout << "\t NOT in urgent case\n";
+            bool f[sensorNum];
+            int cf = 0;
+            for (int i = 0; i < sensorNum; i++) {
+                f[i] = solver.getProblem()->getSensor(i).isCovered(d, curr);
+                cf += f[i];
+            }
             for (int h = hMin; h <= hMax; h++) {
                 aco::Candidate cand;
                 cand.h = h;
-                cand.p = solver.calProbability(ph, d, curr, h);
+                // cand.p = solver.calProbability(ph, d, curr, h);
+                cand.p = solver.calProbability(ph, d, curr, h, f, cf);
                 candidateList.push_back(cand);
                 probSum += cand.p;
             }
@@ -213,13 +220,15 @@ void aco::ACOSolver::solve() {
     int initHeight = greedySolver.getTrajectory().getHeightIndex(0);
 
     // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
-    // Ant bestAnt(problem->getLengthDiscNum(), problem->getMinHeightIndex());
     Ant bestAnt(problem->getLengthDiscNum(), initHeight);
     bestAnt.calCost(*problem);
     double optimalCost = bestAnt.getCost();
-    // this->trajectory = bestAnt.getTrajectory();
-    // copyTrajectory(*bestAnt.getTrajectory());
     trajectory = bestAnt.getTrajectory();
+    bool emptyTraj = false;
+
+    // bool emptyTraj = true;
+    // Ant bestAnt;
+    // double optimalCost = 0;
 
     int iter = 0;
     // TODO 也可以换成其他循环终止条件
@@ -233,29 +242,24 @@ void aco::ACOSolver::solve() {
                 bestIndex = i;
             }
         }
-        if (ants[bestIndex].getCost() < bestAnt.getCost()) {
+        if (emptyTraj || ants[bestIndex].getCost() < bestAnt.getCost()) {
+            std::cout << "better solution\n";
             bestAnt = ants[bestIndex];
+            if (emptyTraj) {
+                optimalCost = bestAnt.getCost();
+                trajectory = bestAnt.getTrajectory();
+                emptyTraj = false;
+            }
         }
         evaporatePheromone(dim, pheromone);   // 蒸发
         enhancePheromone(bestAnt, pheromone); // 增强
         if (bestAnt.getCost() < optimalCost) {
             optimalCost = bestAnt.getCost();
-            // this->trajectory = bestAnt.getTrajectory();
-            // copyTrajectory(*bestAnt.getTrajectory());
             trajectory = bestAnt.getTrajectory();
         }
         ++iter;
-        // cout << "Iter: " << iter << "/" << aco::MAX_ITERATOR << "\n";
     }
-    // cout << "Iteration over\n";
     ants.clear();
-
-    // 手动释放
-    // pheromone.~vector();
-    // ants.~vector();
-    // delete &dim;
-    // delete &pheromone;
-    // delete &ants;
 }
 
 void aco::ACOSolver::evaporatePheromone(const std::vector<int>& dim, std::vector<std::vector<std::vector<double>>> &ph) const {
@@ -339,6 +343,12 @@ double aco::ACOSolver::calProbability(const std::vector<std::vector<std::vector<
     return std::pow(tau, aco::ALPHA) * std::pow(eta, aco::BETA);
 }
 
+double aco::ACOSolver::calProbability(const std::vector<std::vector<std::vector<double>>> &ph, int d, int curr, int next, bool f[], int cf) const {
+    double tau = ph[d][curr][next];
+    double eta = this->calHeuristic(d, curr, next, f, cf);
+    return std::pow(tau, aco::ALPHA) * std::pow(eta, aco::BETA);
+}
+
 double aco::ACOSolver::calHeuristic(int d, int curr, int next) const {
     int count = 0;
     for (int i = 0; i < sensorNum; i++) {
@@ -348,7 +358,27 @@ double aco::ACOSolver::calHeuristic(int d, int curr, int next) const {
         if (curr != next) return 0;
         return aco::HEURISTIC_BASE;
     }
-    return count * aco::HEURISTIC_BASE / (1 + aco::HEURISTIC_REDUCE_FACTOR * std::abs(curr - next));
+    // if (curr == next) {
+    //     return sensorNum * HEURISTIC_BASE;
+    // }
+    // return count * aco::HEURISTIC_BASE / (1 + aco::HEURISTIC_REDUCE_FACTOR * std::abs(curr - next));
+    return count * aco::HEURISTIC_BASE;
+}
+
+double aco::ACOSolver::calHeuristic(int d, int curr, int next, bool f[], int cf) const {
+    if (curr == next) {
+        return std::max(cf, 1);
+    }
+    int cg = 0, ctemp = 0;
+    bool g[sensorNum], flag = false;
+    for (int i = 0; i < sensorNum; i++) {
+        g[i] = problem->getSensor(i).isCovered(d, next);
+        cg += g[i];
+        ctemp += (f[i] & g[i]);
+        flag |= (g[i] & !f[i]);
+    }
+    if (ctemp <= cg && !flag) return 0;
+    return cg;
 }
 
 void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {

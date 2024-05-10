@@ -1,5 +1,8 @@
 #include "dataGenerator.h"
 
+
+/* ------------------------------ DataGenerator ----------------------------- */
+
 void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
 
     std::ofstream fout;
@@ -379,4 +382,218 @@ DataGenerator::DataGenerator(std::string path, int num, double maxYMult, double 
  : savePath(path), sensorNum(num), MAX_Y_MULT(maxYMult), MAX_X_MULT(maxXMult), TIME_PROP(timeProp), MAX_SWELL(maxSwell) {
     unit_height = resource::REF_UNIT_HEIGHT;
     unit_length = resource::REF_UNIT_LENGTH;
+}
+
+
+/* ----------------------------- DataGenerator2 ----------------------------- */
+
+DataGenerator2::DataGenerator2(std::string path, int sensor_num, double max_y_mult, double max_x_mult, double time_prop, double max_swell)
+: savePath(path), sensorNum(sensor_num), MAX_Y_MULT(max_y_mult), MAX_X_MULT(max_x_mult), TIME_PROP(time_prop), MAX_SWELL(max_swell) {
+    unitHeight = resource::REF_UNIT_HEIGHT;
+    unitLength = resource::REF_UNIT_LENGTH;
+}
+
+void DataGenerator2::generate_save_online(unsigned int seed, int data_index) {
+
+    std::ofstream fout;
+    // 数据保存的路径
+    std::string path = savePath + "\\" + filenameBaseOnline + std::to_string(data_index) + ".txt";
+    fout.open(path);
+
+    // 保存随机种子
+    fout << std::to_string(seed) << "\n";
+    
+    srand(seed);
+
+    // 等间隔 (unitHeight) 地生成离散的无人机飞行高度，存于heightList中
+    std::vector<double> heightList;
+    double uavh = MIN_UAV_HEIGHT;
+    while (uavh <= MAX_UAV_HEIGHT) {
+        heightList.push_back(uavh);
+        uavh += unitHeight;
+    }
+
+    // 有多少个离散高度
+    int heightDiscNum = heightList.size();
+    // 高度最小值
+    double minHeight = heightList[0];
+    // 高度最大值
+    double maxHeight = heightList.back();
+
+    // 保存高度
+    fout << std::to_string(heightDiscNum) << "\n";
+    for (int i = 0; i < heightDiscNum; i++)
+        fout << std::to_string(heightList[i]) << "\t";
+    fout << "\n";
+
+    // 总传感器数量为 this->sensorNum
+    int subSensorNum[3];
+    int avgNum = sensorNum / 3;
+    int tempNum = sensorNum - avgNum * 3;
+    for (int i = 0; i < 3; i++) {
+        subSensorNum[i] = avgNum;
+        if (i < tempNum) ++subSensorNum[i];
+    }
+
+    // 生成路径长度
+    double length = 0;
+    double subLength[3];
+    for (int i = 0; i < 3; i++) {
+        subLength[i] = std::ceil(tools::randDouble(MIN_LENGTH_SENSOR_PROP, MAX_LENGTH_SENSOR_PROP) * subSensorNum[i]);
+        length += subLength[i];
+    }
+    this->length = length;
+
+    // 保存路径长度和传感器数量
+    fout << std::to_string(length) << "\n";
+    fout << std::to_string(sensorNum) << "\n";
+
+    /**
+     * 记录形状参数，用于python程序的可视化
+     * shape[i][0]: mid
+     * shape[i][1]: xCoef
+     * shape[i][2]: yCoef
+     * shape[i][3]: swell
+     */
+    double shape[sensorNum][4];
+
+    // 最大高度
+    double deltaYMult = (MAX_Y_MULT - MIN_Y_MULT) / 3.0;
+    double yMultSet[4];
+    yMultSet[0] = MIN_Y_MULT;
+    yMultSet[1] = MIN_Y_MULT + deltaYMult;
+    yMultSet[2] = MIN_Y_MULT + 2 * deltaYMult;
+    yMultSet[3] = MAX_Y_MULT;
+
+    // std::vector<resource::SensorOnline2D> sensorList;
+    int preLength = 0, shapeIndex = 0;
+    for (int group = 0; group < 3; group++) {
+        for (int i = 0; i < subSensorNum[group]; i++) {
+            // 传感器横坐标（中心点）
+            double mid = preLength + tools::randDouble(0, subLength[group]);
+            // 膨胀系数
+            double swell = tools::randDouble(MIN_SWELL, MAX_SWELL);
+            // x 系数
+            double xCoef = 1.0 / tools::randDouble(MIN_X_MULT, MAX_X_MULT);
+            // y 系数
+            double yCoef = 1.0 / tools::randDouble(yMultSet[group], yMultSet[group + 1]);
+            // ? 最大高度
+            double yMax = 2.0 / yCoef;
+            if (yMax <= minHeight) {
+                --i;
+                continue;
+            }
+
+            // 传输范围
+            bool flag = false;
+            int count = 0;
+            resource::SensorOnline2D sensor;
+            for (int j = 0; j < heightDiscNum; j++) {
+                double y = heightList[j];
+                if (y >= yMax) break;
+
+                double yBar = yCoef * y;
+                double p = 2 * yBar * (yBar - 1) + swell;
+                double q = yBar * yBar * yBar * (yBar - 2);
+
+                double temp1 = p * p - 4 * q;
+                if (temp1 <= 0) break;
+                double temp2 = (std::sqrt(temp1) - p) / 2;
+                if (temp2 <= 0) break;
+
+                ++count;
+
+                // 数据传输范围
+                double xDiff = std::sqrt(temp2) / xCoef;
+                if (xDiff <= 1.0) {
+                    flag = true;
+                    break;
+                }
+                resource::Range dataRange, controlRange;
+                dataRange.left = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
+                dataRange.right = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
+                sensor.dataList.push_back(dataRange);
+                
+                // 控制通信范围
+                xDiff *= DataGenerator2::CONTROL_RANGE_MULT;
+                controlRange.left = tools::approx(std::max(0.0, mid - xDiff), resource::LENGTH_ULP);
+                controlRange.right = tools::approx(std::min(length, mid + xDiff), resource::LENGTH_ULP);
+                sensor.controlList.push_back(controlRange);
+            }
+            if (flag) {
+                i--;
+                continue;
+            }
+            resource::Range widest = resource::Range(sensor.dataList[0]);
+            for (resource::Range rg : sensor.dataList) {
+                widest.left = std::min(widest.left, rg.left);
+                widest.right = std::max(widest.right, rg.right);
+            }
+            for (int j = 0; j < heightDiscNum; j++) {
+                if (j < count) {
+                    sensor.controlList[j].left = std::min(widest.left, sensor.controlList[j].left);
+                    sensor.controlList[j].right = std::max(widest.right, sensor.controlList[j].right);
+                } else {
+                    resource::Range controlRange = resource::Range(widest);
+                    sensor.controlList.push_back(controlRange);
+                }
+            }
+
+            double temp3 = swell * swell + swell + 1;
+            double temp4 = swell + 2 + 2 * std::sqrt(temp3);
+            double temp5 = temp3 + swell + 1 + (swell + 2) * std::sqrt(temp3);
+            double width = std::sqrt(temp4 * temp4 * temp4) / temp5 / xCoef;
+            double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * TIME_PROP;
+            // time = time * (maxYMult - minYMult) / (MAX_Y_MULT - MIN_Y_MULT);
+            time = tools::approx(time, resource::TIME_ULP);
+
+            // 保存传输时间
+            fout << std::to_string(time) << "\n";
+            // 保存单个传感器的data range数量
+            fout << std::to_string(count) << "\n";
+            // 保存所有高度（若有）下的数据传输范围
+            for (int j = 0; j < count; j++)
+                fout << std::to_string(sensor.dataList[j].left) << "\t" << std::to_string(sensor.dataList[j].right) << "\t\n";
+            // 保存所有高度下的控制通信范围（覆盖所有高度）
+            for (int j = 0; j < heightDiscNum; j++)
+                fout << std::to_string(sensor.controlList[j].left) << "\t" << std::to_string(sensor.controlList[j].right) << "\t\n";
+            
+            // 记录形状参数
+            shape[shapeIndex][0] = mid;
+            shape[shapeIndex][1] = xCoef;
+            shape[shapeIndex][2] = yCoef;
+            shape[shapeIndex][3] = swell;
+            ++shapeIndex;
+        }
+        preLength += subLength[group];
+    }
+
+    fout.close();
+
+    saveSensorShape(shape, data_index);
+}
+
+void DataGenerator2::saveSensorShape(double shape[][4], int data_index) const {
+    std::ofstream fout;
+    std::string path = savePath + "\\" + filenameBaseShape + std::to_string(data_index) + ".txt";
+    fout.open(path);
+
+    // 路径长度
+    fout << std::to_string(length) << "\n";
+    // 无人机最低高度
+    fout << std::to_string(MIN_UAV_HEIGHT) << "\n";
+    // 无人机最高高度
+    fout << std::to_string(MAX_UAV_HEIGHT) << "\n";
+    // 传感器数量
+    fout << std::to_string(sensorNum) << "\n";
+
+    // 每个传感器形状参数
+    for (int i = 0; i < sensorNum; i++) {
+        for (int j = 0; j < 4; j++) {
+            fout << std::to_string(shape[i][j]) << "\t";
+        }
+        fout << "\n";
+    }
+
+    fout.close();
 }

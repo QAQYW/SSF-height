@@ -25,7 +25,7 @@ public:
     const double MAX_TRANSMISSION_TIME = 500; //10;
     const double MIN_TRANSMISSION_TIME = 10; //0.1;
 
-    // 假设传输时间与传输范围的最大宽度的平方相关（二次）
+    // 假设传输时间与传输范围的最大宽度相关的系数
     const double MAX_TIME_RANGE_PROP = 0.1; //1 / 5.0;
     const double MIN_TIME_RANGE_PROP = 2.0; //1 / 50.0; // 0.02
     // 假设传输时间与传输范围的最大宽度线性相关
@@ -41,11 +41,11 @@ public:
     const double MIN_HEIGHT = 80; // 单位：米
 
     // 路径长度与传感器数量的比例系数
-    const double MAX_LENGTH_SENSOR_PROP = 20; //15; //20; // 100;
+    const double MAX_LENGTH_SENSOR_PROP = 50; //15; //20; // 100;
     // const double MAX_LENGTH_SENSOR_PROP = 3; // for tiny_test only
-    const double MIN_LENGTH_SENSOR_PROP = 5; // 10;
+    const double MIN_LENGTH_SENSOR_PROP = 20; // 10;
 
-    // ? 下面是不太清楚缘由的一部分，知道怎么用，不知道从何而来
+    
     // 传感器范围x坐标最小放大倍数（仅用于生成传输范围吗）
     const double MIN_X_MULT = 20; //10;
     const double MAX_X_MULT = 50;
@@ -125,5 +125,68 @@ public:
     /// @param dataIndex 样例序号
     void saveSensorShape(double shape[][4], int dataIndex) const;
 };
+
+
+class DataGenerator2 {
+
+private:
+    std::string savePath;
+
+public:
+    // const std::string filenameBaseOffline = "test_data_";
+    const std::string filenameBaseOnline = "online_test_data_";
+    const std::string filenameBaseShape = "online_shape_";
+
+    // 传输时间与水滴宽度的比例系数 增大的倍数
+    const double TIME_PROP = 1;
+
+    // 传输时间与水滴宽度的比例系数
+    const double MIN_TIME_RANGE_PROP = 0.1;
+    const double MAX_TIME_RANGE_PROP = 2.0;
+    
+    // 无人机飞行高度
+    const double MIN_UAV_HEIGHT = 80;
+    const double MAX_UAV_HEIGHT = 150;
+
+    // 路径长度与传感器数量的比值
+    const double MIN_LENGTH_SENSOR_PROP = 20;
+    const double MAX_LENGTH_SENSOR_PROP = 50;
+
+    // 传输范围宽度系数
+    const double MIN_X_MULT = 20;
+    const double MAX_X_MULT = 50;
+
+    // 传输范围高度系数
+    const double MIN_Y_MULT = 40;
+    const double MAX_Y_MULT = 100;
+
+    // 水滴曲线的膨胀系数
+    const double MIN_SWELL = 0;
+    const double MAX_SWELL = 3;
+
+    // control communication range与data transmission range的半径比
+    const double CONTROL_RANGE_MULT = 1.5;
+
+private:
+    double unitHeight;
+    double unitLength;
+    int sensorNum;
+    double length;
+
+public:
+    /// @brief 构造函数
+    /// @param path 
+    /// @param sensor_num 
+    /// @param max_y_mult 
+    /// @param max_x_mult 
+    /// @param time_prop 
+    /// @param max_swell 
+    DataGenerator2(std::string path, int sensor_num, double max_y_mult, double max_x_mult, double time_prop, double max_swell);
+
+    void generate_save_online(unsigned int seed, int data_index);
+    void saveSensorShape(double shape[][4], int data_index) const;
+};
+
+
 
 #endif

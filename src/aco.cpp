@@ -409,7 +409,8 @@ void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &spe
 
     int iter = 0;
     // while (iter < aco::MAX_ITERATOR) {
-    while (iter < 30) {
+    int iterMax = aco::MAX_ITERATOR / 2;
+    while (iter < iterMax) {
         int bestIndex = 0;
         for (int i = 0; i < aco::ANT_NUM; i++) {
             ants[i].init(problem->getLengthDiscNum());

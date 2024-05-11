@@ -146,7 +146,7 @@ public:
     
     // 无人机飞行高度
     const double MIN_UAV_HEIGHT = 80;
-    const double MAX_UAV_HEIGHT = 150;
+    const double MAX_UAV_HEIGHT = 120;
 
     // 路径长度与传感器数量的比值
     const double MIN_LENGTH_SENSOR_PROP = 20;

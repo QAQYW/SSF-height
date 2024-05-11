@@ -75,10 +75,10 @@ ProblemDisc2D::ProblemDisc2D(int start, int end, const ProblemOnlineDisc2D &prob
         //     continue;
         // }
         sensor.setRmost();
-        if (sensor.rmost == 0) {
-            std::cout << "rmost = 0";
-            std::cout << "\n";
-        }
+        // if (sensor.rmost == 0) {
+        //     std::cout << "rmost = 0";
+        //     std::cout << "\n";
+        // }
 
         sensorIndexMap.push_back(i);
         sensorList.push_back(sensor);

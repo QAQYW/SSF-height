@@ -41,7 +41,7 @@ void naive::NaiveSolver::solve() {
     trajectory = Trajectory(lengthIndexNum, minHeightIndex);
     // trajectory = Trajectory(lengthIndexNum, maxHeightIndex);
     // minCost = trajectory.calHeightCost() + trajectory.calSpeedCost(*problem);
-    minCost = trajectory.calHeightCost() + energy_calculator::calSpeedCost(*problem, trajectory);
+    minCost = trajectory.calHeightCost(resource::HEIGHT_COST_PROPOR) + energy_calculator::calSpeedCost(*problem, trajectory);
 
     Trajectory tempTraj(lengthIndexNum);
     for (int h = minHeightIndex; h <= maxHeightIndex; h++) {
@@ -76,7 +76,7 @@ void naive::NaiveSolver::generateTrajectory(naive::State curr, Trajectory &traj,
         // std::cout << "Feasible\n";
         // 计算能耗，更新最优路径
         // double cost = traj.calHeightCost() + traj.calSpeedCost(*problem);
-        double cost = traj.calHeightCost() + energy_calculator::calSpeedCost(*problem, traj);
+        double cost = traj.calHeightCost(resource::HEIGHT_COST_PROPOR) + energy_calculator::calSpeedCost(*problem, traj);
         if (cost < minCost) {
             minCost = cost;
             trajectory = traj;

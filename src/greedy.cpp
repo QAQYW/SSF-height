@@ -24,13 +24,13 @@ void greedy::GreedySolver::solve() {
     }
 
     trajectory = Trajectory(lengthIndexNum, minHeightIndex);
-    minCost = trajectory.calHeightCost() + energy_calculator::calSpeedCost(*problem, trajectory);
+    minCost = trajectory.calHeightCost(resource::HEIGHT_COST_PROPOR) + energy_calculator::calSpeedCost(*problem, trajectory);
 
     Trajectory tempTraj;
     double tempCost;
     for (int height = minHeightIndex + 1; height <= maxAvailableHeightIndex; height++) {
         tempTraj = Trajectory(lengthIndexNum, height);
-        tempCost = tempTraj.calHeightCost() + energy_calculator::calSpeedCost(*problem, tempTraj);
+        tempCost = tempTraj.calHeightCost(resource::HEIGHT_COST_PROPOR) + energy_calculator::calSpeedCost(*problem, tempTraj);
         if (tempCost < minCost) {
             minCost = tempCost;
             trajectory = Trajectory(tempTraj);

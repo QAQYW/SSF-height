@@ -12,7 +12,7 @@ const double resource::ANS_TIME_ULP = resource::TIME_ULP / 100;
 const double resource::REF_UNIT_HEIGHT = 10; //10;
 const double resource::REF_UNIT_LENGTH = 1; //resource::LENGTH_ULP * 10;
 
-const double resource::HEIGHT_COST_PROPOR = 1; //39.095; //0.1; //10;
+const double resource::HEIGHT_COST_PROPOR = 10; //39; //39.095; //0.1; //10;
 
 /* ----------------------------- data structure ----------------------------- */
 
@@ -62,12 +62,13 @@ double resource::power(double v) {
     return 0.07 * v * v * v + 0.0391 * v * v - 13.196 * v + 390.95;
 }
 
-double resource::costByHeight(double dh) {
-    return resource::HEIGHT_COST_PROPOR * dh;
+double resource::costByHeight(double dh, double coef) {
+    // return resource::HEIGHT_COST_PROPOR * dh;
+    return coef * dh;
 }
 
-double resource::costByHeight(double h1, double h2) {
-    return resource::costByHeight(std::abs(h1 - h2));
+double resource::costByHeight(double h1, double h2, double coef) {
+    return resource::costByHeight(std::abs(h1 - h2), coef);
 }
 
 double resource::costByFly(double dis, double v) {

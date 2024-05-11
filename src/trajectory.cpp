@@ -29,12 +29,12 @@ int Trajectory::getHeightIndex(int lengthIndex) const {
     return heightSche[lengthIndex];
 }
 
-double Trajectory::calHeightCost() const {
+double Trajectory::calHeightCost(double coef) const {
     int size = heightSche.size();
     double cost = 0;
     for (int i = 1; i < size; i++) {
         double dh = std::abs(heightSche[i - 1] - heightSche[i]) * resource::REF_UNIT_HEIGHT;
-        cost += resource::costByHeight(dh);
+        cost += resource::costByHeight(dh, coef);
     }
     return cost;
 }

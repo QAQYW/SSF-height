@@ -90,8 +90,8 @@ struct SensorOnlineDisc2D {
 // 速度-功率函数
 double power(double v);
 // 高度变化产生的能耗
-double costByHeight(double dh);
-double costByHeight(double h1, double h2);
+double costByHeight(double dh, double coef);
+double costByHeight(double h1, double h2, double coef);
 // 固定高度飞行一段距离产生的能耗
 double costByFly(double dis, double v);
 // 离散化

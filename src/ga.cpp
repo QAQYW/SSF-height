@@ -46,7 +46,7 @@ void ga::Individual::calCost(const ProblemDisc2D &problem) {
 }
 
 double ga::Individual::calHeightCost() const {
-    return trajectory.calHeightCost();
+    return trajectory.calHeightCost(resource::HEIGHT_COST_PROPOR);
 }
 
 double ga::Individual::calSpeedCost(const ProblemDisc2D &problem) const {

@@ -207,7 +207,7 @@ void online::ACOSolver_Online::updateEnergy(double v, int currh, int nexth) {
     if (currh != nexth) {
         // 高度差的绝对值（真实值），所以要乘上unitHeight
         double dh = std::abs(nexth - currh) * problem->getUnitHeight();
-        hcost += resource::costByHeight(dh);
+        hcost += resource::costByHeight(dh, 1);
     }
     vcost += resource::costByFly(problem->getUnitLength(), v);
 }

@@ -98,7 +98,7 @@ void pso::Partical::calCost(const ProblemDisc2D &problem) {
 }
 
 double pso::Partical::calHeightCost() const {
-    return trajectory.calHeightCost();
+    return trajectory.calHeightCost(resource::HEIGHT_COST_PROPOR);
 }
 
 double pso::Partical::calSpeedCost(const ProblemDisc2D &problem) const {

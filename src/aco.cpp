@@ -155,7 +155,7 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
 }
 
 double aco::Ant::calHeightCost() const {
-    return trajectory.calHeightCost();
+    return trajectory.calHeightCost(1);
 }
 
 double aco::Ant::calSpeedCost(const ProblemDisc2D &problem) const {
@@ -224,7 +224,7 @@ void aco::ACOSolver::solve() {
     bestAnt.calCost(*problem);
     double optimalCost = bestAnt.getCost();
     trajectory = bestAnt.getTrajectory();
-    bool emptyTraj = false;
+    // bool emptyTraj = false;
 
     // bool emptyTraj = true;
     // Ant bestAnt;
@@ -242,14 +242,14 @@ void aco::ACOSolver::solve() {
                 bestIndex = i;
             }
         }
-        if (emptyTraj || ants[bestIndex].getCost() < bestAnt.getCost()) {
-            std::cout << "better solution\n";
+        if (ants[bestIndex].getCost() < bestAnt.getCost()) {
+            // std::cout << "better solution\n";
             bestAnt = ants[bestIndex];
-            if (emptyTraj) {
-                optimalCost = bestAnt.getCost();
-                trajectory = bestAnt.getTrajectory();
-                emptyTraj = false;
-            }
+            // if (emptyTraj) {
+            //     optimalCost = bestAnt.getCost();
+            //     trajectory = bestAnt.getTrajectory();
+            //     emptyTraj = false;
+            // }
         }
         evaporatePheromone(dim, pheromone);   // 蒸发
         enhancePheromone(bestAnt, pheromone); // 增强

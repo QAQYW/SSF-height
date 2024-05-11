@@ -35,7 +35,7 @@ public:
     std::vector<int> getHeightSche() const;
     int getHeightIndex(int lengthIdnex) const;
     // 计算高度变化产生的能耗
-    double calHeightCost() const;
+    double calHeightCost(double coef) const;
     // // 计算速度调度的能耗（不包含高度变化）
     // double calSpeedCost(const ProblemDisc2D &problem2D) const;
     // // 计算速度调度的能耗（不包含高度变化），并将速度调度由参数speedSche传出

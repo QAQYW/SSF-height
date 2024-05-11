@@ -42,7 +42,7 @@ namespace para {
     const int sensor_nums[] = {5};
 
     // 水滴曲线最大高度（米），参考值 {115, 135, 155, 175, 195} // {50, 60, 70, 80}
-    const double max_y_mults[] = {60, 80, 100, 120};
+    const double max_y_mults[] = {160, 130, 100, 70};
 
     // 水滴曲线最大宽度（米），参考值 {30, 40, 50, 60} {30, 50, 70, 90}
     const double max_x_milts[] = {30, 40, 50, 60};
@@ -217,7 +217,7 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     // 记录结果
     Result result;
     std::vector<double> speedSche;
-    result.hcost = optTraj.calHeightCost();
+    result.hcost = optTraj.calHeightCost(alg == para::ACO ? 1 : resource::HEIGHT_COST_PROPOR);
     result.vcost = energy_calculator::calSpeedCost(prob, optTraj, speedSche);
     result.cost = result.hcost + result.vcost;
     result.runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
@@ -279,7 +279,7 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
     fout << features[data_index] << "\t";
     fout << result.str << "\n";
 
-    result.hcost = optTraj.calHeightCost();
+    result.hcost = optTraj.calHeightCost(1);
     result.vcost = energy_calculator::calSpeedCost(offprob, optTraj, speedSche);
     result.cost = result.hcost + result.vcost;
     result.str = std::to_string(result.cost) + "\t" + std::to_string(result.hcost) + "\t" + std::to_string(result.vcost) + "\t" + std::to_string(result.runtime);

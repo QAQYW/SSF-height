@@ -84,7 +84,7 @@ void online_aco::OnlineACOSolver::updateEnergy(double v, int currh, int nexth) {
     // udpate hcost
     if (currh != nexth) {
         double dh = std::abs(nexth - currh) * problem->getUnitHeight();
-        hcost += resource::costByHeight(dh);
+        hcost += resource::costByHeight(dh, 1);
     }
     // update vcost
     vcost += resource::costByFly(problem->getUnitLength(), v);

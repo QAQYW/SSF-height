@@ -39,7 +39,7 @@ std::vector<Result> results;
 /// @brief 参数集合
 namespace para {
     // 传感器数量，参考值 {5, 10, 20, 30, 40, 50} {5, 10, 15, 20, 25, 30}
-    const int sensor_nums[] = {20};
+    const int sensor_nums[] = {5};
 
     // 水滴曲线最大高度（米），参考值 {115, 135, 155, 175, 195} // {50, 60, 70, 80}
     const double max_y_mults[] = {160, 130, 100, 70};
@@ -225,7 +225,7 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     results.push_back(result);
     // 保存结果（追加写入）
     std::ofstream fout;
-    fout.open(dir + "\\results.txt", std::ios::out | std::ios::app);
+    fout.open(dir + "\\results_dfs.txt", std::ios::out | std::ios::app);
     fout << para::algorithm_names[alg] << "\t";
     fout << features[data_index] << "\t";
     fout << result.str << "\n";
@@ -295,9 +295,9 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
 /// @param instance_num 
 /// @param dir 
 void solve_all_instance(int instance_num, std::string dir) {
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
+    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
-    // std::vector<para::Algorithm> alg_set = {para::ACO};
+    std::vector<para::Algorithm> alg_set = {para::DFS};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -338,7 +338,7 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\20";
+    std::string direction = ".\\experiment\\5";
 
     // 生成数据
     generate_online_data(direction, true, 1);

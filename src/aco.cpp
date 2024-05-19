@@ -17,6 +17,8 @@ const double aco::HEURISTIC_BASE = 1;           // ? 这个值具体是多少好
 const double aco::HEURISTIC_REDUCE_FACTOR = 0.1; //0.1; //1;  // ! 慎重取值。和无人机升降的能耗有直接关系
 const double aco::INITIAL_PHEROMONE_VALUE = 1;  // ! 未调参
 
+bool aco::HEURISTIC_FLAG = true;
+
 /* -------------------------------- roulette -------------------------------- */
 
 int aco::roulette(std::vector<aco::Candidate>& candList, double sum) {
@@ -377,6 +379,7 @@ double aco::ACOSolver::calHeuristic(int d, int curr, int next, bool f[], int cf)
         ctemp += (f[i] & g[i]);
         flag |= (g[i] & !f[i]);
     }
+    if (!aco::HEURISTIC_FLAG) return cg; // 不适用基于支配关系的筛选
     if (ctemp <= cg && !flag) return 0;
     return cg;
 }

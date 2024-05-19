@@ -34,6 +34,9 @@ extern const double HEURISTIC_BASE;             // 启发式因子的基础值
 extern const double HEURISTIC_REDUCE_FACTOR;    // 计算启发值时分母的系数
 extern const double INITIAL_PHEROMONE_VALUE;    // 信息素初值
 
+// 是否使用设计的启发因子
+extern bool HEURISTIC_FLAG;
+
 /* -------------------------------- roulette -------------------------------- */
 
 /// @brief 轮盘赌中的待选项

@@ -39,12 +39,12 @@ std::vector<Result> results;
 /// @brief 参数集合
 namespace para {
     // 传感器数量，参考值 {5, 10, 20, 30, 40, 50} {5, 10, 15, 20, 25, 30}
-    const int sensor_nums[] = {5};
+    const int sensor_nums[] = {10};
 
-    // 水滴曲线最大高度（米），参考值 {115, 135, 155, 175, 195} // {50, 60, 70, 80}
-    const double max_y_mults[] = {160, 130, 100, 70};
+    // 水滴曲线最大高度（米），参考值 {70, 100, 130, 160}
+    const double max_y_mults[] = {70, 100, 130, 160};
 
-    // 水滴曲线最大宽度（米），参考值 {30, 40, 50, 60} {30, 50, 70, 90}
+    // 水滴曲线最大宽度（米），参考值 {30, 40, 50, 60}
     const double max_x_milts[] = {30, 40, 50, 60};
 
     // // 水滴最宽处宽度与路径总长度线性相关的系数，参考值 {0.2, 0.3, 0.4, 0.5, 0.6}
@@ -53,20 +53,22 @@ namespace para {
     // // 传输时间与传输范围大小的平方相关的系数，参考值 {0.05, 0.1, 0.2, 0.3}
     // const double max_time_range_props[] = {0.05, 0.1, 0.2, 0.3};
 
-    // 传输时间与传输范围大小线性相关的系数，参考值 {0.5, 1, 1.5, 2, 2.5, 3}
+    // 传输时间与传输范围大小线性相关的系数，参考值 {0.5, 1, 1.5, 2}
     const double time_props[] = {0.5, 1, 1.5, 2};
 
     // 最大膨胀系数，参考值 {1, 1.5, 2, 2.5, 3}
     const double max_swells[] = {1, 1.5, 2, 2.5, 3};
 
     // 算法名字
-    const std::string algorithm_names[6] = {
+    const std::string algorithm_names[8] = {
         "DFS",
         "ACO",
         "PSO",
         "GA",
         "Greedy",
-        "ACO-Online"
+        "ACO-Online",
+        "ACO-dominated",  // for calibration
+        "ACO-normal"      // for calibration
     };
     // 算法枚举类型
     enum Algorithm {
@@ -75,7 +77,9 @@ namespace para {
         PSO = 2,
         GA = 3,
         Greedy = 4,
-        ACO_Online = 5
+        ACO_Online = 5,
+        ACO_dominated = 6,  // for calibration
+        ACO_normal = 7      // for calibration
     };
     
 } // namespace para
@@ -155,7 +159,7 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
 /// @brief 读入filenames.txt和features.txt
 /// @param instance_num 
 /// @param dir 
-/// @param online_file_format 
+/// @param online_file_format 是否online格式
 void readInit(int &instance_num, std::string dir, bool online_file_format) {
     std::ifstream fin;
     std::string buff = "";
@@ -192,7 +196,7 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
         naive::NaiveSolver naiveSolver = naive::NaiveSolver(&prob);
         naiveSolver.solve();
         optTraj = naiveSolver.getTrajectory();
-    } else if (alg == para::Algorithm::ACO) {
+    } else if (alg == para::Algorithm::ACO || alg == para::Algorithm::ACO_dominated || alg == para::Algorithm::ACO_normal) {
         // 1
         aco::ACOSolver acoSolver = aco::ACOSolver(&prob);
         acoSolver.solve();
@@ -225,7 +229,7 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     results.push_back(result);
     // 保存结果（追加写入）
     std::ofstream fout;
-    fout.open(dir + "\\results_dfs.txt", std::ios::out | std::ios::app);
+    fout.open(dir + "\\results.txt", std::ios::out | std::ios::app);
     fout << para::algorithm_names[alg] << "\t";
     fout << features[data_index] << "\t";
     fout << result.str << "\n";
@@ -295,9 +299,9 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
 /// @param instance_num 
 /// @param dir 
 void solve_all_instance(int instance_num, std::string dir) {
-    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
-    std::vector<para::Algorithm> alg_set = {para::DFS};
+    // std::vector<para::Algorithm> alg_set = {para::DFS};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -326,6 +330,44 @@ void solve_all_instance(int instance_num, std::string dir) {
     }
 }
 
+void calibration(int instance_num, std::string dir) {
+    para::Algorithm alg;
+    std::string filename = "", feature = "";
+
+
+    // 打开支配筛选启发值
+    alg = para::ACO_dominated;
+    aco::HEURISTIC_FLAG = true;
+    for (int i = 1; i <= instance_num; i++) {
+        filename = filenames[i - 1];
+        feature = features[i - 1];
+
+        // 读入offline问题
+        Problem2D prob2D;
+        prob2D.initFromOnlineFile(filename);
+        ProblemDisc2D probDisc2D = ProblemDisc2D(prob2D);
+
+        solve(probDisc2D, alg, dir, i - 1);
+        std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
+    }
+
+    // 关闭筛选
+    alg = para::ACO_normal;
+    aco::HEURISTIC_FLAG = false;
+    for (int i = 1; i <= instance_num; i++) {
+        filename = filenames[i - 1];
+        feature = features[i - 1];
+
+        // 读入offline问题
+        Problem2D prob2D;
+        prob2D.initFromOnlineFile(filename);
+        ProblemDisc2D probDisc2D = ProblemDisc2D(prob2D);
+
+        solve(probDisc2D, alg, dir, i - 1);
+        std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
+    }
+}
+
 /*
 每次要改的地方：
 1. para::sensor_nums
@@ -338,17 +380,25 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\5";
+    std::string direction = ".\\experiment\\calibration";
 
     // 生成数据
     generate_online_data(direction, true, 1);
 
     // 仿真实验
+    // int instance_num = 0;
+    // readInit(instance_num, direction, true);
+    // std::cout << "instance_number = " << instance_num << "\n\n";
+    // results.clear();
+    // solve_all_instance(instance_num, direction);
+
+    // calibration
     int instance_num = 0;
     readInit(instance_num, direction, true);
     std::cout << "instance_number = " << instance_num << "\n\n";
     results.clear();
-    solve_all_instance(instance_num, direction);
+    calibration(instance_num, direction);
+
 
     return 0;
 }

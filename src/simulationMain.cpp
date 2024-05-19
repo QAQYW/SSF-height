@@ -38,11 +38,13 @@ std::vector<Result> results;
 
 /// @brief 参数集合
 namespace para {
+    /* -------------------------- algorithm comparison -------------------------- */
+
     // 传感器数量，参考值 {5, 10, 20, 30, 40, 50} {5, 10, 15, 20, 25, 30}
-    const int sensor_nums[] = {10};
+    const int sensor_nums[] = {5};
 
     // 水滴曲线最大高度（米），参考值 {70, 100, 130, 160}
-    const double max_y_mults[] = {70, 100, 130, 160};
+    const double max_y_mults[] = {130};
 
     // 水滴曲线最大宽度（米），参考值 {30, 40, 50, 60}
     const double max_x_milts[] = {30, 40, 50, 60};
@@ -58,6 +60,19 @@ namespace para {
 
     // 最大膨胀系数，参考值 {1, 1.5, 2, 2.5, 3}
     const double max_swells[] = {1, 1.5, 2, 2.5, 3};
+
+    /* ------------------------------- calibration ------------------------------ */
+
+    // 蚁群蒸发系数
+    const double evaporate_coefs[] = {0.2, 0.3, 0.4, 0.5};
+
+    // alpha
+    const double alphas[] = {1, 2, 3, 4};
+    // beta
+    const double betas[] = {0, 1, 2, 3, 4, 5};
+    // best performance: alpha=1, beta=2
+
+    /* ---------------------------------- other --------------------------------- */
 
     // 算法名字
     const std::string algorithm_names[8] = {
@@ -232,6 +247,7 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     fout.open(dir + "\\results.txt", std::ios::out | std::ios::app);
     fout << para::algorithm_names[alg] << "\t";
     fout << features[data_index] << "\t";
+    fout << aco::EVAPORATE_COEF << "\t" << aco::ALPHA << "\t" << aco::BETA << "\t";
     fout << result.str << "\n";
     fout.close();
 
@@ -330,10 +346,9 @@ void solve_all_instance(int instance_num, std::string dir) {
     }
 }
 
-void calibration(int instance_num, std::string dir) {
+void calibration_heuristic_component(int instance_num, std::string dir) {
     para::Algorithm alg;
     std::string filename = "", feature = "";
-
 
     // 打开支配筛选启发值
     alg = para::ACO_dominated;
@@ -368,6 +383,57 @@ void calibration(int instance_num, std::string dir) {
     }
 }
 
+void calibration_evaporation(int instance_num, std::string dir) {
+    para::Algorithm alg = para::ACO;
+    std::string filename = "", feature = "";
+
+    for (double evp : para::evaporate_coefs) {
+
+        aco::EVAPORATE_COEF = evp;
+        std::cout << "evaporate = " << evp << "\n";
+
+        for (int i = 1; i <= instance_num; i++) {
+            filename = filenames[i - 1];
+            feature = features[i - 1];
+
+            // 读入offline问题
+            Problem2D prob2D;
+            prob2D.initFromOnlineFile(filename);
+            ProblemDisc2D probDisc2D = ProblemDisc2D(prob2D);
+
+            solve(probDisc2D, alg, dir, i - 1);
+            std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
+        }
+    }
+}
+
+void calibration_alpha_beta(int instance_num, std::string dir) {
+    para::Algorithm alg = para::ACO;
+    std::string filename = "", feature = "";
+
+    for (double alpha : para::alphas) {
+        for (double beta : para::betas) {
+            aco::ALPHA = alpha;
+            aco::BETA = beta;
+
+            std::cout << "alpha = " << alpha << ", beta = " << beta << "\n";
+
+            for (int i = 1; i <= instance_num; i++) {
+                filename = filenames[i - 1];
+                feature = features[i - 1];
+
+                // 读入offline问题
+                Problem2D prob2D;
+                prob2D.initFromOnlineFile(filename);
+                ProblemDisc2D probDisc2D = ProblemDisc2D(prob2D);
+
+                solve(probDisc2D, alg, dir, i - 1);
+                std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
+            }
+        }
+    }
+}
+
 /*
 每次要改的地方：
 1. para::sensor_nums
@@ -380,25 +446,26 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\calibration";
+    std::string direction = ".\\experiment\\calibration_evaporation";
 
-    // 生成数据
+    // // 生成数据
     generate_online_data(direction, true, 1);
 
-    // 仿真实验
-    // int instance_num = 0;
-    // readInit(instance_num, direction, true);
-    // std::cout << "instance_number = " << instance_num << "\n\n";
-    // results.clear();
-    // solve_all_instance(instance_num, direction);
+    // // 仿真实验
+    // // int instance_num = 0;
+    // // readInit(instance_num, direction, true);
+    // // std::cout << "instance_number = " << instance_num << "\n\n";
+    // // results.clear();
+    // // solve_all_instance(instance_num, direction);
 
-    // calibration
+    // // calibration
     int instance_num = 0;
     readInit(instance_num, direction, true);
     std::cout << "instance_number = " << instance_num << "\n\n";
     results.clear();
-    calibration(instance_num, direction);
-
+    // calibration_heuristic_component(instance_num, direction);
+    // calibration_alpha_beta(instance_num, direction);
+    calibration_evaporation(instance_num, direction);
 
     return 0;
 }

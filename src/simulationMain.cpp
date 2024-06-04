@@ -44,7 +44,7 @@ namespace para {
     const int sensor_nums[] = {5};
 
     // 水滴曲线最大高度（米），参考值 {70, 100, 130, 160}
-    const double max_y_mults[] = {130};
+    const double max_y_mults[] = {70, 100, 130, 160};
 
     // 水滴曲线最大宽度（米），参考值 {30, 40, 50, 60}
     const double max_x_milts[] = {30, 40, 50, 60};
@@ -64,7 +64,7 @@ namespace para {
     /* ------------------------------- calibration ------------------------------ */
 
     // 蚁群蒸发系数
-    const double evaporate_coefs[] = {0.2, 0.3, 0.4, 0.5};
+    const double evaporate_coefs[] = {0.1};//, 0.2, 0.3, 0.4, 0.5};
 
     // alpha
     const double alphas[] = {1, 2, 3, 4};
@@ -315,7 +315,7 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
 /// @param instance_num 
 /// @param dir 
 void solve_all_instance(int instance_num, std::string dir) {
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
 
@@ -446,26 +446,26 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\calibration_evaporation";
+    std::string direction = ".\\experiment\\demo";
 
-    // // 生成数据
-    generate_online_data(direction, true, 1);
+    // 生成数据
+    // generate_online_data(direction, true, 1);
 
-    // // 仿真实验
-    // // int instance_num = 0;
-    // // readInit(instance_num, direction, true);
-    // // std::cout << "instance_number = " << instance_num << "\n\n";
-    // // results.clear();
-    // // solve_all_instance(instance_num, direction);
-
-    // // calibration
+    // 仿真实验
     int instance_num = 0;
     readInit(instance_num, direction, true);
     std::cout << "instance_number = " << instance_num << "\n\n";
     results.clear();
-    // calibration_heuristic_component(instance_num, direction);
-    // calibration_alpha_beta(instance_num, direction);
-    calibration_evaporation(instance_num, direction);
+    solve_all_instance(instance_num, direction);
+
+    // // calibration
+    // int instance_num = 0;
+    // readInit(instance_num, direction, true);
+    // std::cout << "instance_number = " << instance_num << "\n\n";
+    // results.clear();
+    // // calibration_heuristic_component(instance_num, direction);
+    // // calibration_alpha_beta(instance_num, direction);
+    // calibration_evaporation(instance_num, direction);
 
     return 0;
 }

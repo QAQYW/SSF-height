@@ -157,7 +157,7 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
 }
 
 double aco::Ant::calHeightCost() const {
-    return trajectory.calHeightCost(1);
+    return trajectory.calHeightCost(resource::HEIGHT_COST_PROPOR);
 }
 
 double aco::Ant::calSpeedCost(const ProblemDisc2D &problem) const {

@@ -129,7 +129,7 @@ void DataGenerator::generateAndSave(unsigned int seed, int dataIndex) {
         // double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * width;
         // 数据传输时间 - 与width成正比
         double time = tools::randDouble(MIN_TIME_RANGE_PROP, MAX_TIME_RANGE_PROP) * width * TIME_PROP;
-        time = tools::approx(time, resource::TIME_ULP);
+        time = tools::approx(time, resource::TIME_ULP) / 10;
         
         // 保存传输时间
         fout << std::to_string(time) << "\n";

@@ -41,7 +41,7 @@ namespace para {
     /* -------------------------- algorithm comparison -------------------------- */
 
     // 传感器数量，参考值 {5, 10, 20, 30, 40, 50} {5, 10, 15, 20, 25, 30}
-    const int sensor_nums[] = {5, 10, 20, 30};
+    const int sensor_nums[] = {5};
 
     // 水滴曲线最大高度（米），参考值 {70, 100, 130, 160}
     const double max_y_mults[] = {70, 100, 130, 160};
@@ -315,7 +315,7 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
 /// @param instance_num 
 /// @param dir 
 void solve_all_instance(int instance_num, std::string dir) {
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::ACO_Online};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO, para::GA, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
 
@@ -446,7 +446,7 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\experiment\\demo";
+    std::string direction = ".\\newexp\\5";
 
     // 生成数据
     generate_online_data(direction, true, 1);

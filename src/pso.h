@@ -53,6 +53,7 @@ public:
     std::vector<double> getBestPosition() const;
     double getCost() const;
     double getBestCost() const;
+    Trajectory getTrajectory() const;
     Trajectory getBestTrajectory();
     /// @brief 更新speed和position
     /// @param gb 全局最优解
@@ -78,6 +79,7 @@ public:
     PSOSolver(ProblemDisc2D* prob);
     Trajectory getTrajectory();
     void solve();
+    bool isFeasible(Trajectory traj) const;
 };
 
 } // namespace pso

@@ -15,7 +15,7 @@ const double pso::PERSONAL_BEST_COEF = 2.0;  // ! 未调参
 const double pso::GLOBAL_BEST_COEF = 2.0;  // ! 未调参
 const int pso::SWARM_SIZE = 20; //30;  // ! 未调参
 const double pso::MAX_SPEED = 0.1;  // ! 未调参
-const int pso::MAX_ITERATOR = 10; //30; //50; // 50;  // ! 未调参
+const int pso::MAX_ITERATOR = 30; //30; //50; // 50;  // ! 未调参
 
 /* -------------------------------- Partical -------------------------------- */
 
@@ -69,6 +69,10 @@ double pso::Partical::getCost() const {
 
 double pso::Partical::getBestCost() const {
     return bestCost;
+}
+
+Trajectory pso::Partical::getTrajectory() const {
+    return trajectory;
 }
 
 Trajectory pso::Partical::getBestTrajectory() {
@@ -148,15 +152,22 @@ void pso::PSOSolver::solve() {
     
     int iter = 0;
     while (iter < pso::MAX_ITERATOR) {
-        bestIndex = 0;
+        bestIndex = -1;
+        bool flag = false;
         for (int i = 0; i < pso::SWARM_SIZE; i++) {
             swarm[i].updatePosition(inertia, bestPartical); // 包含了速度的更新
             swarm[i].positionToTrajectory(); // 把连续的position映射为离散的trajectory
+            if (!isFeasible(swarm[i].getTrajectory())) {
+                // std::cout << "PSO: Infeasible solution!\n";
+                continue;
+            }
+            flag = true;
             swarm[i].calCost(*problem);
             swarm[i].updatePersonalBest();
-            if (swarm[i].getCost() < swarm[bestIndex].getCost()) bestIndex = i;
+            if (bestIndex == -1 || swarm[i].getCost() < swarm[bestIndex].getCost()) bestIndex = i;
         }
 
+        if (!flag) continue;
         // 更新全局最优粒子（主要是位置）
         if (swarm[bestIndex].getCost() < bestPartical.getCost()) {
             bestPartical = pso::Partical(swarm[bestIndex]);
@@ -165,4 +176,27 @@ void pso::PSOSolver::solve() {
         iter++;
         inertia -= dInertia;
     }
+}
+
+bool pso::PSOSolver::isFeasible(Trajectory traj) const {
+    int num = problem->getSensorNum();
+    bool collected[num] = {false};
+    for (int sid = 0; sid < num; sid++) {
+        int lmost = lengthDiscNum - 1;
+        int rmost = 0;
+        for (resource::RangeDisc rg : problem->getSensor(sid).rangeList) {
+            lmost = std::min(lmost, rg.leftIndex);
+            rmost = std::max(rmost, rg.rightIndex);
+        }
+        for (int dis = lmost, hei; !collected[sid] && dis < rmost; dis++) {
+            hei = traj.getHeightIndex(dis);
+            if (problem->getSensor(sid).isCovered(dis, hei)) {
+                collected[sid] = true;
+            }
+        }
+        if (!collected[sid]) {
+            return false;
+        }
+    }
+    return true;
 }

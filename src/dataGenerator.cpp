@@ -188,7 +188,7 @@ void DataGenerator::generateAndSave_Online(unsigned int seed, int dataIndex) {
     } else {
         sensorNum = this->sensorNum;
     }
-    double length = std::ceil(tools::randDouble(MIN_LENGTH_SENSOR_PROP, MAX_LENGTH_SENSOR_PROP) * sensorNum);
+    double length = std::ceil(tools::randDouble(MIN_LENGTH_SENSOR_PROP, MAX_LENGTH_SENSOR_PROP) * sensorNum * 10);
     this->length = length;
 
     // 保存路径长度，传感器数量，以及各传感器信息

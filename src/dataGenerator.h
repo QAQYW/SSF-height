@@ -36,9 +36,9 @@ public:
     // const double MIN_RANGE = 1;//0.5; // ! 0.5米会不会太小
 
     // 飞行高度范围
-    const double MAX_HEIGHT = 120; //200; // 单位：米
+    const double MAX_HEIGHT = 300; //120; //200; // 单位：米
     // const double MAX_HEIGHT = 140; // for tiny_test only
-    const double MIN_HEIGHT = 80; // 单位：米
+    const double MIN_HEIGHT = 30; // 单位：米
 
     // 路径长度与传感器数量的比例系数
     const double MAX_LENGTH_SENSOR_PROP = 50; //15; //20; // 100;
@@ -145,8 +145,8 @@ public:
     const double MAX_TIME_RANGE_PROP = 2.0;
     
     // 无人机飞行高度
-    const double MIN_UAV_HEIGHT = 80;
-    const double MAX_UAV_HEIGHT = 120;
+    const double MIN_UAV_HEIGHT = 50;
+    const double MAX_UAV_HEIGHT = 300;
 
     // 路径长度与传感器数量的比值
     const double MIN_LENGTH_SENSOR_PROP = 20;

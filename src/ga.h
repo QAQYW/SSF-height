@@ -28,12 +28,13 @@ public:
     /// @param heightDiscNum 离散高度值的数量
     /// @param lengthDiscNum 离散距离值的数量（=路径长度）
     Individual(int heightDiscNum, int lengthDiscNum);
-    /// @brief 构造函数
+    /// @brief 构造函数（指定飞行轨迹）
     /// @param heightDiscNum 离散高度值的数量
     /// @param lengthDiscNum 离散距离值的数量（=路径长度）
     /// @param traj 无人机飞行路径
     Individual(int heightDiscNum, int lengthDiscNum, Trajectory traj);
     Trajectory getTrajectory() const;
+    void setCostINF();
     double getCost() const;
     void calCost(const ProblemDisc2D &problem);
     double calHeightCost() const;
@@ -63,6 +64,7 @@ public:
     void solve();
     void crossover(Population &children, Individual p1, Individual p2) const;
     void selection(Population &parents, const Population &children) const;
+    bool isFeasible(Trajectory traj) const;
 };
 
 

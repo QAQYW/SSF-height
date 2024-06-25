@@ -171,6 +171,26 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
     std::cout << "Generate " << count_data << " instances\n\n";
 }
 
+// void test20240622(std::string dir, pso::PSOSolver solver) {
+//     int lengthDiscNum = 169;
+//     Trajectory traj = Trajectory(lengthDiscNum);
+//     std::ifstream fin;
+//     fin.open(dir + "\\answer_PSO_3.txt");
+//     double dis, spd, hei;
+//     std::string tempstr = "";
+//     std::getline(fin, tempstr);
+//     for (int i = 0; i < lengthDiscNum; i++) {
+//         fin >> dis >> spd >> hei;
+//         traj.setHeightIndex(i, (int) ((hei - 80) / 10));
+//     }
+//     fin.close();
+//     if (solver.isFeasible(traj)) {
+//         std::cout << "Feasible Trajectory\n";
+//     } else {
+//         std::cout << "Infeasible Trajectory\n";
+//     }
+// }
+
 /// @brief 读入filenames.txt和features.txt
 /// @param instance_num 
 /// @param dir 
@@ -221,6 +241,9 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
         pso::PSOSolver psoSolver = pso::PSOSolver(&prob);
         psoSolver.solve();
         optTraj = psoSolver.getTrajectory();
+        // if (data_index == 2) {
+        //     test20240622(dir, psoSolver);
+        // }
     } else if (alg == para::Algorithm::GA) {
         // 3
         ga::GASolver gaSolver = ga::GASolver(&prob);
@@ -251,23 +274,23 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     fout << result.str << "\n";
     fout.close();
 
-    // 输出完整解
-    std::string name = dir + "\\answer_" + para::algorithm_names[alg] + "_" + std::to_string(data_index + 1) + ".txt";
-    fout.open(name);
-    fout << "distance\tspeed\theight\n";
-    int len = prob.getLengthDiscNum();
-    double dis, hei;
-    for (int i = 0; i < len; i++) {
-        dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
-        hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob.getMinHeight(), resource::REF_UNIT_HEIGHT);
-        fout << std::to_string(dis) << "\t";
-        fout << std::to_string(speedSche[i]) << "\t";
-        fout << std::to_string(hei) << "\n";
-    }
-    fout << " cost = " << std::to_string(result.cost) << "\n";
-    fout << "hcost = " << std::to_string(result.hcost) << "\n";
-    fout << "vcost = " << std::to_string(result.vcost) << "\n";
-    fout.close();
+    // ! 输出完整解
+    // std::string name = dir + "\\answer_" + para::algorithm_names[alg] + "_" + std::to_string(data_index + 1) + ".txt";
+    // fout.open(name);
+    // fout << "distance\tspeed\theight\n";
+    // int len = prob.getLengthDiscNum();
+    // double dis, hei;
+    // for (int i = 0; i < len; i++) {
+    //     dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
+    //     hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob.getMinHeight(), resource::REF_UNIT_HEIGHT);
+    //     fout << std::to_string(dis) << "\t";
+    //     fout << std::to_string(speedSche[i]) << "\t";
+    //     fout << std::to_string(hei) << "\n";
+    // }
+    // fout << " cost = " << std::to_string(result.cost) << "\n";
+    // fout << "hcost = " << std::to_string(result.hcost) << "\n";
+    // fout << "vcost = " << std::to_string(result.vcost) << "\n";
+    // fout.close();
 }
 
 void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string dir, int data_index) {
@@ -318,7 +341,7 @@ void solve_all_instance(int instance_num, std::string dir) {
     // std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO, para::GA, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -448,10 +471,10 @@ int main() {
 
     // 测试数据存储路径
     // std::string direction = ".\\newexp\\5";
-    std::string direction = ".\\newexp\\test";
+    std::string direction = ".\\newexp\\temp";
 
     // 生成数据
-    // generate_online_data(direction, true, 1);
+    generate_online_data(direction, true, 1);
 
     // 仿真实验
     int instance_num = 0;

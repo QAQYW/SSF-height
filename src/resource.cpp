@@ -4,15 +4,15 @@
 
 const double resource::V_STAR = 13.98; // 在论文里有标注
 
-const double resource::LENGTH_ULP = 0.1;    // ! 慎重取值
-const double resource::HEIGHT_ULP = 0.01;   // ! 慎重取值
-const double resource::TIME_ULP = 0.1;      // ! 慎重取值
+const double resource::LENGTH_ULP = 0.1;
+const double resource::HEIGHT_ULP = 0.01;
+const double resource::TIME_ULP = 0.1;
 const double resource::ANS_TIME_ULP = resource::TIME_ULP / 100;
 
 const double resource::REF_UNIT_HEIGHT = 10; //10;
 const double resource::REF_UNIT_LENGTH = 1; //resource::LENGTH_ULP * 10;
 
-const double resource::HEIGHT_COST_PROPOR = 39.095; //39; //39.095; //0.1; //10;
+const double resource::HEIGHT_COST_PROPOR = 1;//39.095; //39; //39.095; //0.1; //10;
 
 /* ----------------------------- data structure ----------------------------- */
 

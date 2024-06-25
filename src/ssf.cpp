@@ -239,8 +239,6 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
         // 单独一个传感器的 segment 也要记录
         ssf::Segment seg(lMost, rMost, dis, time);
         seg.addSensor(il);
-        seg.calVelocity();
-        segments.push_back(seg);
         inSegment[il] = true;
         // extend segment
         for (int ie = 0; ie < sensorNum; ie++) {
@@ -256,8 +254,13 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
             if (check) {
                 seg.addSensor(ie);
                 inSegment[ie] = true;
+                time += problem->getSensor(sensors[ie].getSensorIndex()).time;
             }
         }
+        // 加到segments中
+        seg.setActiveTime(time);
+        seg.calVelocity();
+        segments.push_back(seg);
 
         for (int ir = il + 1; ir < sensorNum; ir++) {
             // 若该传感器数据已传输，则跳过
@@ -295,6 +298,7 @@ ssf::Segment ssf::SSFSolverDisc::findSlowestSegment(const std::vector<bool>& isA
                 if (check) {
                     seg.addSensor(ie);
                     inSegment[ie] = true;
+                    time += problem->getSensor(sensors[ie].getSensorIndex()).time;
                 }
             }
             

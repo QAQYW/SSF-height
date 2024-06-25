@@ -37,6 +37,10 @@ Trajectory ga::Individual::getTrajectory() const {
     return trajectory;
 }
 
+void ga::Individual::setCostINF() {
+    cost = 1e7; // INF = 1e7
+}
+
 double ga::Individual::getCost() const {
     return cost;
 }
@@ -92,11 +96,15 @@ Trajectory ga::GASolver::getTrajectory() const {
 
 void ga::GASolver::solve() {
     Population parents;
-    int bestIndex = 0;
+    int bestIndex = -1;
     for (int i = 0; i < ga::POPULATION_SIZE; i++) {
-        parents.push_back(ga::Individual(heightDiscNum, lengthDiscNum));
+        ga::Individual ind = ga::Individual(heightDiscNum, lengthDiscNum);
+        while (!isFeasible(ind.getTrajectory())) {
+            ind = ga::Individual(heightDiscNum, lengthDiscNum);
+        }
+        parents.push_back(ind); // ga::Individual(heightDiscNum, lengthDiscNum)
         parents[i].calCost(*problem);
-        if (parents[i].getCost() < parents[bestIndex].getCost()) {
+        if (bestIndex == -1 || parents[i].getCost() < parents[bestIndex].getCost()) {
             bestIndex = i;
         }
     }
@@ -119,10 +127,12 @@ void ga::GASolver::solve() {
         }
         // todo 变异
         for (int i = 0; i < ga::POPULATION_SIZE; i++) {
-            parents[i].mutation();
+            // parents[i].mutation();
             children[i].mutation();
-            parents[i].calCost(*problem);
-            children[i].calCost(*problem);
+            // if (!isFeasible(parents[i].getTrajectory())) parents[i].setCostINF();
+            // else parents[i].calCost(*problem);
+            if (!isFeasible(children[i].getTrajectory())) children[i].setCostINF();
+            else children[i].calCost(*problem);
         }
         // todo 选择
         selection(parents, children);
@@ -157,4 +167,27 @@ void ga::GASolver::selection(ga::Population &parents, const ga::Population &chil
     parents.insert(parents.end(), children.begin(), children.end());
     sort(parents.begin(), parents.end());
     parents.erase(parents.begin() + ga::POPULATION_SIZE, parents.end());
+}
+
+bool ga::GASolver::isFeasible(Trajectory traj) const {
+    int num = problem->getSensorNum();
+    bool collected[num] = {false};
+    for (int sid = 0; sid < num; sid++) {
+        int lmost = lengthDiscNum - 1;
+        int rmost = 0;
+        for (resource::RangeDisc rg : problem->getSensor(sid).rangeList) {
+            lmost = std::min(lmost, rg.leftIndex);
+            rmost = std::max(rmost, rg.rightIndex);
+        }
+        for (int dis = lmost, hei; !collected[sid] && dis < rmost; dis++) {
+            hei = traj.getHeightIndex(dis);
+            if (problem->getSensor(sid).isCovered(dis, hei)) {
+                collected[sid] = true;
+            }
+        }
+        if (!collected[sid]) {
+            return false;
+        }
+    }
+    return true;
 }

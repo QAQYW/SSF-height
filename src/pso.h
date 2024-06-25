@@ -44,7 +44,19 @@ private:
 
 public:
     Partical() {};
+    /// @brief 随机初始化
+    /// @param heightDiscNum 
+    /// @param lengthDiscNum 
+    /// @param gap 
+    /// @param problem 
     Partical(int heightDiscNum, int lengthDiscNum, double gap, const ProblemDisc2D &problem);
+    /// @brief 初始化为指定高度的轨迹（固定高度飞行）
+    /// @param heightDiscNum 
+    /// @param lengthDiscNum 
+    /// @param gap 
+    /// @param problem 
+    /// @param heightIndex 飞行高度
+    Partical(int heightDiscNum, int lengthDiscNum, double gap, const ProblemDisc2D &problem, int heightIndex);
     /// @brief 把位置position映射为离散的路径解trajectory
     void positionToTrajectory();
     /// @brief 把bestPosition映射为离散的路径解trajectory

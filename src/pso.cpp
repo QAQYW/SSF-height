@@ -37,6 +37,24 @@ pso::Partical::Partical(int heightDiscNum, int lengthDiscNum, double gap, const 
     bestCost = cost;
 }
 
+pso::Partical::Partical(int heightDiscNum, int lengthDiscNum, double gap, const ProblemDisc2D &problem, int heightIndex)
+: heightDiscNum(heightDiscNum), lengthDiscNum(lengthDiscNum), gap(gap) {
+    // 初始化trajectory
+    trajectory = Trajectory(lengthDiscNum);
+    // 随机初始化速度和位置（但都对应最低高度）
+    speed.resize(lengthDiscNum);
+    position.resize(lengthDiscNum);
+    bestPosition.resize(lengthDiscNum);
+    for (int i = 0; i < lengthDiscNum; i++) {
+        speed[i] = tools::randDouble(-pso::MAX_SPEED, pso::MAX_SPEED);
+        bestPosition[i] = position[i] = gap / 2;
+    }
+    // 计算cost
+    positionToTrajectory();
+    calCost(problem);
+    bestCost = cost;
+}
+
 void pso::Partical::positionToTrajectory() {
     int hid;
     int hMax = heightDiscNum - 1;
@@ -140,15 +158,23 @@ void pso::PSOSolver::solve() {
     double inertia = pso::INITIAL_INERTIA_VALUE;
     // 惯性权重每次的减小量（线性）
     double dInertia = (pso::INITIAL_INERTIA_VALUE - pso::END_INERTIA_VALUE) / pso::MAX_ITERATOR;
+
+    // // 初始化初始最优解（沿最低高度飞）
+    // bestPartical = pso::Partical(heightDiscNum, lengthDiscNum, gap, *problem, 0);
     
     // 初始化粒子群
-    int bestIndex = 0;
-    for (int i = 0; i < pso::SWARM_SIZE; i++) {
-        swarm[i] = pso::Partical(heightDiscNum, lengthDiscNum, gap, *problem);
-        // swarm[i].calCost(*problem);
-        if (swarm[i].getCost() < swarm[bestIndex].getCost()) bestIndex = i;
+    int bestIndex = -1;
+    while (bestIndex == -1) {
+        for (int i = 0; i < pso::SWARM_SIZE; i++) {
+            swarm[i] = pso::Partical(heightDiscNum, lengthDiscNum, gap, *problem);
+            if (!isFeasible(swarm[i].getTrajectory())) continue;
+            // swarm[i].calCost(*problem);
+            if (bestIndex == -1 || swarm[i].getCost() < swarm[bestIndex].getCost()) bestIndex = i;
+        }
+        if (~bestIndex) {
+            bestPartical = pso::Partical(swarm[bestIndex]);
+        }
     }
-    bestPartical = pso::Partical(swarm[bestIndex]);
     
     int iter = 0;
     while (iter < pso::MAX_ITERATOR) {

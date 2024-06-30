@@ -470,8 +470,8 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    // std::string direction = ".\\newexp\\5";
-    std::string direction = ".\\newexp\\temp";
+    std::string direction = ".\\newexp\\5-10";
+    // std::string direction = ".\\newexp\\test";
 
     // 生成数据
     generate_online_data(direction, true, 1);

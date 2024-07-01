@@ -75,11 +75,12 @@ namespace para {
     /* ---------------------------------- other --------------------------------- */
 
     // 算法名字
-    const std::string algorithm_names[8] = {
+    const std::string algorithm_names[9] = {
         "DFS",
         "ACO",
         "PSO",
         "GA",
+        "SA",
         "Greedy",
         "ACO-Online",
         "ACO-dominated",  // for calibration
@@ -91,10 +92,11 @@ namespace para {
         ACO = 1,
         PSO = 2,
         GA = 3,
-        Greedy = 4,
-        ACO_Online = 5,
-        ACO_dominated = 6,  // for calibration
-        ACO_normal = 7      // for calibration
+        SA = 4,
+        Greedy = 6,
+        ACO_Online = 6,
+        ACO_dominated = 7,  // for calibration
+        ACO_normal = 8      // for calibration
     };
     
 } // namespace para

@@ -26,6 +26,7 @@ sa::Solution::Solution(int heightDiscNum, int lengthDiscNum) : heightDiscNum(hei
     for (int i = 0; i < lengthDiscNum; i++) {
         position[i] = tools::randDouble(0, heightDiscNum - 0.0001);
     }
+    trajectory = Trajectory(lengthDiscNum);
     positionToTrajectory();
 }
 
@@ -103,11 +104,15 @@ ProblemDisc2D* sa::SASolver::getProblem() const {
 }
 
 void sa::SASolver::solve() {
-    bestSolution = sa::Solution(heightDiscNum, lengthDiscNum, 0);
-    bestSolution.calCost(*problem);
+    // bestSolution = sa::Solution(heightDiscNum, lengthDiscNum, 0);
+    // bestSolution.calCost(*problem);
 
     sa::Solution solution = sa::Solution(heightDiscNum, lengthDiscNum);
     while (!isFeasible(solution.getTrajectory())) solution = sa::Solution(heightDiscNum, lengthDiscNum);
+    solution.calCost(*problem);
+
+    bestSolution = sa::Solution(solution);
+    bestSolution.calCost(*problem);
 
     double temperature = sa::INIT_TEMPERATURE;
     while (temperature > sa::MIN_TEMPERATURE) {
@@ -119,7 +124,7 @@ void sa::SASolver::solve() {
     }
 }
 
-Trajectory sa::SASolver::getBestTrajectory() const {
+Trajectory sa::SASolver::getTrajectory() const {
     return bestSolution.getTrajectory();
 }
 

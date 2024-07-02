@@ -16,6 +16,7 @@
 #include "naive.h"
 #include "pso.h"
 #include "ga.h"
+#include "sa.h"
 #include "greedy.h"
 #include "problem2D.h"
 #include "problemDisc2D.h"
@@ -93,7 +94,7 @@ namespace para {
         PSO = 2,
         GA = 3,
         SA = 4,
-        Greedy = 6,
+        Greedy = 5,
         ACO_Online = 6,
         ACO_dominated = 7,  // for calibration
         ACO_normal = 8      // for calibration
@@ -251,8 +252,13 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
         ga::GASolver gaSolver = ga::GASolver(&prob);
         gaSolver.solve();
         optTraj = gaSolver.getTrajectory();
-    } else if (alg == para::Algorithm::Greedy) {
+    } else if (alg == para::Algorithm::SA) {
         // 4
+        sa::SASolver saSolver = sa::SASolver(&prob);
+        saSolver.solve();
+        optTraj = saSolver.getTrajectory();
+    } else if (alg == para::Algorithm::Greedy) {
+        // 5
         greedy::GreedySolver greedySolver = greedy::GreedySolver(&prob);
         greedySolver.solve();
         optTraj = greedySolver.getTrajectory();
@@ -343,7 +349,8 @@ void solve_all_instance(int instance_num, std::string dir) {
     // std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO, para::GA, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::Greedy, para::ACO_Online};
+    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::ACO_Online};
+    std::vector<para::Algorithm> alg_set = {para::SA};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -472,11 +479,11 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
 
     // 测试数据存储路径
-    std::string direction = ".\\newexp\\5-10";
-    // std::string direction = ".\\newexp\\test";
+    // std::string direction = ".\\newexp\\5-10";
+    std::string direction = ".\\newexp\\test";
 
     // 生成数据
-    generate_online_data(direction, true, 1);
+    // generate_online_data(direction, true, 1);
 
     // 仿真实验
     int instance_num = 0;

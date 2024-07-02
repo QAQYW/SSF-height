@@ -14,6 +14,8 @@ extern const double INIT_TEMPERATURE;
 extern const double MIN_TEMPERATURE;
 extern const double TEMPERATURE_REDUCE_COEF; // 0.995
 
+class SASolver;
+
 class Solution {
 private:
     int heightDiscNum;
@@ -60,7 +62,7 @@ public:
     SASolver(ProblemDisc2D* prob);
     ProblemDisc2D* getProblem() const;
     void solve();
-    Trajectory getBestTrajectory() const;
+    Trajectory getTrajectory() const;
     /// @brief 检查trajectory是否合法
     /// @param traj 
     /// @return 合法true；不合法false

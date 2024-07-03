@@ -283,22 +283,22 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     fout.close();
 
     // ! 输出完整解
-    // std::string name = dir + "\\answer_" + para::algorithm_names[alg] + "_" + std::to_string(data_index + 1) + ".txt";
-    // fout.open(name);
-    // fout << "distance\tspeed\theight\n";
-    // int len = prob.getLengthDiscNum();
-    // double dis, hei;
-    // for (int i = 0; i < len; i++) {
-    //     dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
-    //     hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob.getMinHeight(), resource::REF_UNIT_HEIGHT);
-    //     fout << std::to_string(dis) << "\t";
-    //     fout << std::to_string(speedSche[i]) << "\t";
-    //     fout << std::to_string(hei) << "\n";
-    // }
-    // fout << " cost = " << std::to_string(result.cost) << "\n";
-    // fout << "hcost = " << std::to_string(result.hcost) << "\n";
-    // fout << "vcost = " << std::to_string(result.vcost) << "\n";
-    // fout.close();
+    std::string name = dir + "\\answer_" + para::algorithm_names[alg] + "_" + std::to_string(data_index + 1) + ".txt";
+    fout.open(name);
+    fout << "distance\tspeed\theight\n";
+    int len = prob.getLengthDiscNum();
+    double dis, hei;
+    for (int i = 0; i < len; i++) {
+        dis = resource::indexToLength(i, 0, resource::REF_UNIT_LENGTH);
+        hei = resource::indexToHeight(optTraj.getHeightIndex(i), prob.getMinHeight(), resource::REF_UNIT_HEIGHT);
+        fout << std::to_string(dis) << "\t";
+        fout << std::to_string(speedSche[i]) << "\t";
+        fout << std::to_string(hei) << "\n";
+    }
+    fout << " cost = " << std::to_string(result.cost) << "\n";
+    fout << "hcost = " << std::to_string(result.hcost) << "\n";
+    fout << "vcost = " << std::to_string(result.vcost) << "\n";
+    fout.close();
 }
 
 void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algorithm alg, std::string dir, int data_index) {
@@ -349,8 +349,8 @@ void solve_all_instance(int instance_num, std::string dir) {
     // std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO, para::GA, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
-    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::ACO_Online};
-    std::vector<para::Algorithm> alg_set = {para::SA};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::ACO_Online};
+    // std::vector<para::Algorithm> alg_set = {para::SA};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {

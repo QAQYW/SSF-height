@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # sensor_filename = "online_shape_1.txt"
     # solution_filename = "online_answer_aco_prop10_1.txt"
 
-    dataIndex = "5"
+    dataIndex = "6"
     
     length = 859  #50
     minHeight = 0
@@ -121,7 +121,7 @@ if __name__ == "__main__":
         # 离线-暴力
         # filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\offline_answer_naive_prop39_" + dataIndex + ".txt"
         # 离线-蚁群
-        filepath = "D:\\VSCodeWorkspace\\SSF-height\\newexp\\test\\answer_ACO_" + dataIndex + ".txt"
+        filepath = "D:\\VSCodeWorkspace\\SSF-height\\newexp\\test\\answer_Greedy_" + dataIndex + ".txt"
         # 在线-蚁群
         # filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\online_answer_aco_prop39_" + dataIndex + ".txt"
         with open(file=filepath, mode="r") as file:

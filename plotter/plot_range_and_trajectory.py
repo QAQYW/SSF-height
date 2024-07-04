@@ -106,7 +106,7 @@ if __name__ == "__main__":
         # 离线-暴力
         # filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\offline_answer_naive_prop39_" + dataIndex + ".txt"
         # 离线-蚁群
-        filepath = "D:\\VSCodeWorkspace\\SSF-height\\newexp\\test\\answer_ACO_" + dataIndex + ".txt"
+        filepath = "D:\\VSCodeWorkspace\\SSF-height\\newexp\\test\\answer_Greedy3_" + dataIndex + ".txt"
         # 在线-蚁群
         # filepath = "D:\\VSCodeWorkspace\\SSF-height\\tiny_test\\" + timestr + "\\online_answer_aco_prop39_" + dataIndex + ".txt"
         with open(file=filepath, mode="r") as file:

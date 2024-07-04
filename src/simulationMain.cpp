@@ -18,6 +18,8 @@
 #include "ga.h"
 #include "sa.h"
 #include "greedy.h"
+#include "greedy2.h"
+#include "greedy3.h"
 #include "problem2D.h"
 #include "problemDisc2D.h"
 #include "problemOnline2D.h"
@@ -76,13 +78,15 @@ namespace para {
     /* ---------------------------------- other --------------------------------- */
 
     // 算法名字
-    const std::string algorithm_names[9] = {
+    const std::string algorithm_names[11] = {
         "DFS",
         "ACO",
         "PSO",
         "GA",
         "SA",
         "Greedy",
+        "Greedy2",
+        "Greedy3",
         "ACO-Online",
         "ACO-dominated",  // for calibration
         "ACO-normal"      // for calibration
@@ -95,9 +99,11 @@ namespace para {
         GA = 3,
         SA = 4,
         Greedy = 5,
-        ACO_Online = 6,
-        ACO_dominated = 7,  // for calibration
-        ACO_normal = 8      // for calibration
+        Greedy2 = 6,
+        Greedy3 = 7,
+        ACO_Online = 8,
+        ACO_dominated = 9,  // for calibration
+        ACO_normal = 10     // for calibration
     };
     
 } // namespace para
@@ -229,6 +235,8 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     // std::cout << "enter func solve()\n";
     std::clock_t sc = std::clock();
     Trajectory optTraj;
+    Result result;
+    std::vector<double> speedSche;
     if (alg == para::Algorithm::DFS) {
         // 0
         naive::NaiveSolver naiveSolver = naive::NaiveSolver(&prob);
@@ -262,14 +270,28 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
         greedy::GreedySolver greedySolver = greedy::GreedySolver(&prob);
         greedySolver.solve();
         optTraj = greedySolver.getTrajectory();
+    } else if (alg == para::Algorithm::Greedy2) {
+        // 6
+        greedy2::GreedySolver2 greedySolver2 = greedy2::GreedySolver2(&prob);
+        greedySolver2.solve();
+        optTraj = greedySolver2.getTrajectory();
+    } else if (alg == para::Algorithm::Greedy3) {
+        // 7
+        greedy3::GreedySolver3 greedySovler3 = greedy3::GreedySolver3(&prob);
+        greedySovler3.solve();
+        optTraj = greedySovler3.getTrajectory();
+        result.hcost = greedySovler3.getHcost();
+        result.vcost = greedySovler3.getVcost();
+        result.cost = greedySovler3.getCost();
+        speedSche = greedySovler3.getSpeedSche();
     }
     std::clock_t ec = std::clock();
     // 记录结果
-    Result result;
-    std::vector<double> speedSche;
-    result.hcost = optTraj.calHeightCost(resource::HEIGHT_COST_PROPOR);
-    result.vcost = energy_calculator::calSpeedCost(prob, optTraj, speedSche);
-    result.cost = result.hcost + result.vcost;
+    if (alg != para::Algorithm::Greedy3) {
+        result.hcost = optTraj.calHeightCost(resource::HEIGHT_COST_PROPOR);
+        result.vcost = energy_calculator::calSpeedCost(prob, optTraj, speedSche);
+        result.cost = result.hcost + result.vcost;
+    }
     result.runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
     result.str = std::to_string(result.cost) + "\t" + std::to_string(result.hcost) + "\t" + std::to_string(result.vcost) + "\t" + std::to_string(result.runtime);
     results.push_back(result);
@@ -349,8 +371,9 @@ void solve_all_instance(int instance_num, std::string dir) {
     // std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO, para::GA, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::ACO_Online};
+    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::SA};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::Greedy2, para::Greedy3};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {

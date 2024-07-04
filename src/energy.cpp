@@ -21,3 +21,12 @@ double energy_calculator::calSpeedCost(const ProblemDisc2D &prob2D, const Trajec
     speedSche = ssfSolver.getSolution().getSpeedSche();
     return ssfSolver.getCost();
 }
+
+double energy_calculator::calSpeedCost(const std::vector<double> &speedSche) {
+    double cost = 0;
+    for (double v : speedSche) {
+        cost += resource::costByFly(resource::REF_UNIT_LENGTH, v);
+    }
+    return cost;
+
+}

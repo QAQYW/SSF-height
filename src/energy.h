@@ -29,6 +29,10 @@ namespace energy_calculator {
     /// @param speedSche 保存速度调度的结果
     /// @return 能耗
     double calSpeedCost(const ProblemDisc2D &prob2D, const Trajectory &traj, std::vector<double> &speedSche);
+    /// @brief 计算速度调度的能耗，速度调度方案已给出
+    /// @param speedSche 速度调度方案
+    /// @return 能耗
+    double calSpeedCost(const std::vector<double> &speedSche);
 
 } // namespace energy_calculator
 

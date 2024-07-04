@@ -23,6 +23,7 @@ extern const double REF_UNIT_LENGTH; // 距离离散化间隔的参考值
 /// 推导过程见飞书文档
 /// https://seunetsi.feishu.cn/docx/PfNvd5m5bohZfUxkJxycEtb4nQe
 extern const double HEIGHT_COST_PROPOR;
+extern const double HEIGHT_COST_BIAS;
 
 /* ----------------------------- data structure ----------------------------- */
 

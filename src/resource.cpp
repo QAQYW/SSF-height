@@ -13,6 +13,7 @@ const double resource::REF_UNIT_HEIGHT = 10; //10;
 const double resource::REF_UNIT_LENGTH = 1; //resource::LENGTH_ULP * 10;
 
 const double resource::HEIGHT_COST_PROPOR = 1; //39.095; //39; //39.095; //0.1; //10;
+const double resource::HEIGHT_COST_BIAS = 7.5 * resource::REF_UNIT_HEIGHT * resource::HEIGHT_COST_PROPOR;
 
 /* ----------------------------- data structure ----------------------------- */
 
@@ -64,7 +65,8 @@ double resource::power(double v) {
 
 double resource::costByHeight(double dh, double coef) {
     // return resource::HEIGHT_COST_PROPOR * dh;
-    return coef * dh;
+    if (dh == 0) return 0;
+    return coef * dh + resource::HEIGHT_COST_BIAS;
 }
 
 double resource::costByHeight(double h1, double h2, double coef) {

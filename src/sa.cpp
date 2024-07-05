@@ -7,9 +7,9 @@
 
 /* ------------------------------- parameters ------------------------------- */
 
-const double sa::INIT_TEMPERATURE = 99999999;
-const double sa::MIN_TEMPERATURE = 1e-18;
-const double sa::TEMPERATURE_REDUCE_COEF = 0.995;
+const double sa::INIT_TEMPERATURE = 1e8;
+const double sa::MIN_TEMPERATURE = 1e-10;
+const double sa::TEMPERATURE_REDUCE_COEF = 0.99;
 
 /* -------------------------------- Solution -------------------------------- */
 

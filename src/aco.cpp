@@ -4,15 +4,18 @@
 #include "problemDisc2D.h"
 
 #include "greedy.h"
+#include "greedy3.h"
+
+#include <cstdio>
 
 /* -------------------------------- parameter ------------------------------- */
 
 const int aco::ANT_NUM = 20; //30;
 double aco::ALPHA = 1; //5; //1;
-double aco::BETA = 2; //6;
-double aco::EVAPORATE_COEF = 0.2;
+double aco::BETA = 5; //6;
+double aco::EVAPORATE_COEF = 0.1;
 const double aco::ENHANCE_VALUE = 0.3; //0.5;
-const int aco::MAX_ITERATOR = 30; //50;
+const int aco::MAX_ITERATOR = 20; //50;
 const double aco::HEURISTIC_BASE = 1;           // 这个值具体是多少不重要
 const double aco::HEURISTIC_REDUCE_FACTOR = 0.1; //0.1; //1;
 const double aco::INITIAL_PHEROMONE_VALUE = 1;
@@ -47,6 +50,10 @@ aco::Ant::Ant() {
 
 aco::Ant::Ant(int lengthDiscNum, int heightIndex) {
     trajectory = Trajectory(lengthDiscNum, heightIndex);
+}
+
+aco::Ant::Ant(const Trajectory &traj) {
+    trajectory = Trajectory(traj);
 }
 
 double aco::Ant::getCost() const {
@@ -220,17 +227,20 @@ void aco::ACOSolver::solve() {
     greedy::GreedySolver greedySolver = greedy::GreedySolver(problem);
     greedySolver.solve();
     int initHeight = greedySolver.getTrajectory().getHeightIndex(0);
-
     // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
     Ant bestAnt(problem->getLengthDiscNum(), initHeight);
     bestAnt.calCost(*problem);
     double optimalCost = bestAnt.getCost();
-    trajectory = bestAnt.getTrajectory();
-    // bool emptyTraj = false;
+    trajectory = greedySolver.getTrajectory();
 
-    // bool emptyTraj = true;
-    // Ant bestAnt;
-    // double optimalCost = 0;
+    greedy3::GreedySolver3 greedySovler3 = greedy3::GreedySolver3(problem);
+    greedySovler3.solve();
+    if (greedySovler3.getCost() < optimalCost) {
+        bestAnt = aco::Ant(greedySovler3.getTrajectory());
+        trajectory = greedySovler3.getTrajectory();
+        bestAnt.calCost(*problem);
+        optimalCost = bestAnt.getCost();
+    }
 
     int iter = 0;
     // TODO 也可以换成其他循环终止条件
@@ -260,6 +270,8 @@ void aco::ACOSolver::solve() {
             trajectory = bestAnt.getTrajectory();
         }
         ++iter;
+
+        // std::printf("iter: %d/%d, cost=%lf\n", iter, aco::MAX_ITERATOR, optimalCost);
     }
     ants.clear();
 }

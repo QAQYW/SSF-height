@@ -182,6 +182,7 @@ public:
     /// @param time_prop 
     /// @param max_swell 
     DataGenerator2(std::string path, int sensor_num, double max_y_mult, double max_x_mult, double time_prop, double max_swell);
+    DataGenerator2(std::string path, int sensor_num, double max_y_mult, double max_x_mult, double time_prop, double max_swell, double d_height);
 
     void generate_save_online(unsigned int seed, int data_index);
     void saveSensorShape(double shape[][4], int data_index) const;

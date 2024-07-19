@@ -64,6 +64,7 @@ public:
     Ant();
     // 初始化为以固定高度heightIndex飞行的轨迹，但不会自动计算cost
     Ant(int lengthDiscNum, int heightIndex);
+    Ant(const Trajectory &traj);
     double getCost() const;
     void calCost(const ProblemDisc2D &problem);
     Trajectory getTrajectory() const;

@@ -393,6 +393,12 @@ DataGenerator2::DataGenerator2(std::string path, int sensor_num, double max_y_mu
     unitLength = resource::REF_UNIT_LENGTH;
 }
 
+DataGenerator2::DataGenerator2(std::string path, int sensor_num, double max_y_mult, double max_x_mult, double time_prop, double max_swell, double d_height)
+: savePath(path), sensorNum(sensor_num), MAX_Y_MULT(max_y_mult), MAX_X_MULT(max_x_mult), TIME_PROP(time_prop), MAX_SWELL(max_swell) {
+    unitHeight = d_height;
+    unitLength = resource::REF_UNIT_LENGTH;
+}
+
 void DataGenerator2::generate_save_online(unsigned int seed, int data_index) {
 
     std::ofstream fout;

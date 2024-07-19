@@ -44,13 +44,13 @@ namespace para {
     /* -------------------------- algorithm comparison -------------------------- */
 
     // 传感器数量，参考值 {5, 10, 20, 30, 40, 50} {5, 10, 15, 20, 25, 30}
-    const int sensor_nums[] = {5};
+    const int sensor_nums[] = {5, 10, 15, 20, 25, 30};
 
     // 水滴曲线最大高度（米），参考值 {70, 100, 130, 160}
-    const double max_y_mults[] = {70, 100, 130, 160};
+    const double max_y_mults[] = {60, 80, 100, 120, 140, 160};
 
     // 水滴曲线最大宽度（米），参考值 {30, 40, 50, 60}
-    const double max_x_milts[] = {30, 40, 50, 60};
+    const double max_x_milts[] = {30, 35, 40, 45, 50, 55, 60};
 
     // // 水滴最宽处宽度与路径总长度线性相关的系数，参考值 {0.2, 0.3, 0.4, 0.5, 0.6}
     // const double max_x_mult_coefs[] = {0.2, 0.3, 0.4, 0.5, 0.6};
@@ -59,10 +59,10 @@ namespace para {
     // const double max_time_range_props[] = {0.05, 0.1, 0.2, 0.3};
 
     // 传输时间与传输范围大小线性相关的系数，参考值 {0.5, 1, 1.5, 2}
-    const double time_props[] = {0.5, 1, 1.5, 2};
+    const double time_props[] = {0.5, 1, 1.5, 2, 2.5, 3};
 
     // 最大膨胀系数，参考值 {1, 1.5, 2, 2.5, 3}
-    const double max_swells[] = {1, 1.5, 2, 2.5, 3};
+    const double max_swells[] = {1, 1.5, 2, 2.5, 3, 3.5};
 
     /* ------------------------------- calibration ------------------------------ */
 
@@ -179,26 +179,6 @@ void generate_online_data(std::string dir, bool online_file_format, int num) {
 
     std::cout << "Generate " << count_data << " instances\n\n";
 }
-
-// void test20240622(std::string dir, pso::PSOSolver solver) {
-//     int lengthDiscNum = 169;
-//     Trajectory traj = Trajectory(lengthDiscNum);
-//     std::ifstream fin;
-//     fin.open(dir + "\\answer_PSO_3.txt");
-//     double dis, spd, hei;
-//     std::string tempstr = "";
-//     std::getline(fin, tempstr);
-//     for (int i = 0; i < lengthDiscNum; i++) {
-//         fin >> dis >> spd >> hei;
-//         traj.setHeightIndex(i, (int) ((hei - 80) / 10));
-//     }
-//     fin.close();
-//     if (solver.isFeasible(traj)) {
-//         std::cout << "Feasible Trajectory\n";
-//     } else {
-//         std::cout << "Infeasible Trajectory\n";
-//     }
-// }
 
 /// @brief 读入filenames.txt和features.txt
 /// @param instance_num 
@@ -371,8 +351,7 @@ void solve_all_instance(int instance_num, std::string dir) {
     // std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO, para::GA, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
-    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
-    // std::vector<para::Algorithm> alg_set = {para::SA};
+    // std::vector<para::Algorithm> alg_set = {para::ACO};
     std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
 
     std::string filename = "", feature = "";
@@ -490,6 +469,161 @@ void calibration_alpha_beta(int instance_num, std::string dir) {
     }
 }
 
+void set_paras(std::string dir, int sensor_num, double max_y_mult, double max_x_mult, double time_prop, double max_swell, 
+double d_height, double hcost_coef) {
+    // DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell);
+    // // random seed
+    // unsigned int seed = std::rand();
+
+}
+
+void run_exp(std::string dir) {
+    /*
+        sensor_num: 传感器数量
+        max_y_mutls: 传输范围高度
+        max_x_mults: 传输范围宽度
+        time_prop: 传输时间系数/数据量
+        max_swell: 膨胀系数
+        d_height: 高度变化粒度
+        hcost_coef: 高度变化能耗系数
+    */
+    int sensor_num = 5;
+    double max_x_mult = 30;
+    double max_y_mult = 60;
+    double time_prop = 0.5;
+    double max_swell = 1;
+    double d_height = 10;
+    double hcost_cost = 1;
+
+    filenames.clear();
+    features.clear();
+    int count_data = 0;
+    std::vector<unsigned int> seeds;
+
+    // sensor_num
+    for (int sensor_num : para::sensor_nums) {
+        ++count_data;
+        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+        unsigned int seed = std::rand();
+        seeds.push_back(seed);
+        dg2.generate_save_online(seed, count_data);
+        
+        // 测试数据特征值
+        std::string feature = std::to_string(count_data) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height) + "\t"
+            + std::to_string(hcost_cost);
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+        filenames.push_back(filename);
+    }
+
+    // max_y_mult
+    for (double max_y_mult : para::max_y_mults) {
+        ++count_data;
+        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+        unsigned int seed = std::rand();
+        seeds.push_back(seed);
+        dg2.generate_save_online(seed, count_data);
+        
+        // 测试数据特征值
+        std::string feature = std::to_string(count_data) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height) + "\t"
+            + std::to_string(hcost_cost);
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+        filenames.push_back(filename);
+    }
+
+    // max_x_mult
+    for (double max_x_mult : para::max_x_milts) {
+        ++count_data;
+        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+        unsigned int seed = std::rand();
+        seeds.push_back(seed);
+        dg2.generate_save_online(seed, count_data);
+        
+        // 测试数据特征值
+        std::string feature = std::to_string(count_data) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height) + "\t"
+            + std::to_string(hcost_cost);
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+        filenames.push_back(filename);
+    }
+
+    // time_prop
+    for (double time_prop : para::time_props) {
+        ++count_data;
+        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+        unsigned int seed = std::rand();
+        seeds.push_back(seed);
+        dg2.generate_save_online(seed, count_data);
+        
+        // 测试数据特征值
+        std::string feature = std::to_string(count_data) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height) + "\t"
+            + std::to_string(hcost_cost);
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+        filenames.push_back(filename);
+    }
+
+    // max_swell
+    for (double max_swell : para::max_swells) {
+        ++count_data;
+        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+        unsigned int seed = std::rand();
+        seeds.push_back(seed);
+        dg2.generate_save_online(seed, count_data);
+        
+        // 测试数据特征值
+        std::string feature = std::to_string(count_data) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height) + "\t"
+            + std::to_string(hcost_cost);
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+        filenames.push_back(filename);
+    }
+
+    std::ofstream fout;
+    fout.open(dir + "\\features.txt");
+    for (int i = 0; i < count_data; i++) {
+        fout << features[i] << "\n";
+    }
+    fout.close();
+    fout.open(dir + "\\online_filename_set.txt");
+    fout << std::to_string(count_data) << "\n";
+    for (int i = 0; i < count_data; i++) {
+        fout << filenames[i] << "\n";
+    }
+    fout.close();
+}
+
 /*
 每次要改的地方：
 1. para::sensor_nums
@@ -501,12 +635,16 @@ int main() {
 
     std::srand((unsigned int) std::time(NULL));
 
+    // 是否筛选
+    aco::HEURISTIC_FLAG = true;
+
     // 测试数据存储路径
-    std::string direction = ".\\newexp\\5";
+    std::string direction = ".\\newexp\\newnew";
     // std::string direction = ".\\newexp\\test";
 
     // 生成数据
     // generate_online_data(direction, true, 1);
+    run_exp(direction);
 
     // 仿真实验
     int instance_num = 0;

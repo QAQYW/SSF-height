@@ -64,6 +64,12 @@ namespace para {
     // 最大膨胀系数，参考值 {1, 1.5, 2, 2.5, 3}
     const double max_swells[] = {1, 1.5, 2, 2.5, 3, 3.5};
 
+    // 高度变化粒度
+    const double d_heights[] = {5, 10, 15, 20, 25, 30};
+
+    // 高度变化的能耗系数
+    const double height_cost_propors[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40};
+
     /* ------------------------------- calibration ------------------------------ */
 
     // 蚁群蒸发系数
@@ -343,7 +349,6 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
     fout.close();
 }
 
-
 /// @brief 用所有方法，求解所有测试数据
 /// @param instance_num 
 /// @param dir 
@@ -469,31 +474,24 @@ void calibration_alpha_beta(int instance_num, std::string dir) {
     }
 }
 
-void set_paras(std::string dir, int sensor_num, double max_y_mult, double max_x_mult, double time_prop, double max_swell, 
-double d_height, double hcost_coef) {
-    // DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell);
-    // // random seed
-    // unsigned int seed = std::rand();
-
-}
-
+// sensor_num, max_y_mutls, max_x_mults, time_prop, max_swell
 void run_exp(std::string dir) {
     /*
-        sensor_num: 传感器数量
-        max_y_mutls: 传输范围高度
-        max_x_mults: 传输范围宽度
-        time_prop: 传输时间系数/数据量
-        max_swell: 膨胀系数
+        sensor_num: 传感器数量          1-6
+        max_y_mutl: 传输范围高度       7-12
+        max_x_mult: 传输范围宽度       13-19
+        time_prop: 传输时间系数/数据量  20-25
+        max_swell: 膨胀系数             26-31
         d_height: 高度变化粒度
-        hcost_coef: 高度变化能耗系数
+        hcost_propor: 高度变化能耗系数
     */
-    int sensor_num = 5;
-    double max_x_mult = 30;
-    double max_y_mult = 60;
-    double time_prop = 0.5;
-    double max_swell = 1;
+    int sensor_num = 15;
+    double max_x_mult = 45;
+    double max_y_mult = 120;
+    double time_prop = 2;
+    double max_swell = 2.5;
     double d_height = 10;
-    double hcost_cost = 1;
+    double hcost_propor = 1;
 
     filenames.clear();
     features.clear();
@@ -516,7 +514,7 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_cost);
+            + std::to_string(hcost_propor);
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -538,7 +536,7 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_cost);
+            + std::to_string(hcost_propor);
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -560,7 +558,7 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_cost);
+            + std::to_string(hcost_propor);
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -582,7 +580,7 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_cost);
+            + std::to_string(hcost_propor);
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -604,7 +602,7 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_cost);
+            + std::to_string(hcost_propor);
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -624,43 +622,149 @@ void run_exp(std::string dir) {
     fout.close();
 }
 
+// d_height, hcost_coef
+void run_exp2(std::string dir) {
+    /*
+        d_height: 1-6
+        hcost_propor: 7-23
+    */
+
+    int sensor_num = 15;
+    double max_x_mult = 45;
+    double max_y_mult = 120;
+    double time_prop = 2;
+    double max_swell = 2.5;
+    double d_height = 10;
+    double hcost_propor = 1;
+
+    filenames.clear();
+    features.clear();
+    int count_data = 0;
+    std::vector<unsigned int> seeds;
+
+    // d_height
+    for (double d_height : para::d_heights) {
+        ++count_data;
+        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+        unsigned int seed = std::rand();
+        seeds.push_back(seed);
+        dg2.generate_save_online(seed, count_data);
+
+        // 测试数据特征值
+        std::string feature = std::to_string(count_data) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height) + "\t"
+            + std::to_string(hcost_propor);
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+        filenames.push_back(filename);
+    }
+
+    // hcost_propor
+    for (double hcost_propor : para::height_cost_propors) {
+        ++count_data;
+        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+        unsigned int seed = std::rand();
+        seeds.push_back(seed);
+        dg2.generate_save_online(seed, count_data);
+        
+        // 测试数据特征值
+        std::string feature = std::to_string(count_data) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height) + "\t"
+            + std::to_string(hcost_propor);
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+        filenames.push_back(filename);
+    }
+
+    std::ofstream fout;
+    fout.open(dir + "\\features.txt");
+    for (int i = 0; i < count_data; i++) fout << features[i] << "\n";
+    fout.close();
+
+    fout.open(dir + "\\online_filename_set.txt");
+    fout << std::to_string(count_data) << "\n";
+    for (int i = 0; i < count_data; i++) fout << filenames[i] << "\n";
+    fout.close();
+}
+
 /*
-每次要改的地方：
 1. para::sensor_nums
 2. main里的direction
-3. solve_all_instance()里的alg_set需不需要包含DFS
+3. alg_set
 */
 
 int main() {
 
-    std::srand((unsigned int) std::time(NULL));
+    // std::srand((unsigned int) std::time(NULL));
 
-    // 是否筛选
-    aco::HEURISTIC_FLAG = true;
+    // // 是否筛选
+    // aco::HEURISTIC_FLAG = true;
 
-    // 测试数据存储路径
-    std::string direction = ".\\newexp\\newnew";
-    // std::string direction = ".\\newexp\\test";
+    // // 测试数据存储路径
+    // // std::string direction = ".\\newexp\\test";
+    // // std::string direction = ".\\newexp\\newexp";
+    // std::string direction = ".\\newexp\\newexp2";
 
-    // 生成数据
-    // generate_online_data(direction, true, 1);
-    run_exp(direction);
+    // // 生成数据
+    // // generate_online_data(direction, true, 1);
+    // // run_exp(direction);
+    // run_exp2(direction);
 
-    // 仿真实验
-    int instance_num = 0;
-    readInit(instance_num, direction, true);
-    std::cout << "instance_number = " << instance_num << "\n\n";
-    results.clear();
-    solve_all_instance(instance_num, direction);
-
-    // // calibration
+    // // 仿真实验
     // int instance_num = 0;
     // readInit(instance_num, direction, true);
     // std::cout << "instance_number = " << instance_num << "\n\n";
     // results.clear();
-    // // calibration_heuristic_component(instance_num, direction);
-    // // calibration_alpha_beta(instance_num, direction);
-    // calibration_evaporation(instance_num, direction);
+    // solve_all_instance(instance_num, direction);
+
+    // // // calibration
+    // // int instance_num = 0;
+    // // readInit(instance_num, direction, true);
+    // // std::cout << "instance_number = " << instance_num << "\n\n";
+    // // results.clear();
+    // // // calibration_heuristic_component(instance_num, direction);
+    // // // calibration_alpha_beta(instance_num, direction);
+    // // calibration_evaporation(instance_num, direction);
+
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                                   new exp                                  */
+    /* -------------------------------------------------------------------------- */
+
+    std::srand((unsigned int) std::time(NULL));
+    aco::HEURISTIC_FLAG = true;
+
+    int repeat = 10;
+    std::string direction = "";
+    int instance_num = 0;
+    for (int i = 0; i < repeat; i++) {
+        direction = ".\\newnewexp\\exp1\\" + std::to_string(i);// 指定路径
+        run_exp(direction);// 生成数据
+        instance_num = 0;
+        readInit(instance_num, direction, true);
+        std::cout << "instance_number = " << instance_num << "\n\n";
+        results.clear();
+        solve_all_instance(instance_num, direction);
+
+        direction = ".\\newnewexp\\exp2\\" + std::to_string(i);// 指定路径
+        run_exp2(direction);// 生成数据
+        instance_num = 0;
+        readInit(instance_num, direction, true);
+        std::cout << "instance_number = " << instance_num << "\n\n";
+        results.clear();
+        solve_all_instance(instance_num, direction);
+    }
 
     return 0;
 }

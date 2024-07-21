@@ -16,13 +16,13 @@ extern const double HEIGHT_ULP;     // ? 是精度 不是高度离散化的单�
 extern const double TIME_ULP;       // 时间精度
 extern const double ANS_TIME_ULP; // 计算答案（剩余传输时间时的时间精度）在online solver中用到
 
-extern const double REF_UNIT_HEIGHT; // 高度离散化间隔的参考值
+extern double REF_UNIT_HEIGHT; // 高度离散化间隔的参考值
 extern const double REF_UNIT_LENGTH; // 距离离散化间隔的参考值
 
 /// @brief 升降单位高度的能耗，量纲：焦耳/米 (J/m)
 /// 推导过程见飞书文档
 /// https://seunetsi.feishu.cn/docx/PfNvd5m5bohZfUxkJxycEtb4nQe
-extern const double HEIGHT_COST_PROPOR;
+extern double HEIGHT_COST_PROPOR;
 extern const double HEIGHT_COST_BIAS;
 
 /* ----------------------------- data structure ----------------------------- */

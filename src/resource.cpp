@@ -9,11 +9,11 @@ const double resource::HEIGHT_ULP = 0.01;
 const double resource::TIME_ULP = 0.1;
 const double resource::ANS_TIME_ULP = resource::TIME_ULP / 100;
 
-const double resource::REF_UNIT_HEIGHT = 10; //10;
+double resource::REF_UNIT_HEIGHT = 10; //10;
 const double resource::REF_UNIT_LENGTH = 1; //resource::LENGTH_ULP * 10;
 
-const double resource::HEIGHT_COST_PROPOR = 1; //39.095; //39; //39.095; //0.1; //10;
-const double resource::HEIGHT_COST_BIAS = 7.5 * resource::REF_UNIT_HEIGHT * resource::HEIGHT_COST_PROPOR;
+double resource::HEIGHT_COST_PROPOR = 1; //39.095; //39; //39.095; //0.1; //10;
+const double resource::HEIGHT_COST_BIAS = 500; //50 * resource::HEIGHT_COST_PROPOR;
 
 /* ----------------------------- data structure ----------------------------- */
 

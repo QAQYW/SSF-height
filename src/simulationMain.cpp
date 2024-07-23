@@ -475,7 +475,7 @@ void calibration_alpha_beta(int instance_num, std::string dir) {
 }
 
 // sensor_num, max_y_mutls, max_x_mults, time_prop, max_swell
-void run_exp(std::string dir) {
+void run_exp(std::string dir, int &count_data) {
     /*
         sensor_num: 传感器数量          1-6
         max_y_mutl: 传输范围高度       7-12
@@ -495,8 +495,9 @@ void run_exp(std::string dir) {
 
     filenames.clear();
     features.clear();
-    static int count_data = 0;
     std::vector<unsigned int> seeds;
+
+    std::cout << count_data << "\n";
 
     // sensor_num
     for (int sensor_num : para::sensor_nums) {
@@ -514,7 +515,8 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor);
+            + std::to_string(hcost_propor) + "\t"
+            + "sensor_num";
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -536,7 +538,8 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor);
+            + std::to_string(hcost_propor) + "\t"
+            + "max_y_mult";
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -558,7 +561,8 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor);
+            + std::to_string(hcost_propor) + "\t"
+            + "max_x_mult";
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -580,7 +584,8 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor);
+            + std::to_string(hcost_propor) + "\t"
+            + "time_prop";
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -602,7 +607,8 @@ void run_exp(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor);
+            + std::to_string(hcost_propor) + "\t"
+            + "max_swell";
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -623,7 +629,7 @@ void run_exp(std::string dir) {
 }
 
 // d_height, hcost_coef
-void run_exp2(std::string dir) {
+void run_exp2(std::string dir, int &count_data) {
     /*
         d_height: 1-6
         hcost_propor: 7-23
@@ -639,7 +645,6 @@ void run_exp2(std::string dir) {
 
     filenames.clear();
     features.clear();
-    static int count_data = 0;
     std::vector<unsigned int> seeds;
 
     // d_height
@@ -658,7 +663,8 @@ void run_exp2(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor);
+            + std::to_string(hcost_propor) + "\t"
+            + "d_height";
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -680,7 +686,8 @@ void run_exp2(std::string dir) {
             + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor);
+            + std::to_string(hcost_propor) + "\t"
+            + "hcost_propor";
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
@@ -702,14 +709,6 @@ void run_exp2(std::string dir) {
 2. main里的direction
 3. alg_set
 */
-
-// void test_static() {
-//     static int count = 0;
-//     for (int i = 0; i < 10; i++) {
-//         ++count;
-//     }
-//     std::cout << count << std::endl;
-// }
 
 int main() {
 
@@ -754,13 +753,14 @@ int main() {
     aco::HEURISTIC_FLAG = true;
 
     int repeat = 100;
+    int count1 = 0, count2 = 0;
     std::string direction = "";
     for (int i = 0; i < repeat; i++) {
         direction = ".\\newnewexp\\exp1"; // path
-        run_exp(direction);
+        run_exp(direction, count1);
 
         direction = ".\\newnewexp\\exp2"; // path
-        run_exp2(direction);
+        run_exp2(direction, count2);
     }
 
     int instance_num1 = 0;

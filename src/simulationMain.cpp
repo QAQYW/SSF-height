@@ -609,12 +609,12 @@ void run_exp(std::string dir) {
     }
 
     std::ofstream fout;
-    fout.open(dir + "\\features.txt");
+    fout.open(dir + "\\features.txt", std::ios::out | std::ios::app);
     for (int i = 0; i < count_data; i++) {
         fout << features[i] << "\n";
     }
     fout.close();
-    fout.open(dir + "\\online_filename_set.txt");
+    fout.open(dir + "\\online_filename_set.txt", std::ios::out | std::ios::app);
     fout << std::to_string(count_data) << "\n";
     for (int i = 0; i < count_data; i++) {
         fout << filenames[i] << "\n";

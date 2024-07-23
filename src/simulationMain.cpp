@@ -614,15 +614,17 @@ void run_exp(std::string dir, int &count_data) {
         filenames.push_back(filename);
     }
 
+    int tot = features.size();
+
     std::ofstream fout;
     fout.open(dir + "\\features.txt", std::ios::out | std::ios::app);
-    for (int i = 0; i < count_data; i++) {
+    for (int i = 0; i < tot; i++) {
         fout << features[i] << "\n";
     }
     fout.close();
     fout.open(dir + "\\online_filename_set.txt", std::ios::out | std::ios::app);
-    fout << std::to_string(count_data) << "\n";
-    for (int i = 0; i < count_data; i++) {
+    // fout << std::to_string(count_data) << "\n";
+    for (int i = 0; i < tot; i++) {
         fout << filenames[i] << "\n";
     }
     fout.close();
@@ -693,14 +695,16 @@ void run_exp2(std::string dir, int &count_data) {
         filenames.push_back(filename);
     }
 
+    int tot = features.size();
+
     std::ofstream fout;
     fout.open(dir + "\\features.txt", std::ios::out | std::ios::app);
-    for (int i = 0; i < count_data; i++) fout << features[i] << "\n";
+    for (int i = 0; i < tot; i++) fout << features[i] << "\n";
     fout.close();
 
     fout.open(dir + "\\online_filename_set.txt", std::ios::out | std::ios::app);
-    fout << std::to_string(count_data) << "\n";
-    for (int i = 0; i < count_data; i++) fout << filenames[i] << "\n";
+    // fout << std::to_string(count_data) << "\n";
+    for (int i = 0; i < tot; i++) fout << filenames[i] << "\n";
     fout.close();
 }
 

@@ -8,8 +8,8 @@
 /* ------------------------------- parameters ------------------------------- */
 
 const double sa::INIT_TEMPERATURE = 1e8;
-const double sa::MIN_TEMPERATURE = 1e-10;
-const double sa::TEMPERATURE_REDUCE_COEF = 0.99;
+const double sa::MIN_TEMPERATURE = 1e-8;
+const double sa::TEMPERATURE_REDUCE_COEF = 0.95;
 
 /* -------------------------------- Solution -------------------------------- */
 

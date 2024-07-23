@@ -68,7 +68,7 @@ namespace para {
     const double d_heights[] = {5, 10, 15, 20, 25, 30};
 
     // 高度变化的能耗系数
-    const double height_cost_propors[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40};
+    const double height_cost_propors[] = {0, 2, 4, 6, 8, 10, 15, 20, 25, 30, 35, 40};
 
     /* ------------------------------- calibration ------------------------------ */
 
@@ -357,7 +357,7 @@ void solve_all_instance(int instance_num, std::string dir) {
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
     // std::vector<para::Algorithm> alg_set = {para::ACO};
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
+    std::vector<para::Algorithm> alg_set = {/*para::ACO,*/ para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -495,7 +495,7 @@ void run_exp(std::string dir) {
 
     filenames.clear();
     features.clear();
-    int count_data = 0;
+    static int count_data = 0;
     std::vector<unsigned int> seeds;
 
     // sensor_num
@@ -639,7 +639,7 @@ void run_exp2(std::string dir) {
 
     filenames.clear();
     features.clear();
-    int count_data = 0;
+    static int count_data = 0;
     std::vector<unsigned int> seeds;
 
     // d_height
@@ -687,11 +687,11 @@ void run_exp2(std::string dir) {
     }
 
     std::ofstream fout;
-    fout.open(dir + "\\features.txt");
+    fout.open(dir + "\\features.txt", std::ios::out | std::ios::app);
     for (int i = 0; i < count_data; i++) fout << features[i] << "\n";
     fout.close();
 
-    fout.open(dir + "\\online_filename_set.txt");
+    fout.open(dir + "\\online_filename_set.txt", std::ios::out | std::ios::app);
     fout << std::to_string(count_data) << "\n";
     for (int i = 0; i < count_data; i++) fout << filenames[i] << "\n";
     fout.close();
@@ -702,6 +702,14 @@ void run_exp2(std::string dir) {
 2. main里的direction
 3. alg_set
 */
+
+// void test_static() {
+//     static int count = 0;
+//     for (int i = 0; i < 10; i++) {
+//         ++count;
+//     }
+//     std::cout << count << std::endl;
+// }
 
 int main() {
 
@@ -745,26 +753,48 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
     aco::HEURISTIC_FLAG = true;
 
-    int repeat = 10;
+    int repeat = 100;
     std::string direction = "";
-    int instance_num = 0;
     for (int i = 0; i < repeat; i++) {
-        direction = ".\\newnewexp\\exp1\\" + std::to_string(i);// 指定路径
-        run_exp(direction);// 生成数据
-        instance_num = 0;
-        readInit(instance_num, direction, true);
-        std::cout << "instance_number = " << instance_num << "\n\n";
-        results.clear();
-        solve_all_instance(instance_num, direction);
+        direction = ".\\newnewexp\\exp1"; // path
+        run_exp(direction);
 
-        direction = ".\\newnewexp\\exp2\\" + std::to_string(i);// 指定路径
-        run_exp2(direction);// 生成数据
-        instance_num = 0;
-        readInit(instance_num, direction, true);
-        std::cout << "instance_number = " << instance_num << "\n\n";
-        results.clear();
-        solve_all_instance(instance_num, direction);
+        direction = ".\\newnewexp\\exp2"; // path
+        run_exp2(direction);
     }
+
+    int instance_num1 = 0;
+    direction = ".\\newnewexp\\exp1";
+    readInit(instance_num1, direction, true);
+    std::cout << "instance_num1 = " << instance_num1 << "\n\n";
+    results.clear();
+    solve_all_instance(instance_num1, direction);
+
+    int instance_num2 = 0;
+    direction = ".\\newnewexp\\exp2";
+    readInit(instance_num2, direction, true);
+    std::cout << "instance_num2 = " << instance_num2 << "\n\n";
+    results.clear();
+    solve_all_instance(instance_num2, direction);
+
+    // int instance_num = 0;
+    // for (int i = 0; i < repeat; i++) {
+    //     direction = ".\\newnewexp\\exp1";// 指定路径
+    //     run_exp(direction);// 生成数据
+    //     // instance_num = 0;
+    //     // readInit(instance_num1, direction, true);
+    //     // std::cout << "instance_number = " << instance_num1 << "\n\n";
+    //     // results.clear();
+    //     // solve_all_instance(instance_num, direction);
+
+    //     direction = ".\\newnewexp\\exp2";// 指定路径
+    //     run_exp2(direction);// 生成数据
+    //     // instance_num = 0;
+    //     // readInit(instance_num2, direction, true);
+    //     // std::cout << "instance_number = " << instance_num2 << "\n\n";
+    //     // results.clear();
+    //     // solve_all_instance(instance_num, direction);
+    // }
 
     return 0;
 }

@@ -65,7 +65,7 @@ namespace para {
     const double max_swells[] = {1, 1.5, 2, 2.5, 3, 3.5};
 
     // 高度变化粒度
-    const double d_heights[] = {5, 10, 15, 20, 25, 30};
+    const double d_heights[] = {1, 2, 3, 4, 5, 10, 15, 20, 25, 30};
 
     // 高度变化的能耗系数
     const double height_cost_propors[] = {0, 2, 4, 6, 8, 10, 15, 20, 25, 30, 35, 40};
@@ -497,7 +497,7 @@ void run_exp(std::string dir, int &count_data) {
     features.clear();
     std::vector<unsigned int> seeds;
 
-    std::cout << count_data << "\n";
+    // std::cout << count_data << "\n";
 
     // sensor_num
     for (int sensor_num : para::sensor_nums) {
@@ -756,24 +756,28 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
     aco::HEURISTIC_FLAG = true;
 
-    int repeat = 100;
+    int repeat = 80;
     int count1 = 0, count2 = 0;
     std::string direction = "";
     for (int i = 0; i < repeat; i++) {
-        direction = ".\\newnewexp\\exp1"; // path
-        run_exp(direction, count1);
+        // direction = ".\\newnewexp\\exp1"; // path
+        // run_exp(direction, count1);
 
         direction = ".\\newnewexp\\exp2"; // path
         run_exp2(direction, count2);
     }
 
-    int instance_num1 = 0;
-    direction = ".\\newnewexp\\exp1";
-    readInit(instance_num1, direction, true);
-    std::cout << "instance_num1 = " << instance_num1 << "\n\n";
-    results.clear();
-    solve_all_instance(instance_num1, direction);
+    // features.clear();
+    // filenames.clear();
+    // int instance_num1 = 0;
+    // direction = ".\\newnewexp\\exp1";
+    // readInit(instance_num1, direction, true);
+    // std::cout << "instance_num1 = " << instance_num1 << "\n\n";
+    // results.clear();
+    // solve_all_instance(instance_num1, direction);
 
+    features.clear();
+    filenames.clear();
     int instance_num2 = 0;
     direction = ".\\newnewexp\\exp2";
     readInit(instance_num2, direction, true);

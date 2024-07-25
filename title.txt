@@ -1,3 +1,5 @@
 Algorithm	Index	Number of Sensors	Max_Y_Mult	Max_X_Mult	Transmission_Time	Max_Swell	Cost	HCost	VCost	Runtime
 
 Algorithm	Type	Number of Sensors	Max_Y_Mult	Max_X_Mult	Transmission_Time	Max_Swell	dHeight	Height_Cost_Propor	Cost	HCost	VCost	Runtime
+
+Algorithm	Index	Number of Sensors	Max_Y_Mult	Max_X_Mult	Transmission_Time	Max_Swell	dHeight	Height_Cost_Propor	Type	Cost	HCost	VCost	Runtime

@@ -157,7 +157,7 @@ public:
     const double MAX_X_MULT = 50;
 
     // 传输范围高度系数
-    const double MIN_Y_MULT = 40;
+    const double MIN_Y_MULT = 40; // ? 30; ? 
     const double MAX_Y_MULT = 100;
 
     // 水滴曲线的膨胀系数
@@ -186,6 +186,8 @@ public:
 
     void generate_save_online(unsigned int seed, int data_index);
     void saveSensorShape(double shape[][4], int data_index) const;
+
+    void generate_save_online_for_dheight(unsigned int seed, int &data_index, const std::vector<double> &d_heights);
 };
 
 

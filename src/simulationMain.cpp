@@ -708,10 +708,65 @@ void run_exp2(std::string dir, int &count_data) {
     fout.close();
 }
 
+/// @brief for var 'd_height'
+/// @param dir 
+/// @param count_data 
+void run_exp3(std::string dir, int &count_data) {
+
+    int sensor_num = 15;
+    double max_x_mult = 45;
+    double max_y_mult = 120;
+    double time_prop = 2;
+    double max_swell = 2.5;
+    double d_height = 10;
+    double hcost_propor = 1;
+
+    filenames.clear();
+    features.clear();
+    std::vector<unsigned int> seeds;
+
+    std::vector<double> d_height_set;
+    for (double dh : para::d_heights)
+        d_height_set.push_back(dh);
+    
+    int st = count_data + 1;
+    int ed = count_data + d_height_set.size();
+
+    DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+    unsigned int seed = std::rand();
+    for (int i = st; i <= ed; i++) {
+        seeds.push_back(seed);
+        std::string feature = std::to_string(i) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height_set[i - st]) + "\t"
+            + std::to_string(hcost_propor) + "\t"
+            + "d_height";
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(i) + ".txt";
+        filenames.push_back(filename);
+    }
+    dg2.generate_save_online_for_dheight(seed, count_data, d_height_set);
+
+    int tot = features.size();
+
+    std::ofstream fout;
+    fout.open(dir + "\\features.txt", std::ios::out | std::ios::app);
+    for (int i = 0; i < tot; i++) fout << features[i] << "\n";
+    fout.close();
+
+    fout.open(dir + "\\online_filename_set.txt", std::ios::out | std::ios::app);
+    for (int i = 0; i < tot; i++) fout << filenames[i] << "\n";
+    fout.close();
+}
+
 /*
-1. para::sensor_nums
-2. main里的direction
-3. alg_set
+    1. para::sensor_nums
+    2. main里的direction
+    3. alg_set
 */
 
 int main() {
@@ -756,16 +811,19 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
     aco::HEURISTIC_FLAG = true;
 
-    int repeat = 80;
-    int count1 = 0, count2 = 0;
+    // int repeat = 80;
+    // int count1 = 0, count2 = 0, count3 = 0;
     std::string direction = "";
-    for (int i = 0; i < repeat; i++) {
-        // direction = ".\\newnewexp\\exp1"; // path
-        // run_exp(direction, count1);
+    // for (int i = 0; i < repeat; i++) {
+    //     // direction = ".\\newnewexp\\exp1"; // path
+    //     // run_exp(direction, count1);
 
-        direction = ".\\newnewexp\\exp2"; // path
-        run_exp2(direction, count2);
-    }
+    //     // direction = ".\\newnewexp\\exp2"; // path
+    //     // run_exp2(direction, count2);
+
+    //     direction = ".\\newnewexp\\exp3"; // path
+    //     run_exp3(direction, count3);
+    // }
 
     // features.clear();
     // filenames.clear();
@@ -776,14 +834,23 @@ int main() {
     // results.clear();
     // solve_all_instance(instance_num1, direction);
 
+    // features.clear();
+    // filenames.clear();
+    // int instance_num2 = 0;
+    // direction = ".\\newnewexp\\exp2";
+    // readInit(instance_num2, direction, true);
+    // std::cout << "instance_num2 = " << instance_num2 << "\n\n";
+    // results.clear();
+    // solve_all_instance(instance_num2, direction);
+
     features.clear();
     filenames.clear();
-    int instance_num2 = 0;
-    direction = ".\\newnewexp\\exp2";
-    readInit(instance_num2, direction, true);
-    std::cout << "instance_num2 = " << instance_num2 << "\n\n";
+    int instance_num3 = 0;
+    direction = ".\\newnewexp\\exp3";
+    readInit(instance_num3, direction, true);
+    std::cout << "instance_num3 = " << instance_num3 << "\n\n";
     results.clear();
-    solve_all_instance(instance_num2, direction);
+    solve_all_instance(instance_num3, direction);
 
     // int instance_num = 0;
     // for (int i = 0; i < repeat; i++) {

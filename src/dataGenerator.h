@@ -188,6 +188,7 @@ public:
     void saveSensorShape(double shape[][4], int data_index) const;
 
     void generate_save_online_for_dheight(unsigned int seed, int &data_index, const std::vector<double> &d_heights);
+    void generate_save_online_for_hcostprop(unsigned int seed, int &data_index, const std::vector<double> &height_cost_propors);
 };
 
 

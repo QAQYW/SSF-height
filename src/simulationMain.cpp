@@ -65,10 +65,10 @@ namespace para {
     const double max_swells[] = {1, 1.5, 2, 2.5, 3, 3.5};
 
     // 高度变化粒度
-    const double d_heights[] = {1, 2, 3, 4, 5, 10, 15, 20, 25, 30};
+    const double d_heights[] = {1, 3, 5, 10, 15, 20, 25, 30};
 
     // 高度变化的能耗系数
-    const double height_cost_propors[] = {0, 2, 4, 6, 8, 10, 15, 20, 25, 30, 35, 40};
+    const double height_cost_propors[] = {0, 1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40};
 
     /* ------------------------------- calibration ------------------------------ */
 
@@ -364,6 +364,12 @@ void solve_all_instance(int instance_num, std::string dir) {
         filename = filenames[i - 1];
         feature = features[i - 1];
 
+        std::vector<std::string> parameters;
+        tools::splitString(parameters, feature, '\t');
+        double hcost_propor = std::stod(parameters[7]);
+        std::cout << "propor = " << hcost_propor << "\n";
+        resource::HEIGHT_COST_PROPOR = hcost_propor;
+
         // 读入offline问题
         Problem2D probOff2D;
         probOff2D.initFromOnlineFile(filename);
@@ -473,6 +479,18 @@ void calibration_alpha_beta(int instance_num, std::string dir) {
         }
     }
 }
+
+// /// @brief 用所有方法，求解所有测试数据。每个测试数据对于所有hcost_prop都求解一遍，即求解hcost_props.size()遍
+// /// @param instance_num 
+// /// @param dir 
+// void solve_all_instance_hcostprop(int instance_num, std::string dir) {
+//     std::vector<para::Algorithm> alg_set = {/*para::ACO,*/ para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
+
+//     for (double hcost_prop : para::height_cost_propors) {
+//         std::string filename = "", feature = "";
+//         for ()
+//     }
+// }
 
 // sensor_num, max_y_mutls, max_x_mults, time_prop, max_swell
 void run_exp(std::string dir, int &count_data) {
@@ -763,6 +781,61 @@ void run_exp3(std::string dir, int &count_data) {
     fout.close();
 }
 
+/// @brief for var 'height_cost_propor'
+/// @param dir 
+/// @param count_data 
+void run_exp4(std::string dir, int &count_data) {
+
+    int sensor_num = 15;
+    double max_x_mult = 45;
+    double max_y_mult = 120;
+    double time_prop = 2;
+    double max_swell = 2.5;
+    double d_height = 10;
+    double hcost_propor = 1;
+
+    filenames.clear();
+    features.clear();
+    std::vector<unsigned int> seeds;
+    
+    std::vector<double> hcost_propor_set;
+    for (double propor : para::height_cost_propors)
+        hcost_propor_set.push_back(propor);
+    
+    int st = count_data + 1;
+    int ed = count_data + hcost_propor_set.size();
+
+    DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+    unsigned int seed = std::rand();
+    for (int i = st; i <= ed; i++) {
+        seeds.push_back(seed);
+        std::string feature = std::to_string(i) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height) + "\t"
+            + std::to_string(para::height_cost_propors[i - st]) + "\t"
+            + "hcost_propor";
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(i) + ".txt";
+        filenames.push_back(filename);
+    }
+    dg2.generate_save_online_for_hcostprop(seed, count_data, hcost_propor_set);
+
+    int tot = features.size();
+
+    std::ofstream fout;
+    fout.open(dir + "\\features.txt", std::ios::out | std::ios::app);
+    for (int i = 0; i < tot; i++) fout << features[i] << "\n";
+    fout.close();
+
+    fout.open(dir + "\\online_filename_set.txt", std::ios::out | std::ios::app);
+    for (int i = 0; i < tot; i++) fout << filenames[i] << "\n";
+    fout.close();
+}
+
 /*
     1. para::sensor_nums
     2. main里的direction
@@ -811,19 +884,22 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
     aco::HEURISTIC_FLAG = true;
 
-    // int repeat = 80;
-    // int count1 = 0, count2 = 0, count3 = 0;
+    int repeat = 80;
+    int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
     std::string direction = "";
-    // for (int i = 0; i < repeat; i++) {
-    //     // direction = ".\\newnewexp\\exp1"; // path
-    //     // run_exp(direction, count1);
+    for (int i = 0; i < repeat; i++) {
+        // direction = ".\\newnewexp\\exp1"; // path
+        // run_exp(direction, count1);
 
-    //     // direction = ".\\newnewexp\\exp2"; // path
-    //     // run_exp2(direction, count2);
+        // direction = ".\\newnewexp\\exp2"; // path
+        // run_exp2(direction, count2);
 
-    //     direction = ".\\newnewexp\\exp3"; // path
-    //     run_exp3(direction, count3);
-    // }
+        // direction = ".\\newnewexp\\exp3"; // path
+        // run_exp3(direction, count3);
+
+        direction = ".\\newnewexp\\exp4"; // path
+        run_exp4(direction, count4);
+    }
 
     // features.clear();
     // filenames.clear();
@@ -843,14 +919,23 @@ int main() {
     // results.clear();
     // solve_all_instance(instance_num2, direction);
 
+    // features.clear();
+    // filenames.clear();
+    // int instance_num3 = 0;
+    // direction = ".\\newnewexp\\exp3";
+    // readInit(instance_num3, direction, true);
+    // std::cout << "instance_num3 = " << instance_num3 << "\n\n";
+    // results.clear();
+    // solve_all_instance(instance_num3, direction);
+
     features.clear();
     filenames.clear();
-    int instance_num3 = 0;
-    direction = ".\\newnewexp\\exp3";
-    readInit(instance_num3, direction, true);
-    std::cout << "instance_num3 = " << instance_num3 << "\n\n";
+    int instance_num4 = 0;
+    direction = ".\\newnewexp\\exp4";
+    readInit(instance_num4, direction, true);
+    std::cout << "instance_num4 = " << instance_num4 << "\n\n";
     results.clear();
-    solve_all_instance(instance_num3, direction);
+    solve_all_instance(instance_num4, direction);
 
     // int instance_num = 0;
     // for (int i = 0; i < repeat; i++) {

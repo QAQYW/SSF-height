@@ -367,7 +367,7 @@ void solve_all_instance(int instance_num, std::string dir) {
         std::vector<std::string> parameters;
         tools::splitString(parameters, feature, '\t');
         double hcost_propor = std::stod(parameters[7]);
-        std::cout << "propor = " << hcost_propor << "\n";
+        // std::cout << "propor = " << hcost_propor << "\n";
         resource::HEIGHT_COST_PROPOR = hcost_propor;
 
         // 读入offline问题
@@ -480,18 +480,6 @@ void calibration_alpha_beta(int instance_num, std::string dir) {
     }
 }
 
-// /// @brief 用所有方法，求解所有测试数据。每个测试数据对于所有hcost_prop都求解一遍，即求解hcost_props.size()遍
-// /// @param instance_num 
-// /// @param dir 
-// void solve_all_instance_hcostprop(int instance_num, std::string dir) {
-//     std::vector<para::Algorithm> alg_set = {/*para::ACO,*/ para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
-
-//     for (double hcost_prop : para::height_cost_propors) {
-//         std::string filename = "", feature = "";
-//         for ()
-//     }
-// }
-
 // sensor_num, max_y_mutls, max_x_mults, time_prop, max_swell
 void run_exp(std::string dir, int &count_data) {
     /*
@@ -515,99 +503,97 @@ void run_exp(std::string dir, int &count_data) {
     features.clear();
     std::vector<unsigned int> seeds;
 
-    // std::cout << count_data << "\n";
-
-    // sensor_num
-    for (int sensor_num : para::sensor_nums) {
-        ++count_data;
-        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
-        unsigned int seed = std::rand();
-        seeds.push_back(seed);
-        dg2.generate_save_online(seed, count_data);
+    // // sensor_num
+    // for (int sensor_num : para::sensor_nums) {
+    //     ++count_data;
+    //     DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+    //     unsigned int seed = std::rand();
+    //     seeds.push_back(seed);
+    //     dg2.generate_save_online(seed, count_data);
         
-        // 测试数据特征值
-        std::string feature = std::to_string(count_data) + "\t"
-            + std::to_string(sensor_num) + "\t"
-            + std::to_string(max_y_mult) + "\t"
-            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
-            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
-            + std::to_string(max_swell) + "\t"
-            + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor) + "\t"
-            + "sensor_num";
-        features.push_back(feature);
-        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
-        filenames.push_back(filename);
-    }
+    //     // 测试数据特征值
+    //     std::string feature = std::to_string(count_data) + "\t"
+    //         + std::to_string(sensor_num) + "\t"
+    //         + std::to_string(max_y_mult) + "\t"
+    //         + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+    //         + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+    //         + std::to_string(max_swell) + "\t"
+    //         + std::to_string(d_height) + "\t"
+    //         + std::to_string(hcost_propor) + "\t"
+    //         + "sensor_num";
+    //     features.push_back(feature);
+    //     std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+    //     filenames.push_back(filename);
+    // }
 
-    // max_y_mult
-    for (double max_y_mult : para::max_y_mults) {
-        ++count_data;
-        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
-        unsigned int seed = std::rand();
-        seeds.push_back(seed);
-        dg2.generate_save_online(seed, count_data);
+    // // max_y_mult
+    // for (double max_y_mult : para::max_y_mults) {
+    //     ++count_data;
+    //     DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+    //     unsigned int seed = std::rand();
+    //     seeds.push_back(seed);
+    //     dg2.generate_save_online(seed, count_data);
         
-        // 测试数据特征值
-        std::string feature = std::to_string(count_data) + "\t"
-            + std::to_string(sensor_num) + "\t"
-            + std::to_string(max_y_mult) + "\t"
-            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
-            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
-            + std::to_string(max_swell) + "\t"
-            + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor) + "\t"
-            + "max_y_mult";
-        features.push_back(feature);
-        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
-        filenames.push_back(filename);
-    }
+    //     // 测试数据特征值
+    //     std::string feature = std::to_string(count_data) + "\t"
+    //         + std::to_string(sensor_num) + "\t"
+    //         + std::to_string(max_y_mult) + "\t"
+    //         + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+    //         + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+    //         + std::to_string(max_swell) + "\t"
+    //         + std::to_string(d_height) + "\t"
+    //         + std::to_string(hcost_propor) + "\t"
+    //         + "max_y_mult";
+    //     features.push_back(feature);
+    //     std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+    //     filenames.push_back(filename);
+    // }
 
-    // max_x_mult
-    for (double max_x_mult : para::max_x_milts) {
-        ++count_data;
-        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
-        unsigned int seed = std::rand();
-        seeds.push_back(seed);
-        dg2.generate_save_online(seed, count_data);
+    // // max_x_mult
+    // for (double max_x_mult : para::max_x_milts) {
+    //     ++count_data;
+    //     DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+    //     unsigned int seed = std::rand();
+    //     seeds.push_back(seed);
+    //     dg2.generate_save_online(seed, count_data);
         
-        // 测试数据特征值
-        std::string feature = std::to_string(count_data) + "\t"
-            + std::to_string(sensor_num) + "\t"
-            + std::to_string(max_y_mult) + "\t"
-            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
-            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
-            + std::to_string(max_swell) + "\t"
-            + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor) + "\t"
-            + "max_x_mult";
-        features.push_back(feature);
-        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
-        filenames.push_back(filename);
-    }
+    //     // 测试数据特征值
+    //     std::string feature = std::to_string(count_data) + "\t"
+    //         + std::to_string(sensor_num) + "\t"
+    //         + std::to_string(max_y_mult) + "\t"
+    //         + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+    //         + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+    //         + std::to_string(max_swell) + "\t"
+    //         + std::to_string(d_height) + "\t"
+    //         + std::to_string(hcost_propor) + "\t"
+    //         + "max_x_mult";
+    //     features.push_back(feature);
+    //     std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+    //     filenames.push_back(filename);
+    // }
 
-    // time_prop
-    for (double time_prop : para::time_props) {
-        ++count_data;
-        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
-        unsigned int seed = std::rand();
-        seeds.push_back(seed);
-        dg2.generate_save_online(seed, count_data);
+    // // time_prop
+    // for (double time_prop : para::time_props) {
+    //     ++count_data;
+    //     DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+    //     unsigned int seed = std::rand();
+    //     seeds.push_back(seed);
+    //     dg2.generate_save_online(seed, count_data);
         
-        // 测试数据特征值
-        std::string feature = std::to_string(count_data) + "\t"
-            + std::to_string(sensor_num) + "\t"
-            + std::to_string(max_y_mult) + "\t"
-            + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
-            + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
-            + std::to_string(max_swell) + "\t"
-            + std::to_string(d_height) + "\t"
-            + std::to_string(hcost_propor) + "\t"
-            + "time_prop";
-        features.push_back(feature);
-        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
-        filenames.push_back(filename);
-    }
+    //     // 测试数据特征值
+    //     std::string feature = std::to_string(count_data) + "\t"
+    //         + std::to_string(sensor_num) + "\t"
+    //         + std::to_string(max_y_mult) + "\t"
+    //         + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+    //         + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+    //         + std::to_string(max_swell) + "\t"
+    //         + std::to_string(d_height) + "\t"
+    //         + std::to_string(hcost_propor) + "\t"
+    //         + "time_prop";
+    //     features.push_back(feature);
+    //     std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+    //     filenames.push_back(filename);
+    // }
 
     // max_swell
     for (double max_swell : para::max_swells) {
@@ -885,6 +871,7 @@ int main() {
     aco::HEURISTIC_FLAG = true;
 
     int repeat = 80;
+    int count = 0;
     int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
     std::string direction = "";
     for (int i = 0; i < repeat; i++) {
@@ -897,45 +884,22 @@ int main() {
         // direction = ".\\newnewexp\\exp3"; // path
         // run_exp3(direction, count3);
 
-        direction = ".\\newnewexp\\exp4"; // path
-        run_exp4(direction, count4);
+        // direction = ".\\newnewexp\\exp4"; // path
+        // run_exp4(direction, count4);
+
+        direction = ".\\newnewexp\\exp5";   // ! 修改路径(文件夹exp__)
+        run_exp(direction, count);          // ! 修改run_exp()函数，修改count变量
+        // ! 修改online_filename_set.txt
     }
-
-    // features.clear();
-    // filenames.clear();
-    // int instance_num1 = 0;
-    // direction = ".\\newnewexp\\exp1";
-    // readInit(instance_num1, direction, true);
-    // std::cout << "instance_num1 = " << instance_num1 << "\n\n";
-    // results.clear();
-    // solve_all_instance(instance_num1, direction);
-
-    // features.clear();
-    // filenames.clear();
-    // int instance_num2 = 0;
-    // direction = ".\\newnewexp\\exp2";
-    // readInit(instance_num2, direction, true);
-    // std::cout << "instance_num2 = " << instance_num2 << "\n\n";
-    // results.clear();
-    // solve_all_instance(instance_num2, direction);
-
-    // features.clear();
-    // filenames.clear();
-    // int instance_num3 = 0;
-    // direction = ".\\newnewexp\\exp3";
-    // readInit(instance_num3, direction, true);
-    // std::cout << "instance_num3 = " << instance_num3 << "\n\n";
-    // results.clear();
-    // solve_all_instance(instance_num3, direction);
 
     features.clear();
     filenames.clear();
-    int instance_num4 = 0;
-    direction = ".\\newnewexp\\exp4";
-    readInit(instance_num4, direction, true);
-    std::cout << "instance_num4 = " << instance_num4 << "\n\n";
+    int instance_num = 0;
+    direction = ".\\newnewexp\\exp5";       // ! 修改路径(文件夹exp__)
+    readInit(instance_num, direction, true);
+    std::cout << "instance num = " << instance_num << "\n\n";
     results.clear();
-    solve_all_instance(instance_num4, direction);
+    solve_all_instance(instance_num, direction);
 
     return 0;
 }

@@ -937,24 +937,5 @@ int main() {
     results.clear();
     solve_all_instance(instance_num4, direction);
 
-    // int instance_num = 0;
-    // for (int i = 0; i < repeat; i++) {
-    //     direction = ".\\newnewexp\\exp1";// 指定路径
-    //     run_exp(direction);// 生成数据
-    //     // instance_num = 0;
-    //     // readInit(instance_num1, direction, true);
-    //     // std::cout << "instance_number = " << instance_num1 << "\n\n";
-    //     // results.clear();
-    //     // solve_all_instance(instance_num, direction);
-
-    //     direction = ".\\newnewexp\\exp2";// 指定路径
-    //     run_exp2(direction);// 生成数据
-    //     // instance_num = 0;
-    //     // readInit(instance_num2, direction, true);
-    //     // std::cout << "instance_number = " << instance_num2 << "\n\n";
-    //     // results.clear();
-    //     // solve_all_instance(instance_num, direction);
-    // }
-
     return 0;
 }

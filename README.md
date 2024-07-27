@@ -1,1 +1,1 @@
-本科毕业设计的代码
+slowest segment first polity + height

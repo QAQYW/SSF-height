@@ -503,31 +503,8 @@ void run_exp(std::string dir, int &count_data) {
     features.clear();
     std::vector<unsigned int> seeds;
 
-    // // sensor_num
-    // for (int sensor_num : para::sensor_nums) {
-    //     ++count_data;
-    //     DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
-    //     unsigned int seed = std::rand();
-    //     seeds.push_back(seed);
-    //     dg2.generate_save_online(seed, count_data);
-        
-    //     // 测试数据特征值
-    //     std::string feature = std::to_string(count_data) + "\t"
-    //         + std::to_string(sensor_num) + "\t"
-    //         + std::to_string(max_y_mult) + "\t"
-    //         + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
-    //         + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
-    //         + std::to_string(max_swell) + "\t"
-    //         + std::to_string(d_height) + "\t"
-    //         + std::to_string(hcost_propor) + "\t"
-    //         + "sensor_num";
-    //     features.push_back(feature);
-    //     std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
-    //     filenames.push_back(filename);
-    // }
-
-    // max_y_mult
-    for (double max_y_mult : para::max_y_mults) {
+    // sensor_num
+    for (int sensor_num : para::sensor_nums) {
         ++count_data;
         DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
         unsigned int seed = std::rand();
@@ -543,11 +520,34 @@ void run_exp(std::string dir, int &count_data) {
             + std::to_string(max_swell) + "\t"
             + std::to_string(d_height) + "\t"
             + std::to_string(hcost_propor) + "\t"
-            + "max_y_mult";
+            + "sensor_num";
         features.push_back(feature);
         std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
         filenames.push_back(filename);
     }
+
+    // // max_y_mult
+    // for (double max_y_mult : para::max_y_mults) {
+    //     ++count_data;
+    //     DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+    //     unsigned int seed = std::rand();
+    //     seeds.push_back(seed);
+    //     dg2.generate_save_online(seed, count_data);
+        
+    //     // 测试数据特征值
+    //     std::string feature = std::to_string(count_data) + "\t"
+    //         + std::to_string(sensor_num) + "\t"
+    //         + std::to_string(max_y_mult) + "\t"
+    //         + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+    //         + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+    //         + std::to_string(max_swell) + "\t"
+    //         + std::to_string(d_height) + "\t"
+    //         + std::to_string(hcost_propor) + "\t"
+    //         + "max_y_mult";
+    //     features.push_back(feature);
+    //     std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+    //     filenames.push_back(filename);
+    // }
 
     // // max_x_mult
     // for (double max_x_mult : para::max_x_milts) {
@@ -870,24 +870,13 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
     aco::HEURISTIC_FLAG = true;
 
-    int repeat = 100;
+    int repeat = 80;
     int count = 0;
     int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
     std::string direction = "";
     for (int i = 0; i < repeat; i++) {
-        // direction = ".\\newnewexp\\exp1"; // path
-        // run_exp(direction, count1);
 
-        // direction = ".\\newnewexp\\exp2"; // path
-        // run_exp2(direction, count2);
-
-        // direction = ".\\newnewexp\\exp3"; // path
-        // run_exp3(direction, count3);
-
-        // direction = ".\\newnewexp\\exp4"; // path
-        // run_exp4(direction, count4);
-
-        direction = ".\\newnewexp\\exp7";   // ! 修改路径(文件夹exp__)
+        direction = ".\\newnewexp\\exp8";   // ! 修改路径(文件夹exp__)
         run_exp(direction, count);          // ! 修改run_exp()函数，修改count变量
         // ! 别忘了创建文件夹
         // ! 修改online_filename_set.txt
@@ -896,7 +885,7 @@ int main() {
     features.clear();
     filenames.clear();
     int instance_num = 0;
-    direction = ".\\newnewexp\\exp7";       // ! 修改路径(文件夹exp__)
+    direction = ".\\newnewexp\\exp8";       // ! 修改路径(文件夹exp__)
     readInit(instance_num, direction, true);
     std::cout << "instance num = " << instance_num << "\n\n";
     results.clear();

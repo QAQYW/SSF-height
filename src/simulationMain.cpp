@@ -822,6 +822,28 @@ void run_exp4(std::string dir, int &count_data) {
     fout.close();
 }
 
+void run_exp_to_show_pheromone(std::string dir, int &count_data) {
+    int sensor_num = 15;
+    double max_x_mult = 45;
+    double max_y_mult = 120;
+    double time_prop = 2;
+    double max_swell = 3;
+    double d_height = 10;
+    double hcost_propor = 1;
+
+    filenames.clear();
+    features.clear();
+    std::vector<unsigned int> seeds;
+
+    ++count_data;
+    DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+    unsigned int seed = std::rand();
+    seeds.push_back(seed);
+    dg2.generate_save_online(seed, count_data);
+
+    
+}
+
 /*
     1. para::sensor_nums
     2. main里的direction

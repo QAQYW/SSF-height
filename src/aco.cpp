@@ -7,6 +7,7 @@
 #include "greedy3.h"
 
 #include <cstdio>
+#include <iostream>
 
 /* -------------------------------- parameter ------------------------------- */
 
@@ -272,10 +273,10 @@ void aco::ACOSolver::solve() {
         ++iter;
 
         if (iter == aco::MAX_ITERATOR - 1) {
+            // todo 输出信息素浓度矩阵，然后可视化
+            savePheromone(pheromone, ".\\newnewexp\\exp000");
             std::puts("-----  Now check pheromone matrix  -----");
             std::puts("");
-            // todo 输出信息素浓度矩阵，然后可视化
-
         }
 
         // std::printf("iter: %d/%d, cost=%lf\n", iter, aco::MAX_ITERATOR, optimalCost);
@@ -460,4 +461,22 @@ void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &spe
     ssf::SSFSolverDisc ssfSolver = ssf::SSFSolverDisc(&probDisc1D, problem);
     // 结果保存在speedSche和linked当中
     ssfSolver.solveForOnline(start, end, speedSche, linked);
+}
+
+void aco::ACOSolver::savePheromone(const std::vector<std::vector<std::vector<double>>> &ph, std::string dir) const {
+    std::ofstream fout;
+    fout.open(dir + "\\pheromone_copy.txt");
+    int dim1 = ph.size();
+    int dim2 = ph[0].size();
+    int dim3 = ph[0][0].size();
+    fout << dim1 << "\t" << dim2 << "\t" << dim3 << "\n";
+    for (int i = 0; i < dim1; i++) {
+        for (int j = 0; j < dim2; j++) {
+            for (int k = 0; k < dim3; k++) {
+                fout << ph[i][j][k] << "\t";
+            }
+            fout << "\n";
+        }
+    }
+    fout.close();
 }

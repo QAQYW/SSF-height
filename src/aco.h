@@ -125,6 +125,10 @@ public:
     /// @param speedSche 速度调度
     /// @param linked 传感器连接方案
     void solveForOnline(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked);
+
+    /// @brief 输出信息素到文件
+    /// @param ph 信息素矩阵
+    void savePheromone(const std::vector<std::vector<std::vector<double>>> &ph, std::string dir) const;
 };
 
 } // namespace aco

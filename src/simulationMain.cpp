@@ -823,7 +823,7 @@ void run_exp4(std::string dir, int &count_data) {
 }
 
 void run_exp_to_show_pheromone(std::string dir, int &count_data) {
-    int sensor_num = 15;
+    int sensor_num = 5;
     double max_x_mult = 45;
     double max_y_mult = 120;
     double time_prop = 2;

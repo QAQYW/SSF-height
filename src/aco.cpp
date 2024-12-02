@@ -448,6 +448,9 @@ void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &spe
     }
     ants.clear();
 
+    std::puts("-----  Now check pheromone matrix  -----");
+    std::puts("");
+
     // 最后统一把结果传出
     ProblemDisc1D probDisc1D = ProblemDisc1D(problem->getSensorNum(), problem->getLength(), problem->getLengthDiscNum(), problem->getSensorList(), trajectory);
     ssf::SSFSolverDisc ssfSolver = ssf::SSFSolverDisc(&probDisc1D, problem);

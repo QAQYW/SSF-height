@@ -356,8 +356,8 @@ void solve_all_instance(int instance_num, std::string dir) {
     // std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO, para::GA, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
-    // std::vector<para::Algorithm> alg_set = {para::ACO};
-    std::vector<para::Algorithm> alg_set = {/*para::ACO,*/ para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
+    std::vector<para::Algorithm> alg_set = {para::ACO};
+    // std::vector<para::Algorithm> alg_set = {/*para::ACO,*/ para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -840,8 +840,32 @@ void run_exp_to_show_pheromone(std::string dir, int &count_data) {
     unsigned int seed = std::rand();
     seeds.push_back(seed);
     dg2.generate_save_online(seed, count_data);
-
-    
+    // 测试数据特征值
+    std::string feature = std::to_string(count_data) + "\t"
+        + std::to_string(sensor_num) + "\t"
+        + std::to_string(max_y_mult) + "\t"
+        + std::to_string(max_x_mult) + "\t" // + std::to_string(max_x_mult_coef) + "\t"
+        + std::to_string(time_prop) + "\t" // + std::to_string(max_time_range_prop) + "\t"
+        + std::to_string(max_swell) + "\t"
+        + std::to_string(d_height) + "\t"
+        + std::to_string(hcost_propor) + "\t"
+        + "sensor_num";
+    features.push_back(feature);
+    std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+    filenames.push_back(filename);
+    int tot = features.size();
+    std::ofstream fout;
+    fout.open(dir + "\\features.txt", std::ios::out | std::ios::app);
+    for (int i = 0; i < tot; i++) {
+        fout << features[i] << "\n";
+    }
+    fout.close();
+    fout.open(dir + "\\online_filename_set.txt", std::ios::out | std::ios::app);
+    // fout << std::to_string(count_data) << "\n";
+    for (int i = 0; i < tot; i++) {
+        fout << filenames[i] << "\n";
+    }
+    fout.close();
 }
 
 /*
@@ -892,14 +916,14 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
     aco::HEURISTIC_FLAG = true;
 
-    int repeat = 80;
+    int repeat = 1;
     int count = 0;
     int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
     std::string direction = "";
     for (int i = 0; i < repeat; i++) {
 
-        direction = ".\\newnewexp\\exp8";   // ! 修改路径(文件夹exp__)
-        run_exp(direction, count);          // ! 修改run_exp()函数，修改count变量
+        direction = ".\\newnewexp\\exp000";   // ! 修改路径(文件夹exp__)
+        run_exp_to_show_pheromone(direction, count);          // ! 修改run_exp()函数，修改count变量
         // ! 别忘了创建文件夹
         // ! 修改online_filename_set.txt
     }
@@ -907,7 +931,7 @@ int main() {
     features.clear();
     filenames.clear();
     int instance_num = 0;
-    direction = ".\\newnewexp\\exp8";       // ! 修改路径(文件夹exp__)
+    direction = ".\\newnewexp\\exp000";       // ! 修改路径(文件夹exp__)
     readInit(instance_num, direction, true);
     std::cout << "instance num = " << instance_num << "\n\n";
     results.clear();

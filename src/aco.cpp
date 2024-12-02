@@ -271,6 +271,13 @@ void aco::ACOSolver::solve() {
         }
         ++iter;
 
+        if (iter == aco::MAX_ITERATOR - 1) {
+            std::puts("-----  Now check pheromone matrix  -----");
+            std::puts("");
+            // todo 输出信息素浓度矩阵，然后可视化
+
+        }
+
         // std::printf("iter: %d/%d, cost=%lf\n", iter, aco::MAX_ITERATOR, optimalCost);
     }
     ants.clear();
@@ -447,9 +454,6 @@ void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &spe
         ++iter;
     }
     ants.clear();
-
-    std::puts("-----  Now check pheromone matrix  -----");
-    std::puts("");
 
     // 最后统一把结果传出
     ProblemDisc1D probDisc1D = ProblemDisc1D(problem->getSensorNum(), problem->getLength(), problem->getLengthDiscNum(), problem->getSensorList(), trajectory);

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def pheromone_to_alpha(pheromone, dims):
-    alpha_min = 0.1
+    alpha_min = 0.003
     alphas = np.zeros(dims)
     ph_max = np.max(pheromone)
     ph_min = np.min(pheromone)
@@ -12,7 +12,7 @@ def pheromone_to_alpha(pheromone, dims):
         for j in range(dims[1]):
             for k in range(dims[2]):
                 alphas[i][j][k] = alpha_min + (pheromone[i][j][k] - ph_min) / ph_span * (1 - alpha_min)
-    print(alphas)
+    # print(alphas)
     return alphas
 
 if __name__ == '__main__':
@@ -37,10 +37,16 @@ if __name__ == '__main__':
     print("dims =", dims)
     # 检查pheromone是否与输入大小一致
     print("shape =", pheromone.shape)
-    color = "orange"
+    color = 'orange'
     alphas = pheromone_to_alpha(pheromone, dims)
-    for i in range(dims[0]):
+    for k in range(dims[2]):
+        plt.plot([-1,0], [0,k], color=color, alpha=alphas[0][0][k])
+    for i in range(1,dims[0]):
         for j in range(dims[1]):
             for k in range(dims[2]):
-                plt.plot([i, i+1], [j, k], color=color, alpha=alphas[i][j][k])
+                plt.plot([i-1, i], [j, k], color=color, alpha=alphas[i][j][k])
+    print('prepare to save figure')
+    save_path = "D:\\Desktop\\ssf-journal\\figure\\pheromone visualization\\orange_3-2.pdf"
+    plt.savefig(save_path)
+    print('have saved figure: ' + save_path)
     plt.show()

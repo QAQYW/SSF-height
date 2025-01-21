@@ -112,6 +112,8 @@ public:
     double calHeuristic(int d, int curr, int next) const;
     double calHeuristic(int d, int curr, int next, bool f[], int cf) const;
 
+    bool isFeasible(Trajectory traj) const;
+
     /**
      * Online
     */

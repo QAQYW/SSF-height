@@ -1,4 +1,6 @@
 #include "tools.h"
+#include <iostream>
+#include <fstream>
 
 double tools::randDouble(double minVal, double maxVal) {
     return (std::rand() / (double) RAND_MAX) * (maxVal - minVal) + minVal;
@@ -22,4 +24,22 @@ void tools::splitString(std::vector<std::string> &strList, const std::string &st
             pos = i + 1;
         }
     }
+}
+
+void tools::printVector(const std::string &path, const std::vector<double> &vec) {
+    std::ofstream fout;
+    fout.open(path, std::ios::out | std::ios::app);
+    for (double val : vec) {
+        fout << val << "\t";
+    }
+    fout << "\n";
+    fout.close();
+}
+
+void tools::printVector(const std::string &msg, const std::string &path, const std::vector<double> &vec) {
+    std::ofstream fout;
+    fout.open(path, std::ios::out | std::ios::app);
+    fout << msg << "\n";
+    fout.close();
+    printVector(path, vec);
 }

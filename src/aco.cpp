@@ -6,6 +6,8 @@
 #include "greedy.h"
 #include "greedy3.h"
 
+#include "pso.h"
+
 #include <cstdio>
 #include <iostream>
 
@@ -13,10 +15,10 @@
 
 const int aco::ANT_NUM = 20; //30;
 double aco::ALPHA = 1; //5; //1;
-double aco::BETA = 5; //6;
-double aco::EVAPORATE_COEF = 0.1;
-const double aco::ENHANCE_VALUE = 0.3; //0.5;
-const int aco::MAX_ITERATOR = 20; //50;
+double aco::BETA = 0.5; //5; //6;
+double aco::EVAPORATE_COEF = 0.05; // 0.1;
+const double aco::ENHANCE_VALUE = 0.1; //0.3; //0.5;
+const int aco::MAX_ITERATOR = 50; //50;
 const double aco::HEURISTIC_BASE = 1;           // 这个值具体是多少不重要
 const double aco::HEURISTIC_REDUCE_FACTOR = 0.1; //0.1; //1;
 const double aco::INITIAL_PHEROMONE_VALUE = 1;
@@ -26,7 +28,6 @@ bool aco::HEURISTIC_FLAG = true;
 /* -------------------------------- roulette -------------------------------- */
 
 int aco::roulette(std::vector<aco::Candidate>& candList, double sum) {
-    // TODO 也可以写成二分，但不一定会更快
     if (candList.empty()) {
         // std::cout << "Roulette Error: candList is empty\n";
         return 0; // 0 就是hMin
@@ -95,7 +96,7 @@ void aco::Ant::generateTrajectory(int trajLen, const std::vector<std::vector<std
         // 确定(d,h)
         std::vector<aco::Candidate> candidateList;
         double probSum = 0;
-        // TODO 每确定了一个height，就要更新visit vector
+        // 每确定了一个height，就要更新visit vector
         // cout << "going to isUrgent()\n";
         // if (d > 0 && solver.isUrgent(d, candidateList, visit, countVisit)) {
         if (solver.isUrgent(d, candidateList, visit, countVisit)) {
@@ -224,27 +225,55 @@ void aco::ACOSolver::solve() {
 
     // 所有蚂蚁集合
     std::vector<aco::Ant> ants(aco::ANT_NUM, aco::Ant());
+    double optimalCost;
 
-    greedy::GreedySolver greedySolver = greedy::GreedySolver(problem);
-    greedySolver.solve();
-    int initHeight = greedySolver.getTrajectory().getHeightIndex(0);
-    // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
-    Ant bestAnt(problem->getLengthDiscNum(), initHeight);
-    bestAnt.calCost(*problem);
-    double optimalCost = bestAnt.getCost();
-    trajectory = greedySolver.getTrajectory();
+    aco::Ant bestAnt(problem->getLengthDiscNum(), 0);
 
-    greedy3::GreedySolver3 greedySovler3 = greedy3::GreedySolver3(problem);
-    greedySovler3.solve();
-    if (greedySovler3.getCost() < optimalCost) {
-        bestAnt = aco::Ant(greedySovler3.getTrajectory());
-        trajectory = greedySovler3.getTrajectory();
-        bestAnt.calCost(*problem);
-        optimalCost = bestAnt.getCost();
+    // 随机初始化
+    bool feasibleFlag = false; int countTrials = 0;
+    while (!feasibleFlag) {
+        Trajectory randomTraj(problem->getLengthDiscNum());
+        for (int i = 0, tmpHeightIndex; i < problem->getLengthDiscNum(); i++) {
+            tmpHeightIndex = tools::randInt(0, problem->getHeightDiscNum() - 1);
+            randomTraj.setHeightIndex(i, tmpHeightIndex);
+        }
+        if (isFeasible(randomTraj)) {
+            bestAnt = aco::Ant(randomTraj);
+            bestAnt.calCost(*problem);
+            optimalCost = bestAnt.getCost();
+            trajectory = Trajectory(randomTraj);
+            feasibleFlag = true;
+        }
+        ++countTrials;
     }
+    printf("\ntrials = %d\n\n", countTrials);
+
+    // // 用greedy方法来初始化蚁群（所有高度中选最优的，以固定高度飞行）
+    // greedy::GreedySolver greedySolver = greedy::GreedySolver(problem);
+    // greedySolver.solve();
+    // int initHeight = greedySolver.getTrajectory().getHeightIndex(0);
+    // // initHeight = 0;
+    // // 以固定高度 minHeightIndex 飞行的轨迹，作为初始解
+    // bestAnt = aco::Ant(problem->getLengthDiscNum(), initHeight);
+    // bestAnt.calCost(*problem);
+    // optimalCost = bestAnt.getCost();
+    // trajectory = greedySolver.getTrajectory();
+
+
+    // 用greedy3初始化
+    // greedy3::GreedySolver3 greedySovler3 = greedy3::GreedySolver3(problem);
+    // greedySovler3.solve();
+    // if (greedySovler3.getCost() < optimalCost) {
+    //     bestAnt = aco::Ant(greedySovler3.getTrajectory());
+    //     trajectory = greedySovler3.getTrajectory();
+    //     bestAnt.calCost(*problem);
+    //     optimalCost = bestAnt.getCost();
+    // }
 
     int iter = 0;
-    // TODO 也可以换成其他循环终止条件
+    std::vector<double> optimalCostList;
+    optimalCostList.push_back(optimalCost);
+    // 也可以换成其他循环终止条件
     while (iter < aco::MAX_ITERATOR) {
         int bestIndex = 0;
         for (int i = 0; i < aco::ANT_NUM; i++) {
@@ -272,16 +301,36 @@ void aco::ACOSolver::solve() {
         }
         ++iter;
 
-        if (iter == aco::MAX_ITERATOR - 1) {
-            // todo 输出信息素浓度矩阵，然后可视化
-            savePheromone(pheromone, ".\\newnewexp\\exp000");
+        // if (iter == aco::MAX_ITERATOR - 1) {
+        //     // todo 输出信息素浓度矩阵，然后可视化
+        //     savePheromone(pheromone, ".\\newnewexp\\exp000");
+        //     std::puts("-----  Now check pheromone matrix  -----");
+        //     std::puts("");
+        // }
+
+        if (iter == aco::MAX_ITERATOR - 1 || iter == 1) {
+            // 输出信息素浓度矩阵，然后可视化
+            savePheromone(pheromone, ".\\newnewexp\\exp_iter");
             std::puts("-----  Now check pheromone matrix  -----");
             std::puts("");
         }
 
+        // todo 改成 bestAnt.getCost() 的曲线图
+        optimalCostList.push_back(bestAnt.getCost());
+        // optimalCostList.push_back(optimalCost);
+
+        // todo 输出trajectory
+        // std::vector<int> heightSche = bestAnt.getTrajectory().getHeightSche();+
+        // // tools::printVector("Traj", ".\\newnewexp\\exp_iter\\iter_results.txt", heightSche); // save to file
+        // puts("Traj:");
+        // for (int _hei : heightSche) printf("%d, ", _hei);
+        // puts("");
+
         // std::printf("iter: %d/%d, cost=%lf\n", iter, aco::MAX_ITERATOR, optimalCost);
     }
     ants.clear();
+
+    tools::printVector("ACO", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
 }
 
 void aco::ACOSolver::evaporatePheromone(const std::vector<int>& dim, std::vector<std::vector<std::vector<double>>> &ph) const {
@@ -310,8 +359,6 @@ void aco::ACOSolver::enhancePheromone(const aco::Ant &ant, std::vector<std::vect
 
 bool aco::ACOSolver::isUrgent(int d, std::vector<aco::Candidate> & candList, const std::vector<bool> &visit, int countVisit) const {
     
-    // ! 传递的参数countVisit用不到
-
     candList.clear();
     // int dMax = d + sensorNum - countVisit;
     int dMax = std::min(d + sensorNum - countVisit, lengthIndexNum);
@@ -402,6 +449,27 @@ double aco::ACOSolver::calHeuristic(int d, int curr, int next, bool f[], int cf)
     if (!aco::HEURISTIC_FLAG) return cg; // 不使用基于支配关系的筛选
     if (ctemp <= cg && !flag) return 0;
     return cg;
+}
+
+bool aco::ACOSolver::isFeasible(Trajectory traj) const {
+    int num = problem->getSensorNum();
+    bool collected[num] = {false};
+    for (int sid = 0; sid < num; sid++) {
+        int lmost = problem->getLengthDiscNum() - 1;
+        int rmost = 0;
+        for (resource::RangeDisc rg : problem->getSensor(sid).rangeList) {
+            lmost = std::min(lmost, rg.leftIndex);
+            rmost = std::max(rmost, rg.rightIndex);
+        }
+        for (int dis = lmost, hei; !collected[sid] && dis < rmost; dis++) {
+            hei = traj.getHeightIndex(dis);
+            if (problem->getSensor(sid).isCovered(dis, hei)) {
+                collected[sid] = true;
+            }
+        }
+        if (!collected[sid]) return false;
+    }
+    return true;
 }
 
 void aco::ACOSolver::solveForOnline(int start, int end, std::vector<double> &speedSche, std::vector<std::vector<int>> &linked) {

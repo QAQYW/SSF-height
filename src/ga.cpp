@@ -12,7 +12,7 @@
 
 /* -------------------------------- Parameter ------------------------------- */
 
-int const ga::MAX_ITERATOR = 30; //30; //50;
+int const ga::MAX_ITERATOR = 50; //30; //50;
 int const ga::POPULATION_SIZE = 20; //30;
 double const ga::MUTATION_PROBABILITY = 0.005;
 

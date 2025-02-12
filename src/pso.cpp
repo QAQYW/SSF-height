@@ -171,10 +171,11 @@ void pso::PSOSolver::solve() {
             // swarm[i].calCost(*problem);
             if (bestIndex == -1 || swarm[i].getCost() < swarm[bestIndex].getCost()) bestIndex = i;
         }
-        if (~bestIndex) {
-            bestPartical = pso::Partical(swarm[bestIndex]);
-        }
+        // if (~bestIndex) {
+        //     bestPartical = pso::Partical(swarm[bestIndex]);
+        // }
     }
+    bestPartical = pso::Partical(swarm[bestIndex]);
     
     int iter = 0;
     while (iter < pso::MAX_ITERATOR) {

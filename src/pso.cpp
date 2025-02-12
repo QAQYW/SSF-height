@@ -176,6 +176,10 @@ void pso::PSOSolver::solve() {
         // }
     }
     bestPartical = pso::Partical(swarm[bestIndex]);
+
+    // 记录每次迭代后的optimal cost
+    std::vector<double> optimalCostList;
+    optimalCostList.push_back(bestPartical.getBestCost());
     
     int iter = 0;
     while (iter < pso::MAX_ITERATOR) {
@@ -202,7 +206,13 @@ void pso::PSOSolver::solve() {
 
         iter++;
         inertia -= dInertia;
+
+        // 记录optimal cost
+        optimalCostList.push_back(bestPartical.getBestCost());
     }
+
+    // 输出 optimalCostList 到文件
+    tools::printVector("PSO", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
 }
 
 bool pso::PSOSolver::isFeasible(Trajectory traj) const {

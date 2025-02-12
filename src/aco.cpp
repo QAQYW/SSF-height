@@ -330,6 +330,7 @@ void aco::ACOSolver::solve() {
     }
     ants.clear();
 
+    // 输出 optimalCostList 到文件
     tools::printVector("ACO", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
 }
 

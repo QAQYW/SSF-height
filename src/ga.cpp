@@ -112,6 +112,11 @@ void ga::GASolver::solve() {
     trajectory = Trajectory(parents[bestIndex].getTrajectory());
     cost = parents[bestIndex].getCost();
 
+    // 记录每次迭代后的optimal cost
+    std::vector<double> optimalCostList;
+    optimalCostList.push_back(cost);
+    // optimalCostList.push_back(parents[bestIndex].getCost());
+
     // 用于给parents配对
     int indices[ga::POPULATION_SIZE];
     for (int i = 0; i < ga::POPULATION_SIZE; i++) indices[i] = i;
@@ -142,7 +147,13 @@ void ga::GASolver::solve() {
             cost = parents[0].getCost();
         }
         ++iter;
+
+        // 记录optimal cost
+        optimalCostList.push_back(cost);
     }
+
+    // 输出 optimalCostList 到文件
+    tools::printVector("GA", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
 }
 
 void ga::GASolver::crossover(ga::Population &children, ga::Individual p1, ga::Individual p2) const {

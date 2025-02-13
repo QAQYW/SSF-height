@@ -114,6 +114,11 @@ void sa::SASolver::solve() {
     bestSolution = sa::Solution(solution);
     bestSolution.calCost(*problem);
 
+    // 记录每次迭代后的optimal cost
+    std::vector<double> optimalCostList;
+    optimalCostList.push_back(bestSolution.getCost());
+    int iter = 0; // 记录迭代次数
+
     double temperature = sa::INIT_TEMPERATURE;
     while (temperature > sa::MIN_TEMPERATURE) {
         solution.update(temperature, *this);
@@ -121,7 +126,19 @@ void sa::SASolver::solve() {
         if (solution.getCost() < bestSolution.getCost()) {
             bestSolution = sa::Solution(solution);
         }
+
+        // 记录optimal cost
+        // 因为SA太慢了，所以只记录前50次的 和 最终的
+        if (iter < 50) {
+            ++iter;
+            optimalCostList.push_back(bestSolution.getCost());
+        }
     }
+
+    // 记录全局最优的
+    optimalCostList.push_back(bestSolution.getCost());
+    // 输出 optimalCostList 到文件
+    tools::printVector("SA", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
 }
 
 Trajectory sa::SASolver::getTrajectory() const {

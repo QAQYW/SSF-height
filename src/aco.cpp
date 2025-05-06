@@ -18,7 +18,7 @@ double aco::ALPHA = 1; //5; //1;
 double aco::BETA = 0.5; //5; //6;
 double aco::EVAPORATE_COEF = 0.05; // 0.1;
 const double aco::ENHANCE_VALUE = 0.1; //0.3; //0.5;
-const int aco::MAX_ITERATOR = 50; //50;
+const int aco::MAX_ITERATOR = 5; //20; //30; //50;
 const double aco::HEURISTIC_BASE = 1;           // 这个值具体是多少不重要
 const double aco::HEURISTIC_REDUCE_FACTOR = 0.1; //0.1; //1;
 const double aco::INITIAL_PHEROMONE_VALUE = 1;
@@ -246,7 +246,7 @@ void aco::ACOSolver::solve() {
         }
         ++countTrials;
     }
-    printf("\ntrials = %d\n\n", countTrials);
+    // printf("\ntrials = %d\n\n", countTrials);
 
     // // 用greedy方法来初始化蚁群（所有高度中选最优的，以固定高度飞行）
     // greedy::GreedySolver greedySolver = greedy::GreedySolver(problem);
@@ -308,15 +308,15 @@ void aco::ACOSolver::solve() {
         //     std::puts("");
         // }
 
-        if (iter == aco::MAX_ITERATOR - 1 || iter == 1) {
-            // 输出信息素浓度矩阵，然后可视化
-            savePheromone(pheromone, ".\\newnewexp\\exp_iter");
-            std::puts("-----  Now check pheromone matrix  -----");
-            std::puts("");
-        }
+        // if (iter == aco::MAX_ITERATOR - 1 || iter == 1) {
+        //     // 输出信息素浓度矩阵，然后可视化
+        //     savePheromone(pheromone, ".\\newnewexp\\exp_iter");
+        //     std::puts("-----  Now check pheromone matrix  -----");
+        //     std::puts("");
+        // }
 
         // todo 改成 bestAnt.getCost() 的曲线图
-        optimalCostList.push_back(bestAnt.getCost());
+        // optimalCostList.push_back(bestAnt.getCost());
         // optimalCostList.push_back(optimalCost);
 
         // todo 输出trajectory
@@ -331,7 +331,7 @@ void aco::ACOSolver::solve() {
     ants.clear();
 
     // 输出 optimalCostList 到文件
-    tools::printVector("ACO", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
+    // tools::printVector("ACO", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
 }
 
 void aco::ACOSolver::evaporatePheromone(const std::vector<int>& dim, std::vector<std::vector<std::vector<double>>> &ph) const {

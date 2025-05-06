@@ -44,7 +44,7 @@ namespace para {
     /* -------------------------- algorithm comparison -------------------------- */
 
     // 传感器数量，参考值 {5, 10, 20, 30, 40, 50} {5, 10, 15, 20, 25, 30}
-    const int sensor_nums[] = {5, 10, 15, 20, 25, 30};
+    const int sensor_nums[] = {5, 10, 15, 20, 25, 30, 35, 40};
 
     // 水滴曲线最大高度（米），参考值 {70, 100, 130, 160}
     const double max_y_mults[] = {40, 60, 80, 100, 120, 140, 160};
@@ -356,8 +356,8 @@ void solve_all_instance(int instance_num, std::string dir) {
     // std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO, para::GA, para::ACO_Online};
     // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
     // std::vector<para::Algorithm> alg_set = {para::DFS};
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA};
-    // std::vector<para::Algorithm> alg_set = {/*para::ACO,*/ para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
+    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -913,6 +913,69 @@ void run_exp_print_every_iter(std::string dir, int &count_data) {
     fout.close();
 }
 
+/// @brief Major Revision. Run exp for larger scenarios: var 'sensor_num' = 35, 40, 45, 50. Ant record runtime of algorithms
+void run_exp_larger_scale(std::string dir, int &count_data) {
+    
+    // int sensor_num = 15;
+    double max_x_mult = 45;
+    double max_y_mult = 120;
+    double time_prop = 2;
+    double max_swell = 3; //2.5;
+    double d_height = 10;
+    double hcost_propor = 1;
+
+    filenames.clear();
+    features.clear();
+    std::vector<unsigned int> seeds;
+
+    std::vector<int> sensor_num_set;
+    // ! 每次手动改
+    // for (int i = 5; i <= 30; i += 5) {
+    //     sensor_num_set.push_back(i);
+    // }
+    // sensor_num_set.push_back(35);
+    sensor_num_set.push_back(40);
+
+    // int st = count_data + 1;
+    // int ed = count_data + sensor_num_set.size();
+
+    for (int sensor_num : sensor_num_set) {
+        ++count_data;
+        DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+        unsigned int seed = std::rand();
+        seeds.push_back(seed);
+        dg2.generate_save_online(seed, count_data);
+
+        // 测试数据特征值
+        std::string feature = std::to_string(count_data) + "\t"
+            + std::to_string(sensor_num) + "\t"
+            + std::to_string(max_y_mult) + "\t"
+            + std::to_string(max_x_mult) + "\t"
+            + std::to_string(time_prop) + "\t"
+            + std::to_string(max_swell) + "\t"
+            + std::to_string(d_height) + "\t"
+            + std::to_string(hcost_propor) + "\t"
+            + "sensor_num";
+        features.push_back(feature);
+        std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+        filenames.push_back(filename);
+    }
+
+    int tot = features.size();
+
+    std::ofstream fout;
+    fout.open(dir + "\\features.txt", std::ios::out | std::ios::app);
+    for (int i = 0; i < tot; i++) {
+        fout << features[i] << "\n";
+    }
+    fout.close();
+    fout.open(dir + "\\online_filename_set.txt", std::ios::out | std::ios::app);
+    for (int i = 0; i < tot; i++) {
+        fout << filenames[i] << "\n";
+    }
+    fout.close();
+}
+
 /*
     1. para::sensor_nums
     2. main里的direction
@@ -920,6 +983,8 @@ void run_exp_print_every_iter(std::string dir, int &count_data) {
 */
 
 int main() {
+
+    std::cout << "\n\n\tStart Now!\n\n";
 
     // std::srand((unsigned int) std::time(NULL));
 
@@ -961,26 +1026,33 @@ int main() {
     std::srand((unsigned int) std::time(NULL));
     aco::HEURISTIC_FLAG = true;
 
-    int repeat = 1;
+    // 生成数据
+    int repeat = 10;
     int count = 0;
-    int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
-    std::string direction = "";
+    // int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
+    std::string direction = ".\\exp_for_major_revision\\sensor_num\\40";
     // for (int i = 0; i < repeat; i++) {
 
-    //     direction = ".\\newnewexp\\exp_iter";   // ! 修改路径(文件夹exp__)
-    //     run_exp_print_every_iter(direction, count);          // ! 修改run_exp()函数，修改count变量
+    //     // ! 修改路径(文件夹exp__)
+    //     direction = ".\\exp_for_major_revision\\sensor_num\\40";
+
+    //     // ! 修改run_exp()函数，修改count变量
+    //     run_exp_larger_scale(direction, count);
+        
     //     // ! 别忘了创建文件夹
     //     // ! 修改online_filename_set.txt
     // }
 
+    // 在指定数据上测试
     features.clear();
     filenames.clear();
     int instance_num = 0;
-    direction = ".\\newnewexp\\exp_iter";       // ! 修改路径(文件夹exp__)
+    direction = ".\\exp_for_major_revision\\sensor_num\\40"; // ! 修改路径(文件夹exp__)
     readInit(instance_num, direction, true);
     std::cout << "instance num = " << instance_num << "\n\n";
     results.clear();
     solve_all_instance(instance_num, direction);
+
 
     return 0;
 }

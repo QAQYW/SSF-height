@@ -129,16 +129,16 @@ void sa::SASolver::solve() {
 
         // 记录optimal cost
         // 因为SA太慢了，所以只记录前50次的 和 最终的
-        if (iter < 50) {
-            ++iter;
-            optimalCostList.push_back(bestSolution.getCost());
-        }
+        // if (iter < 50) {
+        //     ++iter;
+        //     optimalCostList.push_back(bestSolution.getCost());
+        // }
     }
 
     // 记录全局最优的
-    optimalCostList.push_back(bestSolution.getCost());
+    // optimalCostList.push_back(bestSolution.getCost());
     // 输出 optimalCostList 到文件
-    tools::printVector("SA", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
+    // tools::printVector("SA", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
 }
 
 Trajectory sa::SASolver::getTrajectory() const {

@@ -9,13 +9,13 @@
 
 /* -------------------------------- Parameter ------------------------------- */
 
-const double pso::INITIAL_INERTIA_VALUE = 0.9;  // ! 未调参
-const double pso::END_INERTIA_VALUE = 0.4;  // ! 未调参
-const double pso::PERSONAL_BEST_COEF = 2.0;  // ! 未调参
-const double pso::GLOBAL_BEST_COEF = 2.0;  // ! 未调参
-const int pso::SWARM_SIZE = 20; //30;  // ! 未调参
-const double pso::MAX_SPEED = 0.1;  // ! 未调参
-const int pso::MAX_ITERATOR = 50; //30; //50; // 50;  // ! 未调参
+const double pso::INITIAL_INERTIA_VALUE = 0.9;
+const double pso::END_INERTIA_VALUE = 0.4;
+const double pso::PERSONAL_BEST_COEF = 2.0;
+const double pso::GLOBAL_BEST_COEF = 2.0;
+const int pso::SWARM_SIZE = 20; //30;
+const double pso::MAX_SPEED = 0.1;
+const int pso::MAX_ITERATOR = 20; //50; // 50;
 
 /* -------------------------------- Partical -------------------------------- */
 
@@ -208,11 +208,11 @@ void pso::PSOSolver::solve() {
         inertia -= dInertia;
 
         // 记录optimal cost
-        optimalCostList.push_back(bestPartical.getBestCost());
+        // optimalCostList.push_back(bestPartical.getBestCost());
     }
 
     // 输出 optimalCostList 到文件
-    tools::printVector("PSO", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
+    // tools::printVector("PSO", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
 }
 
 bool pso::PSOSolver::isFeasible(Trajectory traj) const {

@@ -12,7 +12,7 @@
 
 /* -------------------------------- Parameter ------------------------------- */
 
-int const ga::MAX_ITERATOR = 50; //30; //50;
+int const ga::MAX_ITERATOR = 20; //50;
 int const ga::POPULATION_SIZE = 20; //30;
 double const ga::MUTATION_PROBABILITY = 0.005;
 
@@ -149,11 +149,11 @@ void ga::GASolver::solve() {
         ++iter;
 
         // 记录optimal cost
-        optimalCostList.push_back(cost);
+        // optimalCostList.push_back(cost);
     }
 
     // 输出 optimalCostList 到文件
-    tools::printVector("GA", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
+    // tools::printVector("GA", ".\\newnewexp\\exp_iter\\iter_results.txt", optimalCostList);
 }
 
 void ga::GASolver::crossover(ga::Population &children, ga::Individual p1, ga::Individual p2) const {

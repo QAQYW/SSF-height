@@ -113,3 +113,10 @@ double resource::indexToDistance(int disId1, int disId2, double unitLen) {
     return indexToDistance(disId2 - disId1 + 1, unitLen);
 }
 
+double resource::calFlightTime(double uLength, const std::vector<double> speedSche) {
+    double time = 0;
+    for (double v : speedSche) {
+        time += uLength / v;
+    }
+    return time;
+}

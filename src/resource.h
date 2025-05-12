@@ -107,6 +107,13 @@ double indexToLength(int lenId, double minLen, double unitLen);
 double indexToDistance(int activeDis, double unitLen);
 double indexToDistance(int disId1, int disId2, double unitLen);
 
+
+/// @brief 根据速度调度，计算无人机的飞行时间
+/// @param uLength 单位长度
+/// @param speedSche 速度调度方案
+/// @return 飞行时间
+double calFlightTime(double uLength, const std::vector<double> speedSche);
+
 }
 
 #endif

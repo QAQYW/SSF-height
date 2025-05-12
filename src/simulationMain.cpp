@@ -74,11 +74,12 @@ namespace para {
 
     // 蚁群蒸发系数
     const double evaporate_coefs[] = {0.1};//, 0.2, 0.3, 0.4, 0.5};
+    const double rhos[] = {0.1, 0.3, 0.5, 0.7, 0.9}; // 5
 
     // alpha
-    const double alphas[] = {1, 2, 3, 4};
+    const double alphas[] = {0.5, 1, 1.5, 2, 2.5, 3}; // 6
     // beta
-    const double betas[] = {0, 1, 2, 3, 4, 5};
+    const double betas[] = {0, 1, 2, 3, 4, 5}; // 6
     // best performance: alpha=1, beta=2
 
     /* ---------------------------------- other --------------------------------- */
@@ -280,6 +281,9 @@ void solve(ProblemDisc2D &prob, para::Algorithm alg, std::string dir, int data_i
     }
     result.runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
     result.str = std::to_string(result.cost) + "\t" + std::to_string(result.hcost) + "\t" + std::to_string(result.vcost) + "\t" + std::to_string(result.runtime);
+    // // 统计无人机飞行时间
+    // double flighttime = resource::calFlightTime(resource::REF_UNIT_LENGTH, speedSche);
+    // result.str = result.str + "\t" + std::to_string(flighttime);
     results.push_back(result);
     // 保存结果（追加写入）
     std::ofstream fout;
@@ -327,6 +331,10 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
     result.cost = result.hcost + result.vcost;
     result.runtime = (double) (ec - sc) / CLOCKS_PER_SEC;
     result.str = std::to_string(result.cost) + "\t" + std::to_string(result.hcost) + "\t" + std::to_string(result.vcost) + "\t" + std::to_string(result.runtime);
+    // // 统计无人机飞行时间
+    // double flighttime = resource::calFlightTime(resource::REF_UNIT_LENGTH, speedSche);
+    // result.str = result.str + "\t" + std::to_string(flighttime);
+
     results.push_back(result);
     
     // 保存结果（追加写入）
@@ -353,11 +361,8 @@ void solve_online(ProblemDisc2D &offprob, ProblemOnlineDisc2D &prob, para::Algor
 /// @param instance_num 
 /// @param dir 
 void solve_all_instance(int instance_num, std::string dir) {
-    // std::vector<para::Algorithm> alg_set = {para::ACO, para::Greedy, para::PSO, para::GA, para::ACO_Online};
-    // std::vector<para::Algorithm> alg_set = {para::DFS, para::ACO, para::PSO, para::GA, para::Greedy};
-    // std::vector<para::Algorithm> alg_set = {para::DFS};
-    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA};
-    std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
+    // std::vector<para::Algorithm> alg_set = {para::ACO, para::PSO, para::GA, para::SA, para::Greedy, para::Greedy2, para::Greedy3, para::ACO_Online};
+    std::vector<para::Algorithm> alg_set = {para::ACO, para::ACO_Online};
 
     std::string filename = "", feature = "";
     for (int i = 1; i <= instance_num; i++) {
@@ -929,12 +934,12 @@ void run_exp_larger_scale(std::string dir, int &count_data) {
     std::vector<unsigned int> seeds;
 
     std::vector<int> sensor_num_set;
-    // ! 每次手动改
-    // for (int i = 5; i <= 30; i += 5) {
-    //     sensor_num_set.push_back(i);
-    // }
+    // ! 根据需要
+    for (int x : para::sensor_nums) {
+        sensor_num_set.push_back(x);
+    }
     // sensor_num_set.push_back(35);
-    sensor_num_set.push_back(40);
+    // sensor_num_set.push_back(40);
 
     // int st = count_data + 1;
     // int ed = count_data + sensor_num_set.size();
@@ -974,6 +979,91 @@ void run_exp_larger_scale(std::string dir, int &count_data) {
         fout << filenames[i] << "\n";
     }
     fout.close();
+}
+
+/// @brief for calibration (major revision)
+/// @param dir 
+/// @param count_data 
+void make_single_test_data(std::string dir, int &count_data) {
+    
+    int sensor_num = 15;
+    double max_x_mult = 45;
+    double max_y_mult = 120;
+    double time_prop = 2;
+    double max_swell = 3; //2.5;
+    double d_height = 10;
+    double hcost_propor = 1;
+
+    // filenames.clear();
+    // features.clear();
+    std::vector<unsigned int> seeds;
+
+    ++count_data;
+    DataGenerator2 dg2 = DataGenerator2(dir, sensor_num, max_y_mult, max_x_mult, time_prop, max_swell, d_height);
+    unsigned int seed = std::rand();
+    seeds.push_back(seed);
+    dg2.generate_save_online(seed, count_data);
+
+    // 测试数据特征值
+    std::string feature = std::to_string(count_data) + "\t"
+        + std::to_string(sensor_num) + "\t"
+        + std::to_string(max_y_mult) + "\t"
+        + std::to_string(max_x_mult) + "\t"
+        + std::to_string(time_prop) + "\t"
+        + std::to_string(max_swell) + "\t"
+        + std::to_string(d_height) + "\t"
+        + std::to_string(hcost_propor) + "\t"
+        + "calibration"; // 没有变化的测试数据控制参数
+    // features.push_back(feature);
+    std::string filename = dir + "\\" + dg2.filenameBaseOnline + std::to_string(count_data) + ".txt";
+    // filenames.push_back(filename);
+
+    // int tot = features.size();
+
+    std::ofstream fout;
+    fout.open(dir + "\\features.txt", std::ios::out | std::ios::app);
+    fout << feature << "\n";
+    fout.close();
+    fout.open(dir + "\\online_filename_set.txt", std::ios::out | std::ios::app);
+    fout << filename << "\n";
+    fout.close();
+}
+
+void calibration(int instance_num, std::string dir) {
+    para::Algorithm alg = para::ACO;
+    std::string filename = "", feature = "";
+
+    std::ofstream fout;
+    
+    for (double alpha : para::alphas) {
+        for (double beta : para::betas) {
+            for (double rho : para::rhos) {
+                aco::ALPHA = alpha;
+                aco::BETA = beta;
+                aco::EVAPORATE_COEF = rho;
+
+                printf("alpha=%lf, beta=%lf, rho=%lf\n", alpha, beta, rho);
+
+                for (int i = 0; i < instance_num; i++) {
+                    filename = filenames[i];
+                    feature = features[i];
+
+                    // read offline problem
+                    Problem2D prob2D;
+                    prob2D.initFromOnlineFile(filename);
+                    ProblemDisc2D probDisc2D = ProblemDisc2D(prob2D);
+
+                    fout.open(dir + "\\results.txt", std::ios::out | std::ios::app);
+                    std::string cali_feature = std::to_string(alpha) + "\t" + std::to_string(beta) + "\t" + std::to_string(rho);
+                    fout << cali_feature << "\t";
+                    fout.close();
+
+                    solve(probDisc2D, alg, dir, i);
+                    std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -1030,14 +1120,14 @@ int main() {
     int repeat = 10;
     int count = 0;
     // int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
-    std::string direction = ".\\exp_for_major_revision\\sensor_num\\40";
+    std::string direction = ".\\exp_for_major_revision\\calibration";
     // for (int i = 0; i < repeat; i++) {
 
     //     // ! 修改路径(文件夹exp__)
-    //     direction = ".\\exp_for_major_revision\\sensor_num\\40";
+    //     direction = ".\\exp_for_major_revision\\calibration";
 
-    //     // ! 修改run_exp()函数，修改count变量
-    //     run_exp_larger_scale(direction, count);
+    //     // ! 修改run_exp()函数，修改count变量，按需生成测试数据
+    //     make_single_test_data(direction, count);
         
     //     // ! 别忘了创建文件夹
     //     // ! 修改online_filename_set.txt
@@ -1047,11 +1137,12 @@ int main() {
     features.clear();
     filenames.clear();
     int instance_num = 0;
-    direction = ".\\exp_for_major_revision\\sensor_num\\40"; // ! 修改路径(文件夹exp__)
+    direction = ".\\exp_for_major_revision\\calibration"; // ! 修改路径(文件夹exp__)
     readInit(instance_num, direction, true);
     std::cout << "instance num = " << instance_num << "\n\n";
     results.clear();
-    solve_all_instance(instance_num, direction);
+    // solve_all_instance(instance_num, direction);
+    calibration(instance_num, direction);
 
 
     return 0;

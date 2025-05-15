@@ -16,9 +16,9 @@
 const int aco::ANT_NUM = 20; //30;
 double aco::ALPHA = 1; //5; //1;
 double aco::BETA = 0.5; //5; //6;
-double aco::EVAPORATE_COEF = 0.05; // 0.1;
-const double aco::ENHANCE_VALUE = 0.1; //0.3; //0.5;
-const int aco::MAX_ITERATOR = 20; //20; //30; //50;
+double aco::EVAPORATE_COEF = 0.1; // 0.1;
+const double aco::ENHANCE_VALUE = 0.3; //0.3; //0.5;
+const int aco::MAX_ITERATOR = 10; //20; //30; //50;
 const double aco::HEURISTIC_BASE = 1;           // 这个值具体是多少不重要
 const double aco::HEURISTIC_REDUCE_FACTOR = 0.1; //0.1; //1;
 const double aco::INITIAL_PHEROMONE_VALUE = 1;

@@ -79,7 +79,7 @@ namespace para {
     // alpha
     const double alphas[] = {0.5, 1, 1.5, 2, 2.5, 3}; // 6
     // beta
-    const double betas[] = {0, 1, 2, 3, 4, 5}; // 6
+    const double betas[] = {1, 2, 3, 4, 5}; // 5
     // best performance: alpha=1, beta=2
 
     /* ---------------------------------- other --------------------------------- */
@@ -1034,15 +1034,18 @@ void calibration(int instance_num, std::string dir) {
     std::string filename = "", feature = "";
 
     std::ofstream fout;
+
+    double rho = 0.05;
     
     for (double alpha : para::alphas) {
         for (double beta : para::betas) {
-            for (double rho : para::rhos) {
+            // for (double rho : para::rhos) {
                 aco::ALPHA = alpha;
                 aco::BETA = beta;
-                aco::EVAPORATE_COEF = rho;
+                // aco::EVAPORATE_COEF = rho;
 
                 printf("alpha=%lf, beta=%lf, rho=%lf\n", alpha, beta, rho);
+                // printf("alpha=%lf, beta=%lf, rho=0.05\n", alpha, beta);
 
                 for (int i = 0; i < instance_num; i++) {
                     filename = filenames[i];
@@ -1059,9 +1062,9 @@ void calibration(int instance_num, std::string dir) {
                     fout.close();
 
                     solve(probDisc2D, alg, dir, i);
-                    std::cout << para::algorithm_names[alg] << ": " << i << "/" << instance_num << "\n";
+                    std::cout << para::algorithm_names[alg] << ": " << (i + 1) << "/" << instance_num << "\n";
                 }
-            }
+            // }
         }
     }
 }
@@ -1120,11 +1123,11 @@ int main() {
     int repeat = 10;
     int count = 0;
     // int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
-    std::string direction = ".\\exp_for_major_revision\\calibration";
+    std::string direction = ".\\exp_for_major_revision\\calibration3";
     // for (int i = 0; i < repeat; i++) {
 
     //     // ! 修改路径(文件夹exp__)
-    //     direction = ".\\exp_for_major_revision\\calibration";
+    //     direction = ".\\exp_for_major_revision\\calibration3";
 
     //     // ! 修改run_exp()函数，修改count变量，按需生成测试数据
     //     make_single_test_data(direction, count);
@@ -1137,7 +1140,7 @@ int main() {
     features.clear();
     filenames.clear();
     int instance_num = 0;
-    direction = ".\\exp_for_major_revision\\calibration"; // ! 修改路径(文件夹exp__)
+    direction = ".\\exp_for_major_revision\\calibration3"; // ! 修改路径(文件夹exp__)
     readInit(instance_num, direction, true);
     std::cout << "instance num = " << instance_num << "\n\n";
     results.clear();
